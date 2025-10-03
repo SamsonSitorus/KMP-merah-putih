@@ -1,80 +1,96 @@
 @extends('layouts.app')
 
 @section('content')
-    <!-- Hero Section -->
-    <section id="hero" class="hero-section position-relative" style="background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('/images/ferry-hero.jpg'); background-size: cover; background-position: center; min-height: 70vh;">
-        <div class="container h-100 d-flex align-items-center">
-            <div class="row w-100">
-                <div class="col-lg-6">
-                    <!-- Booking Form -->
-                    <div class="card shadow-lg">
-                        <div class="card-body p-4">
-                            <div class="bg-dark text-white p-3 rounded mb-4">
-                                <h3 class="mb-0">Find Your Trip</h3>
-                            </div>
-                            <p class="text-muted small mb-4">Set Your Arrival and Departure Schedule at the Port</p>
-                            
-                            <form>
-                                <div class="row mb-3">
-                                    <div class="col-md-6">
-                                        <label class="form-label fw-bold">Travel Destination</label>
-                                        <input type="text" class="form-control" placeholder="Enter Origin City/Port">
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label">&nbsp;</label>
-                                        <input type="text" class="form-control" placeholder="Enter Destination City/Port">
-                                    </div>
-                                </div>
-                                
-                                <div class="row mb-3">
-                                    <div class="col-md-6">
-                                        <label class="form-label fw-bold">Departure Date</label>
-                                        <input type="date" class="form-control">
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label fw-bold">Select Shipping Lines</label>
-                                        <select class="form-select">
-                                            <option>Blue Star Ferries</option>
-                                            <option>DFDS</option>
-                                            <option>P&O Ferries</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                
-                                <div class="row mb-4">
-                                    <div class="col-md-6">
-                                        <label class="form-label fw-bold">Adults</label>
-                                        <div class="d-flex align-items-center">
-                                            <button type="button" class="btn btn-outline-secondary btn-sm">-</button>
-                                            <span class="mx-3">0</span>
-                                            <button type="button" class="btn btn-outline-secondary btn-sm">+</button>
-                                            <small class="text-muted ms-2">Ages 6 and over</small>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label fw-bold">Children</label>
-                                        <div class="d-flex align-items-center">
-                                            <button type="button" class="btn btn-outline-secondary btn-sm">-</button>
-                                            <span class="mx-3">0</span>
-                                            <button type="button" class="btn btn-outline-secondary btn-sm">+</button>
-                                            <small class="text-muted ms-2">2-5 years old</small>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div class="d-flex gap-3">
-                                    <button type="submit" class="btn btn-success flex-fill">Find Your Ticket</button>
-                                    <button type="button" class="btn btn-outline-dark flex-fill">Manage My Bookings</button>
-                                </div>
-                            </form>
+     <!-- Hero Section -->
+    <section id="hero" class="hero-section position-relative" 
+    style=" 
+        background-image: url('{{ asset('assets/img/ferry.jpeg') }}'); 
+        background-size: cover; 
+        background-position: center; 
+        min-height: 80vh; 
+        display: flex; 
+        align-items: center; 
+        justify-content: center;
+        position: relative;
+    ">
+
+    <!-- Overlay biar teks/form lebih jelas -->
+    <div style="position: absolute; inset: 0; background: rgba(0,0,0,0.4);"></div>
+
+    <div class="container position-relative z-1">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 col-xl-10">
+                <!-- Booking Form -->
+                <div class="card shadow-lg">
+                    <div class="card-body p-4">
+                        <div class="bg-primary text-white p-3 rounded mb-4">
+                            <h3 class="mb-0">Temukan Perjalanan mu</h3>
                         </div>
+                        <p class="text-muted small mb-4">Set Your Arrival and Departure Schedule at the Port</p>
+                        
+                        <form>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Pelabuhan Asal</label>
+                                     <select class="form-select">
+                                        <option>Pilih Pelabuhan Asal</option>
+                                        <option>Muara </option>
+                                        <option>Sipinggan</option>
+                                    </select>
+                                    </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Pelabuhan Tujuan</label>
+                                    <select class="form-select">
+                                        <option>Pilih Pelabuhan tujuan</option>
+                                        <option>Muara </option>
+                                        <option>Sipinggan</option>
+                                    </select>
+                               </div>
+                            </div>
+                            
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Pilih Tanggal </label>
+                                    <input type="date" class="form-control">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Jam Keberangkatan</label>
+                                  <input type="text" class="form-control" placeholder="08.00-10.00" readonly>
+                                
+                               </div>   
+                            </div>
+                            
+                            {{-- <div class="row mb-4">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Adults</label>
+                                    <div class="d-flex align-items-center">
+                                        <button type="button" class="btn btn-outline-secondary btn-sm">-</button>
+                                        <span class="mx-3">0</span>
+                                        <button type="button" class="btn btn-outline-secondary btn-sm">+</button>
+                                        <small class="text-muted ms-2">Ages 6 and over</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Children</label>
+                                    <div class="d-flex align-items-center">
+                                        <button type="button" class="btn btn-outline-secondary btn-sm">-</button>
+                                        <span class="mx-3">0</span>
+                                        <button type="button" class="btn btn-outline-secondary btn-sm">+</button>
+                                        <small class="text-muted ms-2">2-5 years old</small>
+                                    </div>
+                                </div>
+                            </div>
+                             --}}
+                            <div class="d-flex gap-3">
+                                <button type="submit" class="btn btn-success flex-fill">Find Your Ticket</button>
+                               </div>
+                        </form>
                     </div>
                 </div>
-
             </div>
         </div>
-    </section>
-
+    </div>
+</section>
     <!-- Latest Offers Section -->
     <section id="latest-offers" class="py-5">
         <div class="container">
