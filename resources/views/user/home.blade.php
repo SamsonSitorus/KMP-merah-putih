@@ -71,6 +71,7 @@
             </div>
 
             <div class="row">
+<<<<<<< Updated upstream
                 @foreach ([
                     ['img' => 'https://via.placeholder.com/300x200/4a90e2/ffffff?text=Greek+Island', 'title' => 'Greek Island: 30% OFF the return of Golden Star Ferries'],
                     ['img' => 'https://via.placeholder.com/300x200/2c5aa0/ffffff?text=Golden+Queen', 'title' => 'Up to 25% OFF with Golden Queen Fast Boat'],
@@ -87,6 +88,44 @@
                         </div>
                     </div>
                 @endforeach
+=======
+                <div class="col-md-3 mb-4">
+                    <div class="card h-100 offer-card">
+                        <img src="{{ asset('assets/img/Car_Grey.png') }}" class="card-img-top" alt="Greek Island">
+                        <div class="card-body">
+                            <span class="badge bg-primary mb-2"><i class="fas fa-tag me-1"></i>Offers and Promotions</span>
+                            <h5 class="card-title">Greek Island: 30% OFF the return of Golden Star Ferries</h5>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <div class="card h-100 offer-card">
+                        <img src="{{ asset('assets/img/Car_Grey.png') }}" class="card-img-top" alt="Golden Queen">
+                        <div class="card-body">
+                            <span class="badge bg-primary mb-2"><i class="fas fa-tag me-1"></i>Offers and Promotions</span>
+                            <h5 class="card-title">Up to 25% OFF with Golden Queen Fast Boat</h5>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <div class="card h-100 offer-card">
+                        <img src="{{ asset('assets/img/Car_Grey.png') }}" class="card-img-top" alt="Baltic Sea">
+                        <div class="card-body">
+                            <span class="badge bg-primary mb-2"><i class="fas fa-tag me-1"></i>Offers and Promotions</span>
+                            <h5 class="card-title">Baltic Sea: up to 40% OFF with Tallink Silja</h5>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <div class="card h-100 offer-card">
+                        <img src="{{ asset('assets/img/Car_Grey.png') }}" class="card-img-top" alt="High Speed">
+                        <div class="card-body">
+                            <span class="badge bg-primary mb-2"><i class="fas fa-tag me-1"></i>Offers and Promotions</span>
+                            <h5 class="card-title">High-speed sailing</h5>
+                        </div>
+                    </div>
+                </div>
+>>>>>>> Stashed changes
             </div>
         </div>
     </section>
