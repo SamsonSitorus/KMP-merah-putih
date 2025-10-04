@@ -63,7 +63,7 @@
     </section>
 
     <!-- Latest Offers Section -->
-    <section id="latest-offers" class="py-5 bg-light">
+    <section id="latest-offers" class="py-3 bg-light">
         <div class="container">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h2 class="fw-bold"><i class="fas fa-tag me-2 text-primary"></i>Latest Offers</h2>
@@ -71,67 +71,77 @@
             </div>
 
             <div class="row">
-<<<<<<< Updated upstream
-                @foreach ([
-                    ['img' => 'https://via.placeholder.com/300x200/4a90e2/ffffff?text=Greek+Island', 'title' => 'Greek Island: 30% OFF the return of Golden Star Ferries'],
-                    ['img' => 'https://via.placeholder.com/300x200/2c5aa0/ffffff?text=Golden+Queen', 'title' => 'Up to 25% OFF with Golden Queen Fast Boat'],
-                    ['img' => 'https://via.placeholder.com/300x200/1e88e5/ffffff?text=Baltic+Sea', 'title' => 'Baltic Sea: up to 40% OFF with Tallink Silja'],
-                    ['img' => 'https://via.placeholder.com/300x200/0277bd/ffffff?text=High+Speed', 'title' => 'High-speed sailing'],
-                ] as $offer)
-                    <div class="col-md-3 mb-4">
-                        <div class="card h-100 offer-card border-0 shadow-sm hover-shadow transition">
-                            <img src="{{ $offer['img'] }}" class="card-img-top rounded-top" alt="Offer">
-                            <div class="card-body">
-                                <span class="badge bg-primary mb-2"><i class="fas fa-tag me-1"></i>Offers</span>
-                                <h6 class="card-title">{{ $offer['title'] }}</h6>
-                            </div>
-                        </div>
-                    </div>
-                @endforeach
-=======
-                <div class="col-md-3 mb-4">
-                    <div class="card h-100 offer-card">
-                        <img src="{{ asset('assets/img/Car_Grey.png') }}" class="card-img-top" alt="Greek Island">
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100 offer-card shadow-sm">
+                        <img src="{{ asset('assets/img/Car_Grey.png') }}" class="card-img-top" alt="Mobil">
                         <div class="card-body">
-                            <span class="badge bg-primary mb-2"><i class="fas fa-tag me-1"></i>Offers and Promotions</span>
-                            <h5 class="card-title">Greek Island: 30% OFF the return of Golden Star Ferries</h5>
+                            <!-- Badge kategori -->
+                            <span class="badge bg-primary mb-3">
+                                <i class="fas fa-car me-1"></i> Roda 4
+                            </span>
+
+                            <!-- Judul -->
+                            <h5 class="card-title fw-bold">Daftar Harga Mobil</h5>
+
+                            <!-- List harga -->
+                            <ul class="list-group list-group-flush mt-3">
+                                <li class="list-group-item border-0 px-0 py-2">🚗 Mobil Sedan <span class="float-end fw-semibold">Rp 100.000</span></li>
+                                <li class="list-group-item border-0 px-0 py-2">🚚 Mobil Box <span class="float-end fw-semibold">Rp 150.000</span></li>
+                                <li class="list-group-item border-0 px-0 py-2">🚛 Mobil Truck <span class="float-end fw-semibold">Rp 250.000</span></li>
+                                <li class="list-group-item border-0 px-0 py-2">🚙 Mobil SUV <span class="float-end fw-semibold">Rp 300.000</span></li>
+                            </ul>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-3 mb-4">
-                    <div class="card h-100 offer-card">
-                        <img src="{{ asset('assets/img/Car_Grey.png') }}" class="card-img-top" alt="Golden Queen">
+                <div class="col-md-4 mb-4">
+                   <div class="card h-100 offer-card shadow-sm">
+                        <img src="{{ asset('assets/img/team.png') }}" class="card-img-top" alt="penumpang">
                         <div class="card-body">
-                            <span class="badge bg-primary mb-2"><i class="fas fa-tag me-1"></i>Offers and Promotions</span>
-                            <h5 class="card-title">Up to 25% OFF with Golden Queen Fast Boat</h5>
+                            <!-- Badge kategori -->
+                            <span class="badge bg-warning mb-3 text-dark">
+                                <i class="fas fa-user-friends me-1"></i> Penumpang
+                            </span>
+
+                            <!-- Judul -->
+                            <h5 class="card-title fw-bold">Daftar Harga Penumpang</h5>
+
+                            <!-- List harga -->
+                            <ul class="list-group list-group-flush mt-3">
+                                <li class="list-group-item border-0 px-0 py-2">👶 Anak-anak <span class="float-end fw-semibold">Rp 30.000</span></li>
+                                <li class="list-group-item border-0 px-0 py-2">🧑 Dewasa <span class="float-end fw-semibold">Rp 50.000</span></li>
+                                <li class="list-group-item border-0 px-0 py-2">👴 Lansia <span class="float-end fw-semibold">Rp 40.000</span></li>
+                            </ul>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-3 mb-4">
-                    <div class="card h-100 offer-card">
-                        <img src="{{ asset('assets/img/Car_Grey.png') }}" class="card-img-top" alt="Baltic Sea">
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100 offer-card shadow-sm">
+                        <img src="{{ asset('assets/img/scooter.png') }}" class="card-img-top" alt="Sepeda Motor">
                         <div class="card-body">
-                            <span class="badge bg-primary mb-2"><i class="fas fa-tag me-1"></i>Offers and Promotions</span>
-                            <h5 class="card-title">Baltic Sea: up to 40% OFF with Tallink Silja</h5>
+                            <!-- Badge kategori -->
+                            <span class="badge bg-success mb-3">
+                                <i class="fas fa-motorcycle me-1"></i> Roda 2
+                            </span>
+
+                            <!-- Judul -->
+                            <h5 class="card-title fw-bold">Daftar Harga Sepeda Motor</h5>
+
+                            <!-- List harga -->
+                            <ul class="list-group list-group-flush mt-3">
+                                <li class="list-group-item border-0 px-0 py-2">🛵 Motor Bebek <span class="float-end fw-semibold">Rp 50.000</span></li>
+                                <li class="list-group-item border-0 px-0 py-2">🏍️ Motor Sport <span class="float-end fw-semibold">Rp 75.000</span></li>
+                                <li class="list-group-item border-0 px-0 py-2">🛵 Motor Matic <span class="float-end fw-semibold">Rp 60.000</span></li>
+                                <li class="list-group-item border-0 px-0 py-2">🛻 Motor Trail <span class="float-end fw-semibold">Rp 80.000</span></li>
+                            </ul>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-3 mb-4">
-                    <div class="card h-100 offer-card">
-                        <img src="{{ asset('assets/img/Car_Grey.png') }}" class="card-img-top" alt="High Speed">
-                        <div class="card-body">
-                            <span class="badge bg-primary mb-2"><i class="fas fa-tag me-1"></i>Offers and Promotions</span>
-                            <h5 class="card-title">High-speed sailing</h5>
-                        </div>
-                    </div>
-                </div>
->>>>>>> Stashed changes
             </div>
         </div>
     </section>
 
     <!-- Why Use SEAVENTURES Section -->
-    <section id="why-seaventures" class="py-5 bg-primary text-white">
+    {{-- <section id="why-seaventures" class="py-5 bg-primary text-white">
         <div class="container">
             <h2 class="text-center fw-bold mb-5">Why use SEAVENTURES?</h2>
             <div class="row text-center">
@@ -155,10 +165,10 @@
                 </div>
             </div>
         </div>
-    </section>
+    </section> --}}
 
     <!-- Partners Section -->
-    <section id="partners" class="py-5">
+    {{-- <section id="partners" class="py-5">
         <div class="container">
             <h2 class="text-center fw-bold mb-5">Our Partners</h2>
             <div class="row justify-content-center text-center">
@@ -172,10 +182,10 @@
                 @endforeach
             </div>
         </div>
-    </section>
+    </section> --}}
 
     <!-- Customer Service Section -->
-    <section id="customer-service" class="py-5 text-white"
+    {{-- <section id="customer-service" class="py-5 text-white"
         style="background: linear-gradient(rgba(0,0,0,0.65), rgba(0,0,0,0.65)), url('https://via.placeholder.com/1200x400/4a90e2/ffffff?text=Ferry+Sunset');
                background-size: cover; background-position: center;">
         <div class="container">
@@ -190,5 +200,5 @@
                 </div>
             </div>
         </div>
-    </section>
-@endsection
+    </section>--}}
+@endsection 

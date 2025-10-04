@@ -12,12 +12,12 @@
           <!-- Logo -->
           <div class="app-brand justify-content-center mb-4">
             <a href="/" class="app-brand-link gap-2">
-              <span class="app-brand-text demo text-heading fw-bold">Sneat</span>
+              <img src="{{ asset('assets/img/cruise.png') }}" alt="Seaventures" 
+           class="d-inline-block align-text-top" style="height:50px;">
+              <span class="app-brand-text demo text-heading fw-bold">KMP Muara Putih</span>
             </a>
           </div>
           <!-- /Logo -->
-
-          <h4 class="mb-1">Welcome to Sneat! 👋</h4>
           <p class="mb-4">Please sign-in to your account and start the adventure</p>
 
           {{-- Alert jika login gagal --}}

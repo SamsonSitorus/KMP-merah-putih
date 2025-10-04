@@ -21,7 +21,7 @@
     {{-- Menu --}}
     <div class="collapse navbar-collapse" id="navbar-collapse">
       <ul class="navbar-nav ms-auto align-items-center">
-        <li class="nav-item"><a href="#home" class="nav-link fw-medium">Home</a></li>
+        <li class="nav-item"><a href="{{ route('home') }}" class="nav-link fw-medium">Home</a></li>
         <li class="nav-item"><a href="#offers" class="nav-link fw-medium">Latest Offers</a></li>
         <li class="nav-item"><a href="#why-us" class="nav-link fw-medium">Why Us</a></li>
         <li class="nav-item"><a href="#partners" class="nav-link fw-medium">Partners</a></li>
