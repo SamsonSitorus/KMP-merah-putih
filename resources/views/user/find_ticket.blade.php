@@ -9,7 +9,7 @@
             <h4 class="fw-bold mb-1">Surabaya → Makassar</h4>
             <p class="text-muted mb-0">
                 16 June 2023, Fri | Reguler | 
-                <i class="fas fa-user"></i> 2 Adult + 1 Children
+                <i class="fas fa-user"></i> 2 Dewasa + 1 Anak-anak
             </p>
         </div>
         <a href="{{--  --}}" class="btn btn-outline-success rounded-pill">

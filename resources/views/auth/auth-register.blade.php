@@ -28,13 +28,23 @@
 
               <form id="formAuthentication" class="mb-6" action="index.html">
                 <div class="mb-6">
-                  <label for="username" class="form-label">Username</label>
+                  <label for="name" class="form-label">Nama</label>
                   <input
                     type="text"
                     class="form-control"
-                    id="username"
-                    name="username"
-                    placeholder="Enter your username"
+                    id="name"
+                    name="name"
+                    placeholder="Enter your name"
+                    autofocus />
+                </div>
+                <div class="mb-6">
+                  <label for="phone_number" class="form-label">Nomor Telepon</label>
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="phone_number"
+                    name="phone_number"
+                    placeholder="Enter your phone_number"
                     autofocus />
                 </div>
                 <div class="mb-6">
@@ -81,3 +91,63 @@
 
     <!-- / Content -->
 @endsection
+<script type="module">
+  // Import Firebase SDKs
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
+  import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
+
+  // Konfigurasi Firebase Project kamu
+  const firebaseConfig = {
+   apiKey: "AIzaSyDOGpYwwYVAjGv50tkd4Oc6OpOIIGEQACM",
+  authDomain: "kmp-muara-putih.firebaseapp.com",
+  projectId: "kmp-muara-putih",
+  storageBucket: "kmp-muara-putih.firebasestorage.app",
+  messagingSenderId: "464742714279",
+  appId: "1:464742714279:web:2cc8385f3bb3a0c1038482",
+  measurementId: "G-L614DES47M"
+  };
+
+  // Inisialisasi Firebase
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
+  // Handle register form
+  document.getElementById("formAuthentication").addEventListener("submit", (e) => {
+    e.preventDefault();
+    
+    const name = document.getElementById("name").value;
+    const email = document.getElementById("email").value;
+    const phone = document.getElementById("phone_number").value;
+    const password = document.getElementById("password").value;
+
+    createUserWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        const user = userCredential.user;
+        console.log("User registered:", user);
+
+        // (Opsional) kirim data ke Laravel
+          fetch("{{ route('firebase.register') }}", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-CSRF-TOKEN": "{{ csrf_token() }}"
+          },
+          body: JSON.stringify({
+            uid: user.uid,
+            name: name,
+            email: email,
+            phone_number: phone
+          })
+        })
+          .then(response => response.json())
+          .then(data => {
+            console.log("Laravel response:", data);
+            alert("Registrasi berhasil! Data tersimpan di database Laravel");
+          })
+          .catch(error => {
+            console.error("Error dari Laravel:", error);
+            alert("Gagal simpan ke database Laravel!");
+          });
+      });
+  });
+</script>

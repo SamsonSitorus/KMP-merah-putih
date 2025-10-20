@@ -25,7 +25,7 @@
             <div class="alert alert-danger">{{ session('failed') }}</div>
           @endif
 
-          <form action="{{ route('login') }}" method="POST">
+          <form id="formLogin">
             @csrf
 
             <!-- Email -->
@@ -60,9 +60,6 @@
                 <span class="input-group-text cursor-pointer">
                   <i class="bx bx-hide"></i>
                 </span>
-                @error('password')
-                  <div class="invalid-feedback d-block">{{ $message }}</div>
-                @enderror
               </div>
             </div>
 
@@ -85,7 +82,7 @@
 
           <p class="text-center">
             <span>New on our platform?</span>
-            <a href="{{--  --}}">
+            <a href="{{route('register')}}">
               <span>Create an account</span>
             </a>
           </p>
@@ -98,4 +95,58 @@
   </div>
 </div>
 @endsection
-  
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
+  import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
+
+  // 🔧 Firebase Configuration
+  const firebaseConfig = {
+    apiKey: "AIzaSyDOGpYwwYVAjGv50tkd4Oc6OpOIIGEQACM",
+    authDomain: "kmp-muara-putih.firebaseapp.com",
+    projectId: "kmp-muara-putih",
+    storageBucket: "kmp-muara-putih.firebasestorage.app",
+    messagingSenderId: "464742714279",
+    appId: "1:464742714279:web:2cc8385f3bb3a0c1038482",
+    measurementId: "G-L614DES47M"
+  };
+
+  // 🔥 Inisialisasi Firebase
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
+  // 🧠 Handle Login Form
+  document.getElementById("formLogin").addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+      const token = await user.getIdToken(); // Ambil token Firebase
+
+      // Kirim token ke Laravel untuk verifikasi
+      const response = await fetch("{{ route('firebase.verify') }}", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRF-TOKEN": "{{ csrf_token() }}"
+        },
+        body: JSON.stringify({ token })
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        alert("✅ Login berhasil!");
+        window.location.href = "/dashboard";
+      } else {
+        alert("❌ Login gagal: " + data.message);
+      }
+    } catch (error) {
+      console.error("Firebase login error:", error.message);
+      alert("Gagal login: " + error.message);
+    }
+  });
+</script>

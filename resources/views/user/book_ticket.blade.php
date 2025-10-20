@@ -51,7 +51,7 @@
 
             <!-- Upload Bukti Pembayaran -->
             <div class="card border-0 shadow-sm">
-                <div class="card-header bg-success text-white fw-bold">
+                <div class="card-header bg-primary text-white fw-bold">
                     Upload Bukti Pembayaran
                 </div>
                 <div class="card-body">
@@ -64,7 +64,7 @@
                                 Format yang diperbolehkan: JPG, PNG, atau PDF
                             </div>
                         </div>
-                        <button type="submit" class="btn btn-success w-100 rounded-pill">
+                        <button type="submit" class="btn btn-primary w-100 rounded-pill">
                             <i class="fas fa-upload me-2"></i>Konfirmasi Pembayaran
                         </button>
                     </form>
