@@ -23,6 +23,8 @@ class User extends Authenticatable
         'name',
         'email',
         'phone_number',
+        'role',
+        'password',
     ];
 
     /**
@@ -46,5 +48,9 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+    public function detail()
+    {
+        return $this->hasOne(UserDetail::class);
     }
 }

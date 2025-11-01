@@ -10,16 +10,6 @@ use Illuminate\Support\Facades\Log;
 
 class Authcontroller extends Controller
 {
-    public function login(Request $request){
-                $request->validate([
-                'email' => 'required|email|max:50',
-                'password' => 'required|min:3|max:50',
-            ]);
-            if(Auth::attempt($request->only('email', 'password'), $request->remember)){
-                return redirect('/dashboard');
-            }
-            return back()->with('failed','Email atau password tidak sesuai !');
-        }
 
     public function register(Request $request){
         // Ambil data JSON dari frontend
@@ -51,7 +41,7 @@ class Authcontroller extends Controller
      public function verifyFirebase(Request $request)
     {
         try {
-            $factory = (new Factory)->withServiceAccount(base_path('firebase_credentials.json'));
+            $factory = (new Factory)->withServiceAccount(base_path('resources/credential/credential_firebase.json'));
             $auth = $factory->createAuth();
 
             $idTokenString = $request->input('token');
@@ -65,8 +55,9 @@ class Authcontroller extends Controller
             }
 
             // Bisa simpan session manual atau lanjut ke halaman dashboard
-            session(['user' => $user]);
-
+            // session(['user' => $user]);
+            Auth::login($user);
+            $request->session()->regenerate(); 
             return response()->json([
                 'message' => 'Login success',
                 'user' => $user
@@ -76,4 +67,12 @@ class Authcontroller extends Controller
             return response()->json(['message' => 'Invalid or expired token'], 401);
         }
     }
+    public function logout(Request $request)
+    {
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+        return redirect('/login');
+    }
+
 }

@@ -2,7 +2,7 @@
   <div class="container-fluid">
 
     {{-- Logo --}}
-    <a href="/" class="navbar-brand d-flex align-items-center">
+    <a href="{{ route('home') }}" class="navbar-brand d-flex align-items-center">
       <img src="{{ asset('assets/img/cruise.png') }}" alt="Seaventures" 
            class="d-inline-block align-text-top" style="height:50px;">
       <div class="ms-2 lh-1">
@@ -36,8 +36,13 @@
               <span class="fw-medium">{{ Auth::user()->name }}</span>
             </a>
             <ul class="dropdown-menu dropdown-menu-end">
-              <li><a class="dropdown-item" href="{{ url('/profile') }}">Profile</a></li>
-              <li><a class="dropdown-item" href="{{ url('/logout') }}">Logout</a></li>
+              <li><a class="dropdown-item" href="{{ route('profile') }}">Profile</a></li>
+              <li>
+                <form action="{{ route('logout') }}" method="POST" class="p-0 m-0">
+                @csrf
+                <button type="submit" class="dropdown-item">Logout</button>
+              </form>
+            </li>
             </ul>
           </li>
         @else

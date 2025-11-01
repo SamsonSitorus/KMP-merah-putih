@@ -26,7 +26,7 @@
               <h4 class="mb-1">Adventure starts here 🚀</h4>
               {{-- <p class="mb-6">Make your app management easy and fun!</p> --}}
 
-              <form id="formAuthentication" class="mb-6" action="index.html">
+              <form id="formAuthentication" class="mb-6">
                 <div class="mb-6">
                   <label for="name" class="form-label">Nama</label>
                   <input
@@ -63,7 +63,23 @@
                       aria-describedby="password" />
                     <span class="input-group-text cursor-pointer"><i class="icon-base bx bx-hide"></i></span>
                   </div>
+
+                  <div class="form-password-toggle">
+                 <label class="form-label" for="confirm_password">Confirm Password</label>
+                  <div class="input-group input-group-merge">
+                    <input
+                      type="password"
+                      id="confirm_password"
+                      class="form-control"
+                      name="confirm_password"
+                      placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;"
+                      aria-describedby="Confirm_password"
+                      />
+                    <span class="input-group-text cursor-pointer"><i class="icon-base bx bx-hide"></i></span>
+                  </div>
+                </div> 
                 </div>
+
                 <div class="my-7">
                   <div class="form-check mb-0">
                     <input class="form-check-input" type="checkbox" id="terms-conditions" name="terms" />
@@ -78,7 +94,7 @@
 
               <p class="text-center">
                 <span>Already have an account?</span>
-                <a href="auth-login-basic.html">
+                <a href="{{ route('login') }}">
                   <span>Sign in instead</span>
                 </a>
               </p>
@@ -91,63 +107,14 @@
 
     <!-- / Content -->
 @endsection
-<script type="module">
-  // Import Firebase SDKs
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
-  import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
-
-  // Konfigurasi Firebase Project kamu
-  const firebaseConfig = {
-   apiKey: "AIzaSyDOGpYwwYVAjGv50tkd4Oc6OpOIIGEQACM",
-  authDomain: "kmp-muara-putih.firebaseapp.com",
-  projectId: "kmp-muara-putih",
-  storageBucket: "kmp-muara-putih.firebasestorage.app",
-  messagingSenderId: "464742714279",
-  appId: "1:464742714279:web:2cc8385f3bb3a0c1038482",
-  measurementId: "G-L614DES47M"
-  };
-
-  // Inisialisasi Firebase
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-
-  // Handle register form
-  document.getElementById("formAuthentication").addEventListener("submit", (e) => {
-    e.preventDefault();
-    
-    const name = document.getElementById("name").value;
-    const email = document.getElementById("email").value;
-    const phone = document.getElementById("phone_number").value;
-    const password = document.getElementById("password").value;
-
-    createUserWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        const user = userCredential.user;
-        console.log("User registered:", user);
-
-        // (Opsional) kirim data ke Laravel
-          fetch("{{ route('firebase.register') }}", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "X-CSRF-TOKEN": "{{ csrf_token() }}"
-          },
-          body: JSON.stringify({
-            uid: user.uid,
-            name: name,
-            email: email,
-            phone_number: phone
-          })
-        })
-          .then(response => response.json())
-          .then(data => {
-            console.log("Laravel response:", data);
-            alert("Registrasi berhasil! Data tersimpan di database Laravel");
-          })
-          .catch(error => {
-            console.error("Error dari Laravel:", error);
-            alert("Gagal simpan ke database Laravel!");
-          });
-      });
-  });
-</script>
+@push('scripts')
+  {{-- Import file JavaScript eksternal --}}
+  <script type="module" src="{{ asset('assets/js/register.js') }}"></script>
+  {{-- Kirim route dan token ke JS --}}
+  <script>
+    window.Laravel = {
+      registerUrl: "{{ route('firebase.register') }}",
+      csrfToken: "{{ csrf_token() }}",
+    };
+  </script>
+@endpush  
