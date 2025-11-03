@@ -14,11 +14,24 @@ return new class extends Migration
         Schema::create('ticket_prices', function (Blueprint $table) {
             $table->id();
             $table->foreignId('ticket_stock_id')->constrained('ticket_stocks')->onDelete('cascade');
-            $table->enum('passenger_type', ['Dewasa', 'Anak-anak']);
+
+            // Kolom penumpang (opsional)
+            $table->enum('passenger_type', ['Dewasa', 'Anak-anak'])->nullable();
+
+            // Kolom kendaraan (opsional)
+            $table->enum('vehicle_type', [
+                'Motor',
+                'Mobil Sedan',
+                'Mobil Box',
+                'Mobil Truck',
+                'Mobil SUV'
+            ])->nullable();
+
             $table->decimal('price', 10, 2);
             $table->timestamps();
 
-            $table->unique(['ticket_stock_id', 'passenger_type']); // biar 1 tipe penumpang per stok
+            // Cegah duplikasi kombinasi stok & tipe
+            $table->unique(['ticket_stock_id', 'passenger_type', 'vehicle_type']);
         });
     }
 

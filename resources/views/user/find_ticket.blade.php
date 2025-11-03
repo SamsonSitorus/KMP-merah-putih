@@ -1,66 +1,88 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container py-5">
+@php
+    use App\Models\Port;
+    use App\Models\TicketStock;
 
-    <!-- Header Result -->
-    <div class="bg-white shadow-sm p-4 rounded-4 mb-4 d-flex justify-content-between align-items-center">
+    $originId = request()->query('origin_port_id');
+    $destinationId = request()->query('destination_port_id');
+    $departureDate = request()->query('departure_date');
+    $dewasaCount = (int) request()->query('dewasa_count', 0);
+    $anakCount = (int) request()->query('anak_count', 0);
+    $vehicleType = request()->query('vehicle_type');
+    $vehicleCount = (int) request()->query('vehicle_count', 0);
+
+    $origin = $originId ? Port::find($originId) : null;
+    $destination = $destinationId ? Port::find($destinationId) : null;
+
+    // Gunakan method model untuk mencari stok tiket agar logic tidak bercampur di view
+    $results = TicketStock::searchByRoute($originId, $destinationId, $departureDate);
+@endphp
+
+<div class="container py-4">
+
+    <!-- Search summary -->
+    <div class="bg-white shadow-sm p-4 rounded mb-4 d-flex justify-content-between align-items-center">
         <div>
-            <h4 class="fw-bold mb-1">Surabaya → Makassar</h4>
-            <p class="text-muted mb-0">
-                16 June 2023, Fri | Reguler | 
-                <i class="fas fa-user"></i> 2 Dewasa + 1 Anak-anak
-            </p>
+            <h4 class="mb-1">{{ $origin->name ?? '-' }} → {{ $destination->name ?? '-' }}</h4>
+            <p class="text-muted mb-0">{{ $departureDate ?? '-' }} | {{ $dewasaCount }} Dewasa • {{ $anakCount }} Anak-anak</p>
         </div>
-        <a href="{{--  --}}" class="btn btn-outline-success rounded-pill">
-            <i class="fas fa-search me-2"></i>Find Ticket
-        </a>
+        <a href="{{ route('home') }}" class="btn btn-outline-secondary">Ubah Pencarian</a>
     </div>
 
-    <!-- Result Ticket Card -->
-    <div class="card border-0 shadow-lg rounded-4 mb-4">
-        <div class="card-body p-4">
-            <div class="row align-items-center">
-                <!-- Info Section -->
-                <div class="col-md-9">
-                    <p class="text-success fw-semibold mb-2">Available Seat (238)</p>
+    @if($results->isEmpty())
+        <div class="alert alert-warning">Tidak ditemukan jadwal untuk rute dan tanggal yang dipilih.</div>
+    @else
+        <div class="row gy-3">
+            @foreach($results as $stock)
+                @php
+                    $prices = $stock->prices()->get();
+                    $passengerPrices = $prices->whereNotNull('passenger_type')->groupBy('passenger_type')->map(fn($g) => $g->first()->price);
+                    $vehiclePrices = $prices->whereNotNull('vehicle_type')->groupBy('vehicle_type')->map(fn($g) => $g->first()->price);
 
-                    <h5 class="fw-bold mb-1">
-                        Surabaya, Jawa Timur <i class="fas fa-arrow-right mx-2 text-primary"></i> 
-                        Makassar, Sulawesi Selatan
-                    </h5>
-                    <p class="text-muted small mb-3">
-                        SBY - TANJUNG PERAK → MAK - MAKASSAR
-                    </p>
+                    $total = 0;
+                    $total += ($dewasaCount * ($passengerPrices['Dewasa'] ?? 0));
+                    $total += ($anakCount * ($passengerPrices['Anak-anak'] ?? 0));
+                    $total += ($vehicleCount * ($vehiclePrices[$vehicleType] ?? 0));
+                @endphp
 
-                    <div class="row">
-                        <div class="col-md-6">
-                            <p class="mb-1"><span class="fw-semibold">Departure Date:</span></p>
-                            <p class="text-muted">16 June 2023, Fri</p>
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-body d-flex justify-content-between align-items-center">
+                            <div>
+                                <h5 class="mb-1">Berangkat {{ \Carbon\Carbon::parse($stock->departure_time)->format('H:i') }}</h5>
+                                <small class="text-muted">Stok tersisa: {{ $stock->remaining_stock }}</small>
+                            </div>
+
+                            <div class="text-end">
+                                <div class="mb-2 fw-bold text-danger">{{ $total > 0 ? 'Rp ' . number_format($total,0,',','.') : 'Rp 0' }}</div>
+                                <form action="{{ route('book_ticket') }}" method="GET">
+                                    <input type="hidden" name="ticket_stock_id" value="{{ $stock->id }}">
+                                    <input type="hidden" name="departure_date" value="{{ $departureDate }}">
+                                    <input type="hidden" name="departure_time" value="{{ $stock->departure_time }}">
+                                    <input type="hidden" name="dewasa_count" value="{{ $dewasaCount }}">
+                                    <input type="hidden" name="anak_count" value="{{ $anakCount }}">
+                                    <input type="hidden" name="vehicle_type" value="{{ $vehicleType }}">
+                                    <input type="hidden" name="vehicle_count" value="{{ $vehicleCount }}">
+                                    <input type="hidden" name="total_price" value="{{ $total }}">
+                                    <button class="btn btn-primary">Pesan Sekarang</button>
+                                </form>
+                            </div>
                         </div>
-                        <div class="col-md-6">
-                            <p class="mb-1"><span class="fw-semibold">Shipping Lines:</span></p>
-                            <p class="text-muted">PELNI SHIP</p>
+
+                        <div class="card-footer bg-white">
+                            <div class="d-flex gap-3 flex-wrap">
+                                <div>Dewasa: {{ isset($passengerPrices['Dewasa']) ? 'Rp ' . number_format($passengerPrices['Dewasa'],0,',','.') : '-' }}</div>
+                                <div>Anak-anak: {{ isset($passengerPrices['Anak-anak']) ? 'Rp ' . number_format($passengerPrices['Anak-anak'],0,',','.') : '-' }}</div>
+                                <div>Kendaraan ({{ $vehicleType ?? '-' }}): {{ isset($vehiclePrices[$vehicleType]) ? 'Rp ' . number_format($vehiclePrices[$vehicleType],0,',','.') : '-' }}</div>
+                            </div>
                         </div>
                     </div>
-
-                        <div class="d-flex gap-4 mt-2 small fw-semibold">
-                            <a href="#" class="text-success border-bottom border-2 border-success">Pricing Details</a>
-                            <a href="#" class="text-muted">Trip Details</a>
-                            <a href="#" class="text-muted">Terms and Conditions</a>
-                        </div>
                 </div>
-
-                <!-- Price Section -->
-                <div class="col-md-3 text-center">
-                    <h4 class="fw-bold text-danger mb-4">Rp. 576.000</h4>
-                    <a href="{{--  --}}" class="btn btn-success rounded-pill px-4 py-2">
-                        <i class="fas fa-ticket-alt me-2"></i>Book Ticket
-                    </a>
-                </div>
-            </div>
+            @endforeach
         </div>
-    </div>
+    @endif
 
 </div>
 @endsection

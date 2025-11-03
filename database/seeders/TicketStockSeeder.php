@@ -10,7 +10,7 @@ class TicketStockSeeder extends Seeder
 {
     public function run()
     {
-        // Buat data TicketStock dulu
+        // Buat data stok tiket
         $ticketStocks = [
             [
                 'origin_port_id' => 1,
@@ -33,18 +33,35 @@ class TicketStockSeeder extends Seeder
         foreach ($ticketStocks as $data) {
             $stock = TicketStock::create($data);
 
-            // Setelah stok dibuat, tambahkan harga tiketnya
+            //  Harga penumpang
             TicketPrice::create([
                 'ticket_stock_id' => $stock->id,
-                'passenger_type' => 'dewasa',
+                'passenger_type' => 'Dewasa',
                 'price' => 50000,
             ]);
 
             TicketPrice::create([
                 'ticket_stock_id' => $stock->id,
-                'passenger_type' => 'anak-anak',
+                'passenger_type' => 'Anak-anak',
                 'price' => 30000,
             ]);
+
+            //  Harga kendaraan
+            $vehicles = [
+                ['vehicle_type' => 'Motor', 'price' => 20000],
+                ['vehicle_type' => 'Mobil Sedan', 'price' => 100000],
+                ['vehicle_type' => 'Mobil Box', 'price' => 150000],
+                ['vehicle_type' => 'Mobil Truck', 'price' => 250000],
+                ['vehicle_type' => 'Mobil SUV', 'price' => 300000],
+            ];
+
+            foreach ($vehicles as $vehicle) {
+                TicketPrice::create([
+                    'ticket_stock_id' => $stock->id,
+                    'vehicle_type' => $vehicle['vehicle_type'],
+                    'price' => $vehicle['price'],
+                ]);
+            }
         }
     }
 }

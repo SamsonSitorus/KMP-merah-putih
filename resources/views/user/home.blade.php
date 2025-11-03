@@ -543,7 +543,7 @@
 
         <!-- Booking Form -->
         <div class="booking-card">
-            <form id="ticketForm">
+            <form id="ticketForm" action="{{ route('find_ticket') }}" method="GET">
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
                     <div>
                         <label class="form-label">Pelabuhan Asal</label>
@@ -567,7 +567,7 @@
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
                     <div>
                         <label class="form-label">Pilih Tanggal</label>
-                        <input type="date" name="departure_date" class="form-control">
+                        <input type="date" name="departure_date" class="form-control" id="departureDateInput" min="{{ date('Y-m-d') }}" required>
                     </div>
 
                     <div>
@@ -586,6 +586,10 @@
                     <input type="hidden" name="anak_count" id="anakCountInput" value="0">
                     <input type="hidden" name="dewasa_price" id="dewasaPriceInput" value="0">
                     <input type="hidden" name="anak_price" id="anakPriceInput" value="0">
+                    <!-- Vehicle booking fields -->
+                    <input type="hidden" name="vehicle_type" id="vehicleTypeInput" value="">
+                    <input type="hidden" name="vehicle_count" id="vehicleCountInput" value="0">
+                    <input type="hidden" name="vehicle_price" id="vehiclePriceInput" value="0">
                 </div>
 
                 <!-- Total Price -->
@@ -636,6 +640,27 @@
                 </div>
             </div>
 
+            <!-- Kendaraan Row -->
+            <div class="passenger-row" style="align-items: center;">
+                <div class="passenger-info">
+                    <h6>Kendaraan</h6>
+                    <small>Tambahkan kendaraan (opsional)</small>
+                    <div class="price-display" id="vehiclePriceDisplay">Harga: -</div>
+                </div>
+                <div class="counter-group">
+                    <select id="vehicleTypeSelect" class="form-select" style="min-width: 140px; padding: 0.4rem;">
+                        <option value="" selected>-- Pilih Kendaraan --</option>
+                        @foreach($vehicleTypes as $vtype)
+                            <option value="{{ $vtype }}">{{ $vtype }}</option>
+                        @endforeach
+                    </select>
+
+                    <button type="button" class="counter-btn" id="minusVehicle">−</button>
+                    <span id="countVehicle" class="counter-display">0</span>
+                    <button type="button" class="counter-btn" id="plusVehicle">+</button>
+                </div>
+            </div>
+
             <button type="button" class="btn-done" id="donePassenger">SELESAI</button>
         </div>
     </div>
@@ -656,19 +681,19 @@
                 <h5>Daftar Harga Mobil</h5>
                 <div class="price-item">
                     <span>🚗 Mobil Sedan</span>
-                    <span>Rp 100.000</span>
+                    <span>{{ isset($vehiclePrices['Mobil Sedan']) ? 'Rp ' . number_format($vehiclePrices['Mobil Sedan'], 0, ',', '.') : 'Rp 0' }}</span>
                 </div>
                 <div class="price-item">
                     <span>🚚 Mobil Box</span>
-                    <span>Rp 150.000</span>
+                    <span>{{ isset($vehiclePrices['Mobil Box']) ? 'Rp ' . number_format($vehiclePrices['Mobil Box'], 0, ',', '.') : 'Rp 0' }}</span>
                 </div>
                 <div class="price-item">
                     <span>🚛 Mobil Truck</span>
-                    <span>Rp 250.000</span>
+                    <span>{{ isset($vehiclePrices['Mobil Truck']) ? 'Rp ' . number_format($vehiclePrices['Mobil Truck'], 0, ',', '.') : 'Rp 0' }}</span>
                 </div>
                 <div class="price-item">
                     <span>🚙 Mobil SUV</span>
-                    <span>Rp 300.000</span>
+                    <span>{{ isset($vehiclePrices['Mobil SUV']) ? 'Rp ' . number_format($vehiclePrices['Mobil SUV'], 0, ',', '.') : 'Rp 0' }}</span>
                 </div>
             </div>
 
@@ -678,11 +703,11 @@
                 <h5>Daftar Harga Penumpang</h5>
                 <div class="price-item">
                     <span>👶 Anak-anak</span>
-                    <span>Rp 30.000</span>
+                    <span>{{ isset($passengerPrices['Anak-anak']) ? 'Rp ' . number_format($passengerPrices['Anak-anak'], 0, ',', '.') : 'Rp 0' }}</span>
                 </div>
                 <div class="price-item">
                     <span>🧑 Dewasa</span>
-                    <span>Rp 50.000</span>
+                    <span>{{ isset($passengerPrices['Dewasa']) ? 'Rp ' . number_format($passengerPrices['Dewasa'], 0, ',', '.') : 'Rp 0' }}</span>
                 </div>
             </div>
 
@@ -692,19 +717,19 @@
                 <h5>Daftar Harga Sepeda Motor</h5>
                 <div class="price-item">
                     <span>🛵 Motor Bebek</span>
-                    <span>Rp 50.000</span>
+                    <span>{{ isset($vehiclePrices['Motor Bebek']) ? 'Rp ' . number_format($vehiclePrices['Motor Bebek'], 0, ',', '.') : 'Rp 0' }}</span>
                 </div>
                 <div class="price-item">
                     <span>🏍️ Motor Sport</span>
-                    <span>Rp 75.000</span>
+                    <span>{{ isset($vehiclePrices['Motor Sport']) ? 'Rp ' . number_format($vehiclePrices['Motor Sport'], 0, ',', '.') : 'Rp 0' }}</span>
                 </div>
                 <div class="price-item">
                     <span>🛵 Motor Matic</span>
-                    <span>Rp 60.000</span>
+                    <span>{{ isset($vehiclePrices['Motor Matic']) ? 'Rp ' . number_format($vehiclePrices['Motor Matic'], 0, ',', '.') : 'Rp 0' }}</span>
                 </div>
                 <div class="price-item">
                     <span>🛻 Motor Trail</span>
-                    <span>Rp 80.000</span>
+                    <span>{{ isset($vehiclePrices['Motor Trail']) ? 'Rp ' . number_format($vehiclePrices['Motor Trail'], 0, ',', '.') : 'Rp 0' }}</span>
                 </div>
             </div>
         </div>
@@ -787,9 +812,16 @@
         let anak = 0;
         let dewasaPrice = 0;
         let anakPrice = 0;
+    // Vehicle booking state
+    let vehicleCount = 0;
+    let vehiclePrice = 0;
+    let vehicleType = '';
 
         const dewasaCount = document.getElementById('countDewasa');
         const anakCount = document.getElementById('countAnak');
+    const vehicleCountDisplay = document.getElementById('countVehicle');
+    const vehicleTypeSelect = document.getElementById('vehicleTypeSelect');
+    const vehiclePriceDisplay = document.getElementById('vehiclePriceDisplay');
 
         function updatePassengerButtonText() {
             const totalPassengers = dewasa + anak;
@@ -825,7 +857,7 @@
                 return;
             }
             
-            fetchPrices(origin, destination);
+            fetchPrices(origin, destination, vehicleTypeSelect.value);
             passengerModal.classList.add('active');
         });
 
@@ -837,7 +869,7 @@
         });
 
         // Function to fetch prices from HomeController
-        async function fetchPrices(origin, destination) {
+        async function fetchPrices(origin, destination, vType = '') {
             try {
                 const resDewasa = await fetch(
                     `/get-price?origin_port_id=${origin}&destination_port_id=${destination}&passenger_type=Dewasa`
@@ -859,6 +891,19 @@
                 
                 if (!timeInput.value && dataAnak.departure_time) {
                     timeInput.value = dataAnak.departure_time;
+                }
+
+                // Fetch vehicle price if vehicle type provided
+                if (vType) {
+                    const resVehicle = await fetch(
+                        `/get-price?origin_port_id=${origin}&destination_port_id=${destination}&vehicle_type=${encodeURIComponent(vType)}`
+                    );
+                    const dataVehicle = await resVehicle.json();
+                    vehiclePrice = dataVehicle.price || 0;
+                    vehiclePriceDisplay.textContent = `Harga: ${vehiclePrice ? 'Rp ' + parseInt(vehiclePrice).toLocaleString('id-ID') : '-'}`;
+                } else {
+                    vehiclePrice = 0;
+                    vehiclePriceDisplay.textContent = 'Harga: -';
                 }
             } catch (err) {
                 console.error('Error fetching prices:', err);
@@ -893,6 +938,63 @@
             updatePassengerButtonText();
         });
 
+        // Vehicle counter events
+        document.getElementById('plusVehicle').addEventListener('click', (e) => {
+            e.preventDefault();
+            // Only allow adding vehicle if a type is selected
+            const selected = vehicleTypeSelect.value;
+            if (!selected) {
+                alert('Pilih jenis kendaraan terlebih dahulu.');
+                return;
+            }
+            vehicleType = selected;
+            vehicleCount++;
+            vehicleCountDisplay.textContent = vehicleCount;
+            document.getElementById('vehicleCountInput').value = vehicleCount;
+            document.getElementById('vehicleTypeInput').value = vehicleType;
+            updateTotalPrice();
+        });
+
+        document.getElementById('minusVehicle').addEventListener('click', (e) => {
+            e.preventDefault();
+            if (vehicleCount > 0) vehicleCount--;
+            vehicleCountDisplay.textContent = vehicleCount;
+            document.getElementById('vehicleCountInput').value = vehicleCount;
+            if (vehicleCount === 0) {
+                // clear vehicle type if no vehicles
+                document.getElementById('vehicleTypeInput').value = '';
+                vehicleType = '';
+            }
+            updateTotalPrice();
+        });
+
+        // When vehicle type changes, fetch its price for selected route (if route chosen)
+        vehicleTypeSelect.addEventListener('change', (e) => {
+            vehicleType = e.target.value;
+            document.getElementById('vehicleTypeInput').value = vehicleType;
+
+            const origin = asalSelect.value;
+            const destination = tujuanId.value;
+            if (!origin || !destination) {
+                vehiclePrice = 0;
+                vehiclePriceDisplay.textContent = 'Harga: -';
+                return;
+            }
+
+            if (vehicleType) {
+                fetchPrices(origin, destination, vehicleType).then(() => {
+                    // update hidden price input
+                    document.getElementById('vehiclePriceInput').value = vehiclePrice;
+                    updateTotalPrice();
+                });
+            } else {
+                vehiclePrice = 0;
+                vehiclePriceDisplay.textContent = 'Harga: -';
+                document.getElementById('vehiclePriceInput').value = 0;
+                updateTotalPrice();
+            }
+        });
+
         document.getElementById('minusAnak').addEventListener('click', (e) => {
             e.preventDefault();
             if (anak > 0) anak--;
@@ -904,7 +1006,8 @@
 
         // Update total price in real-time
         function updateTotalPrice() {
-            const total = (dewasa * dewasaPrice) + (anak * anakPrice);
+            const vehicleTotal = vehicleCount * vehiclePrice;
+            const total = (dewasa * dewasaPrice) + (anak * anakPrice) + vehicleTotal;
             if (total > 0) {
                 priceInput.value = `Rp ${parseInt(total).toLocaleString('id-ID')}`;
             } else {
@@ -931,14 +1034,22 @@
             priceInput.value = 'Rp 0';
             dewasaPriceDisplay.textContent = 'Harga: -';
             anakPriceDisplay.textContent = 'Harga: -';
+            vehiclePriceDisplay.textContent = 'Harga: -';
             
             dewasa = 0;
             anak = 0;
+            vehicleCount = 0;
+            vehiclePrice = 0;
+            vehicleType = '';
             dewasaCount.textContent = '0';
             anakCount.textContent = '0';
+            vehicleCountDisplay.textContent = '0';
             updatePassengerButtonText();
             document.getElementById('dewasaCountInput').value = 0;
             document.getElementById('anakCountInput').value = 0;
+            document.getElementById('vehicleCountInput').value = 0;
+            document.getElementById('vehiclePriceInput').value = 0;
+            document.getElementById('vehicleTypeInput').value = '';
         });
 
         // Done selecting passengers
@@ -948,8 +1059,56 @@
             // Store prices in hidden fields
             document.getElementById('dewasaPriceInput').value = dewasaPrice;
             document.getElementById('anakPriceInput').value = anakPrice;
+            document.getElementById('vehiclePriceInput').value = vehiclePrice;
+            document.getElementById('vehicleCountInput').value = vehicleCount;
+            document.getElementById('vehicleTypeInput').value = vehicleType;
             
             passengerModal.classList.remove('active');
+        });
+
+        // Form submit validation: date must be >= today, anak cannot be booked without minimum 1 dewasa
+        const ticketForm = document.getElementById('ticketForm');
+        ticketForm.addEventListener('submit', function(e) {
+            // ensure hidden inputs reflect current state
+            document.getElementById('dewasaPriceInput').value = dewasaPrice;
+            document.getElementById('anakPriceInput').value = anakPrice;
+            document.getElementById('vehiclePriceInput').value = vehiclePrice;
+            document.getElementById('vehicleCountInput').value = vehicleCount;
+            document.getElementById('vehicleTypeInput').value = vehicleType;
+
+            // Validate date
+            const depInput = document.getElementById('departureDateInput');
+            const depValue = depInput ? depInput.value : null;
+            if (!depValue) {
+                alert('Pilih tanggal keberangkatan.');
+                e.preventDefault();
+                return;
+            }
+            const today = new Date();
+            today.setHours(0,0,0,0);
+            const depDate = new Date(depValue + 'T00:00:00');
+            if (depDate < today) {
+                alert('Tanggal keberangkatan tidak boleh sebelum hari ini.');
+                e.preventDefault();
+                return;
+            }
+
+            // Validate children/adult rule
+            if (anak > 0 && dewasa === 0) {
+                alert('Jika memesan anak-anak, minimal harus ada 1 orang dewasa.');
+                e.preventDefault();
+                // open passenger modal to let user fix
+                passengerModal.classList.add('active');
+                return;
+            }
+
+            // Validate vehicle selection coherence
+            if (vehicleCount > 0 && !vehicleType) {
+                alert('Pilih jenis kendaraan untuk kendaraan yang dipesan.');
+                e.preventDefault();
+                passengerModal.classList.add('active');
+                return;
+            }
         });
     });
 </script>
