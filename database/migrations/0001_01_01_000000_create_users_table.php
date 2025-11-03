@@ -17,8 +17,8 @@ return new class extends Migration
             $table->string('name');
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
-            $table->string('phone_number')->unique();
-            $table->enum('role',['admin','customer'])->default('customer');
+            $table->string('phone_number')->unique()->nullable(); // ✅ dibuat nullable agar tidak wajib diisi
+            $table->enum('role', ['admin', 'customer'])->default('customer');
             $table->string('password')->nullable();
             $table->rememberToken();
             $table->timestamps();
@@ -45,8 +45,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('users');
-        Schema::dropIfExists('password_reset_tokens');
         Schema::dropIfExists('sessions');
+        Schema::dropIfExists('password_reset_tokens');
+        Schema::dropIfExists('users');
     }
 };
