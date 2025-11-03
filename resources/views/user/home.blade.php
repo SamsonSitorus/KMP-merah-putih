@@ -2,17 +2,24 @@
 
 @section('content')
 <style>
+    /* Enable smooth scrolling for anchor links */
+    html { scroll-behavior: smooth; }
     :root {
-        --primary: #3293f3;
-        --secondary: #e0eff5;
-        --accent: #e2ab97;
-        --dark: #1a1a1a;
-        --light: #f8f9fa;
-        --border: #e0e0e0;
+        --primary: #0052a3; /* deeper blue */
+        --primary-2: #0077d6;
+        --secondary: #e6f5ff;
+        --accent: #ff8c42; /* warm accent */
+        --muted: #6b7280;
+        --dark: #0f1724;
+        --light: #ffffff;
+        --glass: rgba(255,255,255,0.65);
+        --border: rgba(15,23,36,0.06);
     }
 
     * {
-        transition: all 0.3s ease;
+        transition: background-color 220ms ease, color 220ms ease, transform 260ms ease, box-shadow 260ms ease;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
     }
 
     body {
@@ -21,40 +28,67 @@
 
     /* Hero Section */
     .hero-section {
-        background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-        min-height: 70vh;
+        background: linear-gradient(180deg, rgba(0,82,163,0.95) 0%, rgba(0,119,214,0.92) 40%, rgba(230,245,255,0.0) 100%);
+        min-height: 74vh;
         position: relative;
         overflow: hidden;
-        padding: 2rem 0;
+        padding: 3rem 0 4rem 0;
+        color: var(--light);
     }
 
+    /* subtle background texture with ferry image */
     .hero-section::before {
         content: '';
         position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background-image: url('{{ asset('assets/img/ferry.jpeg') }}');
+        inset: 0;
+        background-image: linear-gradient(180deg, rgba(0,82,163,0.18), rgba(0,119,214,0.06)), url('{{ asset('assets/img/ferry.jpeg') }}');
         background-size: cover;
         background-position: center;
-        opacity: 0.2;
+        opacity: 0.95;
+        filter: saturate(0.85) contrast(0.95) brightness(0.92);
         z-index: 1;
+    }
+
+    /* animated floating shapes in hero */
+    .hero-shape {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(18px);
+        opacity: 0.14;
+        z-index: 0;
+        animation: float 8s infinite linear;
+    }
+
+    .hero-shape.shape-1 { width: 240px; height: 240px; background: radial-gradient(circle at 30% 30%, #00a3ff, #004b8a); left: -40px; top: 10%; animation-duration: 9s; }
+    .hero-shape.shape-2 { width: 160px; height: 160px; background: radial-gradient(circle at 30% 30%, #ffd7b5, #ff8c42); right: -30px; top: 25%; animation-duration: 11s; }
+
+    @keyframes float {
+        0% { transform: translateY(0) translateX(0); }
+        50% { transform: translateY(-12px) translateX(6px); }
+        100% { transform: translateY(0) translateX(0); }
     }
 
     .hero-content {
         position: relative;
         z-index: 2;
-        color: white;
+        color: var(--light);
         text-align: center;
+        padding-top: 1rem;
     }
 
     .hero-content h1 {
-        font-size: 2.5rem;
-        font-weight: 800;
+        font-size: 2.8rem;
+        font-weight: 900;
         margin-bottom: 0.5rem;
-        text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
-        animation: slideDown 0.8s ease-out;
+        letter-spacing: -0.02em;
+        text-shadow: 0 6px 28px rgba(2,6,23,0.45);
+        animation: popIn 0.9s cubic-bezier(.2,.9,.3,1) both;
+    }
+
+    @keyframes popIn {
+        0% { opacity: 0; transform: translateY(-18px) scale(.98); }
+        60% { opacity: 1; transform: translateY(6px) scale(1.02); }
+        100% { transform: translateY(0) scale(1); }
     }
 
     .hero-content p {
@@ -76,13 +110,21 @@
 
     /* Booking Form */
     .booking-card {
-        background: white;
-        border-radius: 15px;
-        box-shadow: 0 15px 40px rgba(0,0,0,0.12);
+        background: linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.75));
+        backdrop-filter: blur(6px) saturate(120%);
+        border-radius: 16px;
+        border: 1px solid var(--border);
+        box-shadow: 0 18px 50px rgba(2,6,23,0.12);
         padding: 1.5rem;
-        max-width: 850px;
+        max-width: 920px;
         margin: 0 auto;
-        animation: slideUp 0.8s ease-out 0.4s both;
+        transform-origin: center top;
+        animation: lift 0.8s cubic-bezier(.16,.8,.3,1) both;
+    }
+
+    @keyframes lift {
+        0% { opacity: 0; transform: translateY(18px) scale(.995); }
+        100% { opacity: 1; transform: translateY(0) scale(1); }
     }
 
     .booking-card .form-label {
@@ -94,17 +136,23 @@
 
     .booking-card .form-control,
     .booking-card .form-select {
-        border: 1px solid var(--border);
-        border-radius: 8px;
-        padding: 0.6rem 0.8rem;
-        font-size: 0.9rem;
-        transition: all 0.3s ease;
+        border: 1px solid rgba(15,23,36,0.06);
+        border-radius: 12px;
+        padding: 0.72rem 0.85rem;
+        font-size: 0.95rem;
+        background: transparent;
+        box-shadow: inset 0 -1px 0 rgba(15,23,36,0.02);
+        transition: box-shadow 220ms ease, transform 220ms ease, border-color 220ms ease;
     }
+
+    .booking-card .form-control::placeholder { color: var(--muted); }
 
     .booking-card .form-control:focus,
     .booking-card .form-select:focus {
-        border-color: var(--primary);
-        box-shadow: 0 0 0 2px rgba(0, 102, 204, 0.1);
+        border-color: var(--primary-2);
+        box-shadow: 0 8px 26px rgba(3,37,76,0.08);
+        transform: translateY(-2px);
+        outline: none;
     }
 
     /* Updated passenger button to show selected passengers clearly */
@@ -220,39 +268,42 @@
     }
 
     .btn-done {
-        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        background: linear-gradient(135deg, var(--primary-2), var(--primary));
         border: none;
         color: white;
-        font-weight: 600;
-        border-radius: 8px;
+        font-weight: 700;
+        border-radius: 10px;
         padding: 0.6rem 1.2rem;
         margin-top: 0.8rem;
         width: 100%;
         cursor: pointer;
-        font-size: 0.9rem;
+        font-size: 0.95rem;
+        box-shadow: 0 10px 30px rgba(3,37,76,0.12);
+        letter-spacing: 0.2px;
     }
 
     .btn-done:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 20px rgba(0, 102, 204, 0.3);
+        transform: translateY(-4px) scale(1.01);
+        box-shadow: 0 18px 40px rgba(3,37,76,0.16);
     }
 
     .btn-search {
-        background: linear-gradient(135deg, var(--accent), #ff8c42);
+        background: linear-gradient(90deg, var(--primary-2) 0%, var(--accent) 100%);
         border: none;
         color: white;
-        font-weight: 600;
-        border-radius: 8px;
-        padding: 0.8rem;
+        font-weight: 800;
+        border-radius: 12px;
+        padding: 0.9rem 1rem;
         width: 100%;
-        font-size: 1rem;
+        font-size: 1.02rem;
         cursor: pointer;
         margin-top: 1rem;
+        box-shadow: 0 12px 32px rgba(3,37,76,0.12);
     }
 
     .btn-search:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 20px rgba(255, 107, 53, 0.3);
+        transform: translateY(-4px) scale(1.01);
+        box-shadow: 0 20px 48px rgba(3,37,76,0.16);
     }
 
     /* Modal styling */
@@ -308,6 +359,32 @@
         padding: 2.5rem 0;
     }
 
+    /* Reveal animation for sections */
+    .reveal {
+        opacity: 0;
+        transform: translateY(24px);
+        transition: opacity 0.7s ease, transform 0.7s ease;
+        will-change: opacity, transform;
+    }
+
+    .reveal.visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    /* Staggered items (cards inside a reveal section) */
+    .stagger-item {
+        opacity: 0;
+        transform: translateY(18px);
+        transition: opacity 0.6s ease, transform 0.6s ease;
+        will-change: opacity, transform;
+    }
+
+    .stagger-item.visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
     .offers-header {
         display: flex;
         justify-content: space-between;
@@ -340,18 +417,32 @@
     }
 
     .offer-card {
-        background: white;
-        border-radius: 12px;
-        padding: 1.2rem;
-        border: none;
-        box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+        background: linear-gradient(180deg, #fff 0%, #fbfdff 100%);
+        border-radius: 14px;
+        padding: 1.3rem;
+        border: 1px solid var(--border);
+        box-shadow: 0 8px 30px rgba(2,6,23,0.06);
         height: 100%;
-        transition: all 0.3s ease;
+        transition: transform 300ms cubic-bezier(.2,.9,.3,1), box-shadow 300ms ease;
+        position: relative;
+        overflow: hidden;
     }
 
     .offer-card:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+        transform: translateY(-8px) rotate(-0.2deg);
+        box-shadow: 0 22px 55px rgba(2,6,23,0.12);
+    }
+
+    .offer-card::after {
+        content: '';
+        position: absolute;
+        right: -40px;
+        top: -30px;
+        width: 180px;
+        height: 180px;
+        background: radial-gradient(circle at 40% 40%, rgba(0,119,214,0.06), transparent 40%);
+        transform: rotate(18deg);
+        pointer-events: none;
     }
 
     .offer-badge {
@@ -667,7 +758,7 @@
 </div>
 
 <!-- Latest Offers Section -->
-<section class="offers-section">
+<section id="offers" class="offers-section reveal">
     <div style="max-width: 1100px; margin: 0 auto; padding: 0 1rem;">
         <div class="offers-header">
             <h2>🏷️ Latest Offers</h2>
@@ -676,7 +767,7 @@
 
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem;">
             <!-- Vehicles -->
-            <div class="offer-card">
+            <div class="offer-card stagger-item">
                 <div class="offer-badge">🚗 Roda 4</div>
                 <h5>Daftar Harga Mobil</h5>
                 <div class="price-item">
@@ -698,7 +789,7 @@
             </div>
 
             <!-- Passengers -->
-            <div class="offer-card">
+            <div class="offer-card stagger-item">
                 <div class="offer-badge">👥 Penumpang</div>
                 <h5>Daftar Harga Penumpang</h5>
                 <div class="price-item">
@@ -712,7 +803,7 @@
             </div>
 
             <!-- Motorcycles -->
-            <div class="offer-card">
+            <div class="offer-card stagger-item">
                 <div class="offer-badge">🏍️ Roda 2</div>
                 <h5>Daftar Harga Sepeda Motor</h5>
                 <div class="price-item">
@@ -737,7 +828,7 @@
 </section>
 
 <!-- Why Choose Us Section -->
-<section class="why-section">
+<section id="why-us" class="why-section reveal">
     <div style="max-width: 1100px; margin: 0 auto; padding: 0 1rem;">
         <h2>Kenapa Memilih Kami?</h2>
 
@@ -764,7 +855,7 @@
 </section>
 
 <!-- About Section -->
-<section class="about-section">
+<section id="partners" class="about-section reveal">
     <div style="max-width: 1100px; margin: 0 auto; padding: 0 1rem;">
         <h2>Tentang Kami</h2>
 
@@ -790,6 +881,18 @@
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+</section>
+
+<!-- Contact Section -->
+<section id="contact" class="py-5 bg-[#f8fafc] reveal">
+    <div style="max-width:1100px; margin:0 auto; padding:0 1rem;">
+        <h4 style="font-weight:700; margin-bottom:0.5rem;">Contact Us</h4>
+        <p style="color:#555; margin-bottom:1rem;">Butuh bantuan? Hubungi kami di <strong>support@muaraputih.co.id</strong> atau telepon <strong>021-555-0123</strong>.</p>
+        <div style="display:flex; gap:1rem; flex-wrap:wrap;">
+            <a href="mailto:support@muaraputih.co.id" class="btn-search" style="width:auto; padding:0.6rem 1rem;">Email Us</a>
+            <a href="tel:+62215550123" class="btn-done" style="width:auto; padding:0.6rem 1rem;">Call Us</a>
         </div>
     </div>
 </section>
@@ -1109,6 +1212,64 @@
                 passengerModal.classList.add('active');
                 return;
             }
+        });
+
+        // --- Section reveal animations using IntersectionObserver ---
+        const revealElements = document.querySelectorAll('.reveal');
+        if ('IntersectionObserver' in window) {
+            const io = new IntersectionObserver((entries, obs) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        // If the revealed section contains stagger items, reveal them one-by-one
+                        const items = entry.target.querySelectorAll('.stagger-item');
+                        if (items.length) {
+                            items.forEach((it, i) => {
+                                setTimeout(() => it.classList.add('visible'), i * 90);
+                            });
+                        }
+
+                        // Reveal the section itself
+                        entry.target.classList.add('visible');
+                        obs.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.12 });
+
+            revealElements.forEach(el => io.observe(el));
+        } else {
+            // Fallback: just show all (and stagger a tiny bit)
+            revealElements.forEach(el => {
+                el.classList.add('visible');
+                const items = el.querySelectorAll('.stagger-item');
+                items.forEach((it, i) => setTimeout(() => it.classList.add('visible'), i * 90));
+            });
+        }
+
+        // Collapse mobile navbar when clicking on internal anchor links
+        const navLinks = document.querySelectorAll('.navbar-nav a[href^="#"]');
+        navLinks.forEach(link => {
+            link.addEventListener('click', (ev) => {
+                // Collapse Bootstrap navbar if it's open (mobile)
+                try {
+                    const navbarCollapse = document.getElementById('navbar-collapse');
+                    if (navbarCollapse && navbarCollapse.classList.contains('show')) {
+                        // Use Bootstrap's collapse API if available
+                        if (window.bootstrap && bootstrap.Collapse) {
+                            const bs = bootstrap.Collapse.getInstance(navbarCollapse) || new bootstrap.Collapse(navbarCollapse);
+                            bs.hide();
+                        } else {
+                            // fallback: remove show class
+                            navbarCollapse.classList.remove('show');
+                        }
+                    }
+                } catch (err) {
+                    // ignore
+                }
+
+                // small link feedback
+                link.classList.add('text-primary');
+                setTimeout(() => link.classList.remove('text-primary'), 900);
+            });
         });
     });
 </script>

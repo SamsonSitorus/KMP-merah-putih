@@ -37,10 +37,6 @@
              style="padding: 8px 16px; border-radius: 6px; transition: all 0.3s ease;">Why Us</a>
         </li>
         <li class="nav-item">
-          <a href="#partners" class="nav-link fw-500 text-dark transition-all" 
-             style="padding: 8px 16px; border-radius: 6px; transition: all 0.3s ease;">Partners</a>
-        </li>
-        <li class="nav-item">
           <a href="#contact" class="nav-link fw-500 text-dark transition-all" 
              style="padding: 8px 16px; border-radius: 6px; transition: all 0.3s ease;">Contact Us</a>
         </li>
