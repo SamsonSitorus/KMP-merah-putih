@@ -20,11 +20,14 @@
 
           {{-- Footer --}}
           @include('partials.footer')
+          {{-- Alerts partial (toasts) --}}
+          @include('partials.alerts')
 
         </div>
       </div>
     </div>
 
     @include('layouts.scripts')
+
   </body>
 </html>

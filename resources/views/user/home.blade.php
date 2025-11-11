@@ -1,204 +1,312 @@
 @extends('layouts.app')
 
 @section('content')
-    <!-- Hero Section -->
-    <section id="hero" class="hero-section position-relative d-flex align-items-center justify-content-center"
-        style="
-            background-image: url('{{ asset('assets/img/ferry.jpeg') }}');
-            background-size: cover;
-            background-position: center;
-            min-height: 90vh;
-            position: relative;
-        ">
-        <!-- Overlay -->
-        <div class="position-absolute w-100 h-100" style="background: rgba(0,0,0,0.55);"></div>
+<link rel="stylesheet" href="{{ asset('assets/ss/home.css') }}">
 
-        <div class="container position-relative text-center text-white z-2">
-            <h1 class="fw-bold display-4 mb-4 animate__animated animate__fadeInDown">Temukan Perjalananmu</h1>
-            <p class="lead mb-5 animate__animated animate__fadeInUp">Set Your Arrival and Departure Schedule at the Port</p>
+<!-- Hero Section -->
+<section class="hero-section">
+    <!-- floating shapes (HTML nodes) for parallax/animations -->
+    <div class="hero-shape shape-1"></div>
+    <div class="hero-shape shape-2"></div>  
+    <div class="hero-shape shape-3"></div>
+    <div class="hero-shape shape-4"></div>
 
-            <!-- Booking Form -->
-            <div class="card shadow-lg border-0 rounded-4 animate__animated animate__fadeInUp" style="max-width: 850px; margin: auto;">
-                <div class="card-body p-4">
-                    <form>
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <label class="form-label fw-bold">Pelabuhan Asal</label>
-                                <select class="form-select shadow-sm">
-                                    <option selected disabled>Pilih Pelabuhan Asal</option>
-                                    <option>Muara</option>
-                                    <option>Sipinggan</option>
-                                </select>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label fw-bold">Pelabuhan Tujuan</label>
-                                <select class="form-select shadow-sm">
-                                    <option selected disabled>Pilih Pelabuhan Tujuan</option>
-                                    <option>Muara</option>
-                                    <option>Sipinggan</option>
-                                </select>
-                            </div>
-                        </div>
+    <div class="hero-content">
+        <h1>Temukan Perjalananmu</h1>
+        <p>Set Your Arrival and Departure Schedule at the Port</p>
 
-                        <div class="row g-3 mt-2">
-                            <div class="col-md-6">
-                                <label class="form-label fw-bold">Pilih Tanggal</label>
-                                <input type="date" class="form-control shadow-sm">
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label fw-bold">Jam Keberangkatan</label>
-                                <input type="text" class="form-control shadow-sm" placeholder="08.00 - 10.00" readonly>
-                            </div>
-                        </div>
+        <!-- Booking Form -->
+        <div class="booking-card">
+            <form id="ticketForm" action="{{ route('find_ticket') }}" method="GET">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                    <div>
+                        <label class="form-label">Pelabuhan Asal</label>
+                        <select id="asalSelect" name="origin_port_id" class="form-select">
+                            <option selected disabled>Pilih Pelabuhan Asal</option>
+                            @foreach ($ports as $port)
+                                <option value="{{ $port->id }}" data-name="{{ strtolower($port->name) }}">
+                                    {{ $port->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
 
-                        <div class="d-grid mt-4">
-                            <button type="submit" class="btn btn-success btn-lg rounded-pill shadow">
-                                <i class="fas fa-ticket-alt me-2"></i>Find Your Ticket
-                            </button>
-                        </div>
-                    </form>
+                    <div>
+                        <label class="form-label">Pelabuhan Tujuan</label>
+                        <input type="text" id="tujuanInput" class="form-control" placeholder="Pelabuhan Tujuan" readonly>
+                        <input type="hidden" id="tujuanId" name="destination_port_id">
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                    <div>
+                        <label class="form-label">Pilih Tanggal</label>
+                        <input type="date" name="departure_date" class="form-control" id="departureDateInput" min="{{ date('Y-m-d') }}" required>
+                    </div>
+
+                    <div>
+                        <label class="form-label">Jam Keberangkatan</label>
+                        <input type="text" id="jamKeberangkatan" name="departure_time" class="form-control" readonly>
+                    </div>
+                </div>
+
+                <!-- Passenger selector button now displays selected passengers live -->
+                <div style="margin-bottom: 1rem;">
+                    <label class="form-label">Penumpang</label>
+                    <button type="button" class="btn-passenger-select" id="passengerSelectBtn">
+                        <span>👥</span> Pilih Penumpang
+                    </button>
+                    <input type="hidden" name="dewasa_count" id="dewasaCountInput" value="0">
+                    <input type="hidden" name="anak_count" id="anakCountInput" value="0">
+                    <input type="hidden" name="dewasa_price" id="dewasaPriceInput" value="0">
+                    <input type="hidden" name="anak_price" id="anakPriceInput" value="0">
+                    <!-- Vehicle booking fields -->
+                    <input type="hidden" name="vehicle_type" id="vehicleTypeInput" value="">
+                    <input type="hidden" name="vehicle_count" id="vehicleCountInput" value="0">
+                    <input type="hidden" name="vehicle_price" id="vehiclePriceInput" value="0">
+                </div>
+
+                <!-- Total Price -->
+                <div style="margin-bottom: 1rem;">
+                    <label class="form-label">Total Harga Tiket</label>
+                    <input type="text" id="ticketPrice" name="price" class="form-control" readonly style="background: var(--light); font-weight: 600; color: var(--accent); font-size: 1.1rem;">
+                </div>
+
+                <button type="submit" class="btn-search">
+                    🎫 Find Your Ticket
+                </button>
+            </form>
+        </div>
+    </div>
+    <!-- decorative wave -->
+</section>
+
+<!-- Hero wave SVG -->
+<div style="margin-top:-6px;">
+    <svg class="hero-wave" viewBox="0 0 1440 120" preserveAspectRatio="none" style="width:100%; height:80px; display:block;">
+        <defs>
+            <linearGradient id="g1" x1="0%" x2="100%">
+                <stop offset="0%" stop-color="#0077d6" stop-opacity="0.18" />
+                <stop offset="100%" stop-color="#0052a3" stop-opacity="0.06" />
+            </linearGradient>
+        </defs>
+        <path d="M0,32 C220,120 440,0 720,32 C1000,64 1220,8 1440,48 L1440 120 L0 120 Z" fill="url(#g1)"></path>
+    </svg>
+</div>
+
+<!-- Modal for passenger selection -->
+<div class="modal-overlay" id="passengerModal">
+    <div class="modal-content">
+        <div class="modal-header">Pilih Penumpang</div>
+        
+        <div class="passenger-card">
+            <!-- Dewasa Row -->
+            <div class="passenger-row">
+                <div class="passenger-info">
+                    <h6>Dewasa</h6>
+                    <small>Usia 5 tahun ke atas</small>
+                    <div class="price-display" id="dewasaPriceDisplay">Harga: -</div>
+                </div>
+                <div class="counter-group">
+                    <button type="button" class="counter-btn" id="minusDewasa">−</button>
+                    <span id="countDewasa" class="counter-display">0</span>
+                    <button type="button" class="counter-btn" id="plusDewasa">+</button>
+                </div>
+            </div>
+
+            <!-- Anak-anak Row -->
+            <div class="passenger-row">
+                <div class="passenger-info">
+                    <h6>Anak-anak</h6>
+                    <small>Usia 2–5 tahun</small>
+                    <div class="price-display" id="anakPriceDisplay">Harga: -</div>
+                </div>
+                <div class="counter-group">
+                    <button type="button" class="counter-btn" id="minusAnak">−</button>
+                    <span id="countAnak" class="counter-display">0</span>
+                    <button type="button" class="counter-btn" id="plusAnak">+</button>
+                </div>
+            </div>
+
+            <!-- Kendaraan Row -->
+            <div class="passenger-row" style="align-items: center;">
+                <div class="passenger-info">
+                    <h6>Kendaraan</h6>
+                    <small>Tambahkan kendaraan (opsional)</small>
+                    <div class="price-display" id="vehiclePriceDisplay">Harga: -</div>
+                </div>
+                <div class="counter-group">
+                    <select id="vehicleTypeSelect" class="form-select" style="min-width: 140px; padding: 0.4rem;">
+                        <option value="" selected>-- Pilih Kendaraan --</option>
+                        @foreach($vehicleTypes as $vtype)
+                            <option value="{{ $vtype }}">{{ $vtype }}</option>
+                        @endforeach
+                    </select>
+
+                    <button type="button" class="counter-btn" id="minusVehicle">−</button>
+                    <span id="countVehicle" class="counter-display">0</span>
+                    <button type="button" class="counter-btn" id="plusVehicle">+</button>
+                </div>
+            </div>
+
+            <button type="button" class="btn-done" id="donePassenger">SELESAI</button>
+        </div>
+    </div>
+</div>
+
+<!-- Latest Offers Section -->
+<section id="offers" class="offers-section reveal">
+    <div style="max-width: 1100px; margin: 0 auto; padding: 0 1rem;">
+        <div class="offers-header">
+            <h2>🏷️ Latest Offers</h2>
+            <a href="#">View All Special Offers</a>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem;">
+            <!-- Vehicles -->
+            <div class="offer-card stagger-item tilt">
+                <div class="card-inner">
+                <div class="offer-badge">🚗 Roda 4</div>
+                <h5>Daftar Harga Mobil</h5>
+                <div class="price-item">
+                    <span>🚗 Mobil Sedan</span>
+                    <span>{{ isset($vehiclePrices['Mobil Sedan']) ? 'Rp ' . number_format($vehiclePrices['Mobil Sedan'], 0, ',', '.') : 'Rp 0' }}</span>
+                </div>
+                <div class="price-item">
+                    <span>🚚 Mobil Box</span>
+                    <span>{{ isset($vehiclePrices['Mobil Box']) ? 'Rp ' . number_format($vehiclePrices['Mobil Box'], 0, ',', '.') : 'Rp 0' }}</span>
+                </div>
+                <div class="price-item">
+                    <span>🚛 Mobil Truck</span>
+                    <span>{{ isset($vehiclePrices['Mobil Truck']) ? 'Rp ' . number_format($vehiclePrices['Mobil Truck'], 0, ',', '.') : 'Rp 0' }}</span>
+                </div>
+                <div class="price-item">
+                    <span>🚙 Mobil SUV</span>
+                    <span>{{ isset($vehiclePrices['Mobil SUV']) ? 'Rp ' . number_format($vehiclePrices['Mobil SUV'], 0, ',', '.') : 'Rp 0' }}</span>
+                </div>
+                </div>
+            </div>
+
+            <!-- Passengers -->
+            <div class="offer-card stagger-item tilt">
+                <div class="card-inner">
+                <div class="offer-badge">👥 Penumpang</div>
+                <h5>Daftar Harga Penumpang</h5>
+                <div class="price-item">
+                    <span>👶 Anak-anak</span>
+                    <span>{{ isset($passengerPrices['Anak-anak']) ? 'Rp ' . number_format($passengerPrices['Anak-anak'], 0, ',', '.') : 'Rp 0' }}</span>
+                </div>
+                <div class="price-item">
+                    <span>🧑 Dewasa</span>
+                    <span>{{ isset($passengerPrices['Dewasa']) ? 'Rp ' . number_format($passengerPrices['Dewasa'], 0, ',', '.') : 'Rp 0' }}</span>
+                </div>
+                </div>
+            </div>
+
+            <!-- Motorcycles -->
+            <div class="offer-card stagger-item tilt">
+                <div class="card-inner">
+                <div class="offer-badge">🏍️ Roda 2</div>
+                <h5>Daftar Harga Sepeda Motor</h5>
+                <div class="price-item">
+                    <span>🛵 Motor Bebek</span>
+                    <span>{{ isset($vehiclePrices['Motor Bebek']) ? 'Rp ' . number_format($vehiclePrices['Motor Bebek'], 0, ',', '.') : 'Rp 0' }}</span>
+                </div>
+                <div class="price-item">
+                    <span>🏍️ Motor Sport</span>
+                    <span>{{ isset($vehiclePrices['Motor Sport']) ? 'Rp ' . number_format($vehiclePrices['Motor Sport'], 0, ',', '.') : 'Rp 0' }}</span>
+                </div>
+                <div class="price-item">
+                    <span>🛵 Motor Matic</span>
+                    <span>{{ isset($vehiclePrices['Motor Matic']) ? 'Rp ' . number_format($vehiclePrices['Motor Matic'], 0, ',', '.') : 'Rp 0' }}</span>
+                </div>
+                <div class="price-item">
+                    <span>🛻 Motor Trail</span>
+                    <span>{{ isset($vehiclePrices['Motor Trail']) ? 'Rp ' . number_format($vehiclePrices['Motor Trail'], 0, ',', '.') : 'Rp 0' }}</span>
+                </div>
                 </div>
             </div>
         </div>
-    </section>
+    </div>
+</section>
 
-    <!-- Latest Offers Section -->
-    <section id="latest-offers" class="py-3 bg-light">
-        <div class="container">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h2 class="fw-bold"><i class="fas fa-tag me-2 text-primary"></i>Latest Offers</h2>
-                <a href="#" class="btn btn-outline-primary rounded-pill">View All Special Offers</a>
+<!-- Why Choose Us Section -->
+<section id="why-us" class="why-section reveal">
+    <div style="max-width: 1100px; margin: 0 auto; padding: 0 1rem;">
+        <h2>Kenapa Memilih Kami?</h2>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.5rem;">
+            <div class="why-card">
+                <img src="{{ asset('assets/img/cyber-security.png') }}" alt="Keamanan">
+                <h4>Keamanan & Kenyaman</h4>
+                <p>Kami memastikan setiap transaksi berlangsung aman, cepat, dan mudah. Dengan sistem pembayaran terenkripsi dan layanan pemesanan yang praktis, Anda bisa menikmati perjalanan tanpa khawatir.</p>
             </div>
 
-            <div class="row">
-                <div class="col-md-4 mb-4">
-                    <div class="card h-100 offer-card shadow-sm">
-                        <img src="{{ asset('assets/img/Car_Grey.png') }}" class="card-img-top" alt="Mobil">
-                        <div class="card-body">
-                            <!-- Badge kategori -->
-                            <span class="badge bg-primary mb-3">
-                                <i class="fas fa-car me-1"></i> Roda 4
-                            </span>
+            <div class="why-card">
+                <img src="{{ asset('assets/img/accessible.png') }}" alt="Kemudahan">
+                <h4>Kemudahan Pemesanan</h4>
+                <p>Kami memahami waktu Anda sangat berharga. Platform kami hadir untuk memberikan kemudahan dalam memesan tiket kapal ferry secara online dengan sistem yang cepat dan efisien.</p>
+            </div>
 
-                            <!-- Judul -->
-                            <h5 class="card-title fw-bold">Daftar Harga Mobil</h5>
+            <div class="why-card">
+                <img src="{{ asset('assets/img/best-price.png') }}" alt="Harga">
+                <h4>Harga Terjangkau</h4>
+                <p>Kami percaya perjalanan yang menyenangkan tidak harus mahal. Platform kami menawarkan harga tiket yang terjangkau dan transparan, lengkap dengan berbagai promo menarik setiap minggunya.</p>
+            </div>
+        </div>
+    </div>
+</section>
 
-                            <!-- List harga -->
-                            <ul class="list-group list-group-flush mt-3">
-                                <li class="list-group-item border-0 px-0 py-2">🚗 Mobil Sedan <span class="float-end fw-semibold">Rp 100.000</span></li>
-                                <li class="list-group-item border-0 px-0 py-2">🚚 Mobil Box <span class="float-end fw-semibold">Rp 150.000</span></li>
-                                <li class="list-group-item border-0 px-0 py-2">🚛 Mobil Truck <span class="float-end fw-semibold">Rp 250.000</span></li>
-                                <li class="list-group-item border-0 px-0 py-2">🚙 Mobil SUV <span class="float-end fw-semibold">Rp 300.000</span></li>
-                            </ul>
-                        </div>
+<!-- About Section -->
+<section id="partners" class="about-section reveal">
+    <div style="max-width: 1100px; margin: 0 auto; padding: 0 1rem;">
+        <h2>Tentang Kami</h2>
+
+        <div style="display: grid; gap: 1.5rem;">
+            <div class="about-card">
+                <div class="about-card-content">
+                    <img src="../assets/img/elements/18.png" alt="About">
+                    <div class="about-card-body">
+                        <h5>Visi Kami</h5>
+                        <p>Menjadi platform terdepan dalam industri transportasi laut yang memberikan pengalaman terbaik kepada setiap pengguna.</p>
+                        <small>Sejak 2020</small>
                     </div>
                 </div>
-                <div class="col-md-4 mb-4">
-                   <div class="card h-100 offer-card shadow-sm">
-                        <img src="{{ asset('assets/img/team.png') }}" class="card-img-top" alt="penumpang">
-                        <div class="card-body">
-                            <!-- Badge kategori -->
-                            <span class="badge bg-warning mb-3 text-dark">
-                                <i class="fas fa-user-friends me-1"></i> Penumpang
-                            </span>
+            </div>
 
-                            <!-- Judul -->
-                            <h5 class="card-title fw-bold">Daftar Harga Penumpang</h5>
-
-                            <!-- List harga -->
-                            <ul class="list-group list-group-flush mt-3">
-                                <li class="list-group-item border-0 px-0 py-2">👶 Anak-anak <span class="float-end fw-semibold">Rp 30.000</span></li>
-                                <li class="list-group-item border-0 px-0 py-2">🧑 Dewasa <span class="float-end fw-semibold">Rp 50.000</span></li>
-                                <li class="list-group-item border-0 px-0 py-2">👴 Lansia <span class="float-end fw-semibold">Rp 40.000</span></li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4 mb-4">
-                    <div class="card h-100 offer-card shadow-sm">
-                        <img src="{{ asset('assets/img/scooter.png') }}" class="card-img-top" alt="Sepeda Motor">
-                        <div class="card-body">
-                            <!-- Badge kategori -->
-                            <span class="badge bg-success mb-3">
-                                <i class="fas fa-motorcycle me-1"></i> Roda 2
-                            </span>
-
-                            <!-- Judul -->
-                            <h5 class="card-title fw-bold">Daftar Harga Sepeda Motor</h5>
-
-                            <!-- List harga -->
-                            <ul class="list-group list-group-flush mt-3">
-                                <li class="list-group-item border-0 px-0 py-2">🛵 Motor Bebek <span class="float-end fw-semibold">Rp 50.000</span></li>
-                                <li class="list-group-item border-0 px-0 py-2">🏍️ Motor Sport <span class="float-end fw-semibold">Rp 75.000</span></li>
-                                <li class="list-group-item border-0 px-0 py-2">🛵 Motor Matic <span class="float-end fw-semibold">Rp 60.000</span></li>
-                                <li class="list-group-item border-0 px-0 py-2">🛻 Motor Trail <span class="float-end fw-semibold">Rp 80.000</span></li>
-                            </ul>
-                        </div>
+            <div class="about-card">
+                <div class="about-card-content" style="flex-direction: row-reverse;">
+                    <img src="../assets/img/elements/19.png" alt="About">
+                    <div class="about-card-body">
+                        <h5>Misi Kami</h5>
+                        <p>Menyediakan layanan pemesanan tiket ferry yang mudah, aman, dan terjangkau untuk semua kalangan masyarakat Indonesia.</p>
+                        <small>Melayani dengan sepenuh hati</small>
                     </div>
                 </div>
             </div>
         </div>
-    </section>
+    </div>
+</section>
 
-    <!-- Why Use SEAVENTURES Section -->
-    {{-- <section id="why-seaventures" class="py-5 bg-primary text-white">
-        <div class="container">
-            <h2 class="text-center fw-bold mb-5">Why use SEAVENTURES?</h2>
-            <div class="row text-center">
-                <div class="col-md-4">
-                    <div class="p-4 bg-white text-dark rounded-4 shadow-sm h-100">
-                        <i class="fas fa-ship fa-3x text-primary mb-3"></i>
-                        <h6>Ferries from 4412 routes and 901 ports worldwide</h6>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="p-4 bg-white text-dark rounded-4 shadow-sm h-100">
-                        <i class="fas fa-users fa-3x text-primary mb-3"></i>
-                        <h6>Trusted by over 2.5 million customers</h6>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="p-4 bg-white text-dark rounded-4 shadow-sm h-100">
-                        <i class="fas fa-tag fa-3x text-primary mb-3"></i>
-                        <h6>We check up to 1 million prices daily</h6>
-                    </div>
-                </div>
-            </div>
+<!-- Contact Section -->
+<section id="contact" class="py-5 bg-[#f8fafc] reveal">
+    <div style="max-width:1100px; margin:0 auto; padding:0 1rem;">
+        <h4 style="font-weight:700; margin-bottom:0.5rem;">Contact Us</h4>
+        <p style="color:#555; margin-bottom:1rem;">Butuh bantuan? Hubungi kami di <strong>support@muaraputih.co.id</strong> atau telepon <strong>021-555-0123</strong>.</p>
+        <div style="display:flex; gap:1rem; flex-wrap:wrap;">
+            <a href="mailto:support@muaraputih.co.id" class="btn-search" style="width:auto; padding:0.6rem 1rem;">Email Us</a>
+            <a href="tel:+62215550123" class="btn-done" style="width:auto; padding:0.6rem 1rem;">Call Us</a>
         </div>
-    </section> --}}
+    </div>
+</section>
 
-    <!-- Partners Section -->
-    {{-- <section id="partners" class="py-5">
-        <div class="container">
-            <h2 class="text-center fw-bold mb-5">Our Partners</h2>
-            <div class="row justify-content-center text-center">
-                @foreach (['Blue Star', 'DFDS', 'Hellenic', 'P&O', 'SeaJets'] as $partner)
-                    <div class="col-md-2 col-6 mb-4">
-                        <div class="p-3 border rounded-4 bg-light shadow-sm hover-shadow">
-                            <img src="https://via.placeholder.com/120x60/f8f9fa/6c757d?text={{ urlencode($partner) }}"
-                                alt="{{ $partner }}" class="img-fluid">
-                        </div>
-                    </div>
-                @endforeach
-            </div>
-        </div>
-    </section> --}}
-
-    <!-- Customer Service Section -->
-    {{-- <section id="customer-service" class="py-5 text-white"
-        style="background: linear-gradient(rgba(0,0,0,0.65), rgba(0,0,0,0.65)), url('https://via.placeholder.com/1200x400/4a90e2/ffffff?text=Ferry+Sunset');
-               background-size: cover; background-position: center;">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-8 animate__animated animate__fadeInLeft">
-                    <div class="d-flex align-items-center mb-3">
-                        <i class="fas fa-question-circle fa-2x me-3"></i>
-                        <h2 class="fw-bold">Customer Service</h2>
-                        <span class="badge bg-light text-dark ms-3">Need Help?</span>
-                    </div>
-                    <p class="lead">Visit our customer service page to find useful information on travelling by ferry, our FAQs, and how to contact us for help with your booking.</p>
-                </div>
-            </div>
-        </div>
-    </section>--}}
-@endsection 
+<!-- Scripts -->
+<script>
+    // minimal data for external home.js
+    window.HomePageData = {
+        muaraId: {!! json_encode($ports->firstWhere('name', 'Muara')->id ?? '') !!},
+        sipingganId: {!! json_encode($ports->firstWhere('name', 'Sipinggan')->id ?? '') !!}
+    };
+</script>
+<script src="{{ asset('assets/js/home.js') }}"></script>
+@endsection

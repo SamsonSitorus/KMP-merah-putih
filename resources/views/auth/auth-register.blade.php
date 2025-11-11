@@ -26,20 +26,32 @@
               <h4 class="mb-1">Adventure starts here 🚀</h4>
               {{-- <p class="mb-6">Make your app management easy and fun!</p> --}}
 
-              <form id="formAuthentication" class="mb-6" action="index.html">
+              <form id="formAuthentication" class="mb-6">
                 <div class="mb-6">
-                  <label for="username" class="form-label">Username</label>
+                  <label for="name" class="form-label">Nama</label>
                   <input
                     type="text"
                     class="form-control"
-                    id="username"
-                    name="username"
-                    placeholder="Enter your username"
+                    id="name"
+                    name="name"
+                    placeholder="Enter your name"
+                    value="{{ old('name') }}"
+                    autofocus />
+                </div>
+                <div class="mb-6">
+                  <label for="phone_number" class="form-label">Nomor Telepon</label>
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="phone_number"
+                    name="phone_number"
+                    placeholder="Enter your phone_number"
+                     value="{{ old('phone_number') }}"
                     autofocus />
                 </div>
                 <div class="mb-6">
                   <label for="email" class="form-label">Email</label>
-                  <input type="text" class="form-control" id="email" name="email" placeholder="Enter your email" />
+                  <input type="text" class="form-control" id="email" name="email" placeholder="Enter your email" value="{{ old('email') }}" />
                 </div>
                 <div class="form-password-toggle">
                   <label class="form-label" for="password">Password</label>
@@ -53,7 +65,23 @@
                       aria-describedby="password" />
                     <span class="input-group-text cursor-pointer"><i class="icon-base bx bx-hide"></i></span>
                   </div>
+
+                  <div class="form-password-toggle">
+                 <label class="form-label" for="confirm_password">Confirm Password</label>
+                  <div class="input-group input-group-merge">
+                    <input
+                      type="password"
+                      id="confirm_password"
+                      class="form-control"
+                      name="confirm_password"
+                      placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;"
+                      aria-describedby="Confirm_password"
+                      />
+                    <span class="input-group-text cursor-pointer"><i class="icon-base bx bx-hide"></i></span>
+                  </div>
+                </div> 
                 </div>
+
                 <div class="my-7">
                   <div class="form-check mb-0">
                     <input class="form-check-input" type="checkbox" id="terms-conditions" name="terms" />
@@ -68,7 +96,7 @@
 
               <p class="text-center">
                 <span>Already have an account?</span>
-                <a href="auth-login-basic.html">
+                <a href="{{ route('login') }}">
                   <span>Sign in instead</span>
                 </a>
               </p>
@@ -81,3 +109,14 @@
 
     <!-- / Content -->
 @endsection
+@push('scripts')
+  {{-- Import file JavaScript eksternal --}}
+  <script type="module" src="{{ asset('assets/js/register.js') }}"></script>
+  {{-- Kirim route dan token ke JS --}}
+  <script>
+    window.Laravel = {
+      registerUrl: "{{ route('firebase.register') }}",
+      csrfToken: "{{ csrf_token() }}",
+    };
+  </script>
+@endpush  

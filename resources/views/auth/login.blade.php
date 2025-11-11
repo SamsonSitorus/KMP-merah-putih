@@ -25,9 +25,8 @@
             <div class="alert alert-danger">{{ session('failed') }}</div>
           @endif
 
-          <form action="{{ route('login') }}" method="POST">
+          <form id="formLogin">
             @csrf
-
             <!-- Email -->
             <div class="mb-3">
               <label for="email" class="form-label">Email or Username</label>
@@ -60,9 +59,6 @@
                 <span class="input-group-text cursor-pointer">
                   <i class="bx bx-hide"></i>
                 </span>
-                @error('password')
-                  <div class="invalid-feedback d-block">{{ $message }}</div>
-                @enderror
               </div>
             </div>
 
@@ -85,7 +81,7 @@
 
           <p class="text-center">
             <span>New on our platform?</span>
-            <a href="{{--  --}}">
+            <a href="{{route('register')}}">
               <span>Create an account</span>
             </a>
           </p>
@@ -97,5 +93,15 @@
     </div>
   </div>
 </div>
-@endsection
-  
+@endsection  
+@push('scripts')
+  {{-- Import file JavaScript eksternal --}}
+  <script type="module" src="{{ asset('assets/js/login.js') }}"></script>
+  {{-- Kirim route dan token ke JS --}}
+  <script>
+    window.Laravel = {
+      verifyUrl: "{{ route('firebase.verify') }}",
+      csrfToken: "{{ csrf_token() }}",
+    };
+  </script>
+@endpush  
