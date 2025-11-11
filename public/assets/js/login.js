@@ -24,7 +24,7 @@
     const password = document.getElementById("password").value.trim();
 
     if (!email || !password) {
-      alert("⚠️ Email dan Password wajib diisi!");
+      window.showAlert("Email dan Password wajib diisi!", 'warning', { title: 'Validasi' });
       return;
     }
 
@@ -50,19 +50,19 @@
           data = JSON.parse(text); // parse JSON
         } catch(e) {
           console.error("Response bukan JSON:", text);
-          alert("❌ Login gagal: Response server bukan JSON");
+          window.showAlert("Login gagal: Response server bukan JSON", 'error', { title: 'Server' });
           return;
         }
       // const data = await response.json();
 
       if (response.ok) {
-        alert("✅ Login berhasil!");
+        window.showAlert("Login berhasil!", 'success', { title: 'Sukses' });
         window.location.href = "/home";
       } else {
-        alert("❌ Login gagal: " + (data.message || "Token tidak valid"));
+        window.showAlert("Login gagal: " + (data.message || "Token tidak valid"), 'error', { title: 'Error' });
       }
     } catch (error) {
       console.error("Firebase login error:", error.message);
-      alert("⚠️ Gagal login: " + error.message);
+      window.showAlert("Gagal login: " + error.message, 'error', { title: 'Auth' });
     }
   });

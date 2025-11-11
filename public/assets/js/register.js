@@ -28,7 +28,7 @@ document.getElementById("formAuthentication").addEventListener("submit", (e) => 
     const confirm = document.getElementById("confirm_password").value;
 
     if (password !== confirm) {
-        alert("Password dan Konfirmasi Password tidak cocok!");
+        window.showAlert("Password dan Konfirmasi Password tidak cocok!", 'warning', { title: 'Validasi' });
         return;
     }
 
@@ -58,26 +58,26 @@ document.getElementById("formAuthentication").addEventListener("submit", (e) => 
                 data = JSON.parse(text);
             } catch (e) {
                 console.error("Response bukan JSON:", text);
-                alert("❌ Gagal simpan ke Laravel, response bukan JSON");
+                window.showAlert("Gagal simpan ke Laravel, response bukan JSON", 'error', { title: 'Server' });
                 return;
             }
 
             if (response.ok) {
                 console.log("Laravel response:", data);
-                alert("✅ Registrasi berhasil! Data tersimpan di database Laravel");
+                window.showAlert("Registrasi berhasil! Data tersimpan di database Laravel", 'success', { title: 'Sukses' });
                 window.location.href = "/login"; // bisa langsung pakai path
             } else {
-                alert("❌ Gagal registrasi: " + (data.message || "Terjadi kesalahan"));
+                window.showAlert("Gagal registrasi: " + (data.message || "Terjadi kesalahan"), 'error', { title: 'Error' });
             }
         })
         .catch(error => {
             console.error("Error dari Laravel:", error);
-            alert("❌ Gagal simpan ke database Laravel!");
+            window.showAlert("Gagal simpan ke database Laravel!", 'error', { title: 'Server' });
         });
 
     })
     .catch((error) => {
         console.error("Firebase registration error:", error);
-        alert("❌ Gagal register di Firebase: " + error.message);
+        window.showAlert("Gagal register di Firebase: " + error.message, 'error', { title: 'Auth' });
     });
 });
