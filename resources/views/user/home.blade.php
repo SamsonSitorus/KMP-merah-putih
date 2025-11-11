@@ -1,7 +1,6 @@
 @extends('layouts.app')
 
 @section('content')
-<link rel="stylesheet" href="{{ asset('assets/ss/home.css') }}">
 
 <!-- Hero Section -->
 <section class="hero-section">

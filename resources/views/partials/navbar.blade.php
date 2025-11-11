@@ -3,10 +3,16 @@
 
     {{-- Logo --}}
 
-    <a href="/" class="navbar-brand d-flex align-items-center gap-2">
-      <div class="p-2 rounded-lg" style="background: linear-gradient(135deg, #0066cc 0%, #0052a3 100%);">
+    <a href="{{ route('home') }}" class="navbar-brand d-flex align-items-center gap-2">
+      {{-- <div class="p-2 rounded-lg" style="background: linear-gradient(135deg, #0066cc 0%, #0052a3 100%);">
         <img src="{{ asset('assets/img/cruise.png') }}" alt="Seaventures" 
              class="d-inline-block align-text-top" style="height: 40px; filter: brightness(0) invert(1);">
+      </div> --}}
+      <div class="p-2 rounded-lg">
+        <img src="{{ asset('assets/img/cruise.png') }}" 
+            alt="Seaventures" 
+            class="d-inline-block align-text-top" 
+            style="height: 40px;">
       </div>
       <div class="lh-1">
         <span class="fw-bold text-dark d-block" style="font-size: 16px;">KMP Muara Putih</span>
@@ -46,9 +52,13 @@
           <li class="nav-item dropdown ms-3">
             <a class="nav-link dropdown-toggle d-flex align-items-center gap-2" href="#" 
                data-bs-toggle="dropdown" style="padding: 6px 12px;">
-              <img src="{{ asset('assets/img/avatars/1.png') }}" 
-                   alt="User" class="w-px-40 h-auto rounded-circle border border-2" 
-                   style="border-color: #0066cc !important;" />
+               <img src="{{ optional(Auth::user()->detail)->foto_profil
+              ? asset('storage/' . optional(Auth::user()->detail  )->foto_profil)
+              : asset('assets/img/avatars/1.png') }}"
+              alt="User"
+              class="rounded-circle border border-2"  
+              id="uploadedAvatar"
+              style="width: 50px; height: 50px; border-color: #0066cc !important;">
               <span class="fw-600 text-dark d-none d-sm-inline">{{ Auth::user()->name }}</span>
             </a>
             <ul class="dropdown-menu dropdown-menu-end">

@@ -23,7 +23,6 @@ class Authcontroller extends Controller
                     'data' => $existingUser
                 ]);
             }
-
             // Simpan ke tabel users
               $user = User::create([
             'firebase_uid' => $data['uid'],
@@ -32,7 +31,6 @@ class Authcontroller extends Controller
             'phone_number' => $data['phone_number'],
             'password' => null,
         ]);
-
          return response()->json([
             'message' => 'User registered successfully',
             'data' => $user

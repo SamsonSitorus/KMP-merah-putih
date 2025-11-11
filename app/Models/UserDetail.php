@@ -15,9 +15,10 @@ class UserDetail extends Model
         'tanggal_lahir',
         'gender',
         'jenis_id',
-        'email',
         'nomor_identitas',
         'kota_asal',
+        'ZipCode',
+        'foto_profil'
     ];
 
     public function user()

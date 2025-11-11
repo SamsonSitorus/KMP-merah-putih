@@ -19,6 +19,8 @@ return new class extends Migration
         $table->enum('jenis_id', ['KTP', 'SIM', 'Paspor']);
         $table->string('nomor_identitas');
         $table->string('kota_asal');
+        $table->string('ZipCode');
+        $table->string('foto_profil')->nullable();
         $table->timestamps();
     });
     }
