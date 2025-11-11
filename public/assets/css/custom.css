@@ -1,0 +1,7 @@
+.footer-custom {
+  background: linear-gradient(135deg, #0061ff, #60efff);
+  color: white;
+}
+.footer-custom a {
+  color: #f1f1f1;
+}
