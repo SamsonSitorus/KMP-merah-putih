@@ -138,6 +138,7 @@
                 </div>
             </div>
         </div>
+
     </section>
     <!-- Why Use SEAVENTURES Section -->
     {{-- <section id="why-seaventures" class="py-5 bg-primary text-white">
@@ -201,6 +202,10 @@
         </div>
     </section>--}}
 @endsection 
+
+    </div>
+</section>
+
 
 <!-- Scripts -->
 <script>

@@ -14,12 +14,14 @@
       <!-- Quick Links -->
       <div class="col-md-4">
 
+
         <h5 class="fw-bold mb-3">Quick Links</h5>
         <ul class="list-unstyled small">
           <li class="mb-2"><a href="#" class="text-secondary text-decoration-none hover-link">Home</a></li>
           <li class="mb-2"><a href="#" class="text-secondary text-decoration-none hover-link">Services</a></li>
           <li class="mb-2"><a href="#" class="text-secondary text-decoration-none hover-link">Contact</a></li>
         </ul>
+
       </div>
       <!-- Follow Us -->
       <div class="col-md-4">

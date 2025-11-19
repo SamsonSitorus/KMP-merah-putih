@@ -2,9 +2,10 @@
 
 use App\Http\Controllers\Authcontroller;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\HomeController;
 use App\Http\Controllers\TicketController;
-use App\Http\Controllers\ProfileController;         
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\HomeController;       
+
 // Route::get('/', function () {
 //     return view('user.home');
 // });
@@ -32,10 +33,16 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/profile/update/{id}', [ProfileController::class, 'updateorcreate'])->name('profile.update');
     Route::get('/book_ticket', fn() => view('user.book_ticket'))->name('book_ticket');
 });
+
 Route::get('/find_ticket',[TicketController::class,'find_ticket'])->name('find_ticket');
 Route::get('/book_ticket', fn() => view('user.book_ticket'))->name('book_ticket');
 
 Route::get('/user_detail', fn() => view('user.user_detail'))->name('user_detail');
+
+Route::get('/find_ticket',[TicketController::class,'find_ticket'])->name('find_ticket');
+
+
+
 Route::post('/book_ticket/confirm', [App\Http\Controllers\BookingController::class, 'confirm'])->name('book_ticket.confirm');
 
 Route::get('/user_detail', fn() => view('user.user_detail'))->name('user_detail');
