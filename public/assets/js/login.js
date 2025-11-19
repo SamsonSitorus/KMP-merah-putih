@@ -57,7 +57,7 @@
 
       if (response.ok) {
         window.showAlert("Login berhasil!", 'success', { title: 'Sukses' });
-        window.location.href = "/home";
+        window.location.href = "/";
       } else {
         window.showAlert("Login gagal: " + (data.message || "Token tidak valid"), 'error', { title: 'Error' });
       }
