@@ -1,0 +1,149 @@
+    /* Externalized CSS for resources/views/user/home.blade.php
+    Paths: public/assets/ss/home.css
+    NOTE: image URLs use absolute /assets/... paths so they resolve from public/ folder
+    */
+    html { scroll-behavior: smooth; }
+    :root {
+        --primary: #0052a3; /* deeper blue */
+        --primary-2: #0077d6;
+        --secondary: #e6f5ff;
+        --accent: #ff8c42; /* warm accent */
+        --muted: #6b7280;
+        --dark: #0f1724;
+        --light: #ffffff;
+        --glass: rgba(255,255,255,0.65);
+        --border: rgba(15,23,36,0.06);
+    }
+    * {
+        transition: background-color 220ms ease, color 220ms ease, transform 260ms ease, box-shadow 260ms ease;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    /* Hero Section */
+    .hero-section {
+        /* background: linear-gradient(180deg, rgba(0,82,163,0.95) 0%, rgba(0,119,214,0.92) 40%, rgba(255, 244, 230, 0) 100%); */
+        min-height: 74vh;
+        position: relative;
+        overflow: hidden;
+        padding: 3rem 0 4rem 0;
+        color: var(--light);
+    }
+    .hero-section .hero-content h1 {
+    color: var(--light) !important;
+    font-family: "Cinzel", serif;
+    font-weight: 800;
+
+}
+    .hero-section::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background-image: linear-gradient(180deg, rgba(0,82,163,0.18), rgba(0,119,214,0.06)), url('/assets/img/ferry.jpeg');
+        background-size: cover;
+        background-position: center;
+        opacity: 0.95;
+        filter: saturate(0.85) contrast(0.95) brightness(0.92);
+        z-index: 1;
+    }
+    /* animated floating shapes in hero */
+    .hero-shape { position: absolute; border-radius: 50%; filter: blur(18px); opacity: 0.14; z-index: 0; animation: float 8s infinite linear; }
+    .hero-shape.shape-1 { width: 240px; height: 240px; background: radial-gradient(circle at 30% 30%, #00a3ff, #004b8a); left: -40px; top: 10%; animation-duration: 9s; }
+    .hero-shape.shape-2 { width: 160px; height: 160px; background: radial-gradient(circle at 30% 30%, #ffd7b5, #ff8c42); right: -30px; top: 25%; animation-duration: 11s; }
+    .hero-shape.shape-3 { width: 120px; height: 120px; background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.18), rgba(120,180,255,0.14)); left: 10%; bottom: 6%; animation-duration: 12s; opacity:0.12; }
+    .hero-shape.shape-4 { width: 200px; height: 200px; background: radial-gradient(circle at 30% 30%, rgba(255,140,66,0.16), rgba(0,82,163,0.06)); right: 8%; bottom: 18%; animation-duration: 14s; opacity:0.11; }
+    @keyframes float { 0% { transform: translateY(0) translateX(0); } 50% { transform: translateY(-12px) translateX(6px); } 100% { transform: translateY(0) translateX(0); } }
+    .hero-content { position: relative; z-index: 2; color: var(--light); text-align: center; padding-top: 1rem; }
+    .hero-content h1 { font-size: 3rem; font-weight: 900; margin-bottom: 0.5rem; letter-spacing: -0.02em; text-shadow: 0 6px 28px rgb(255, 128, 0); animation: popIn 0.9s cubic-bezier(.2,.9,.3,1) both; }
+    @keyframes popIn { 0% { opacity: 0; transform: translateY(-18px) scale(.98); } 60% { opacity: 1; transform: translateY(6px) scale(1.02); } 100% { transform: translateY(0) scale(1); } }
+    .hero-content p { font-size: 1.5rem; margin-bottom: 1.5rem; opacity: 0.95; animation: slideUp 0.8s ease-out 0.2s both;text-shadow: 0 6px 28px rgb(21, 0, 255); }
+    @keyframes slideDown { from { opacity: 0; transform: translateY(-30px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+    /* Booking Form */
+    .booking-card { background: linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.75)); backdrop-filter: blur(6px) saturate(120%); border-radius: 16px; border: 1px solid var(--border); box-shadow: 0 18px 50px rgba(2,6,23,0.12); padding: 1.5rem; max-width: 920px; margin: 0 auto; transform-origin: center top; animation: lift 0.8s cubic-bezier(.16,.8,.3,1) both; }
+    @keyframes lift { 0% { opacity: 0; transform: translateY(18px) scale(.995); } 100% { opacity: 1; transform: translateY(0) scale(1); } }
+    .booking-card .form-label { font-weight: 600; color: var(--dark); margin-bottom: 0.4rem; font-size: 0.85rem; }
+    .booking-card .form-control, .booking-card .form-select { border: 1px solid rgba(15,23,36,0.06); border-radius: 12px; padding: 0.72rem 0.85rem; font-size: 0.95rem; background: transparent; box-shadow: inset 0 -1px 0 rgba(15,23,36,0.02); transition: box-shadow 220ms ease, transform 220ms ease, border-color 220ms ease; }
+    .booking-card .form-control::placeholder { color: var(--muted); }
+    .booking-card .form-control:focus, .booking-card .form-select:focus { border-color: var(--primary-2); box-shadow: 0 8px 26px rgba(3,37,76,0.08); transform: translateY(-2px); outline: none; }
+    /* Updated passenger button to show selected passengers clearly */
+    .btn-passenger-select { border: 2px solid var(--border); border-radius: 8px; padding: 0.8rem; font-size: 0.9rem; background: white; color: var(--dark); cursor: pointer; text-align: left; transition: all 0.3s ease; width: 100%; font-weight: 500; display: flex; align-items: center; gap: 0.5rem; }
+    .btn-passenger-select:hover { border-color: var(--primary); background: var(--light); }
+    .btn-passenger-select.has-passengers { border-color: var(--primary); background: linear-gradient(135deg, rgba(50, 147, 243, 0.08), rgba(224, 239, 245, 0.3)); color: var(--primary); font-weight: 600; box-shadow: 0 2px 8px rgba(50, 147, 243, 0.15); }
+    .btn-passenger-select.has-passengers:hover { background: linear-gradient(135deg, rgba(50, 147, 243, 0.15), rgba(224, 239, 245, 0.4)); box-shadow: 0 4px 12px rgba(50, 147, 243, 0.25); }
+    .passenger-card { background: var(--light); border-radius: 10px; padding: 1rem; border: 1px solid var(--border); }
+    .passenger-row { display: flex; justify-content: space-between; align-items: center; padding: 0.7rem 0; border-bottom: 1px solid var(--border); }
+    .passenger-row:last-child { border-bottom: none; }
+    .passenger-info h6 { margin: 0; font-weight: 600; color: var(--dark); font-size: 0.9rem; }
+    .passenger-info small { color: #666; display: block; margin-top: 0.2rem; font-size: 0.75rem; }
+    .price-display { font-size: 0.8rem; color: var(--accent); font-weight: 600; margin-top: 0.2rem; }
+    .counter-group { display: flex; align-items: center; gap: 0.7rem; }
+    .counter-btn { width: 32px; height: 32px; border: 1px solid var(--primary); background: white; color: var(--primary); border-radius: 6px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; font-size: 0.9rem; }
+    .counter-btn:hover { background: var(--primary); color: white; }
+    .counter-display { font-size: 1rem; font-weight: 600; color: var(--primary); min-width: 25px; text-align: center; }
+    .btn-done { background: linear-gradient(135deg, var(--primary-2), var(--primary)); border: none; color: white; font-weight: 700; border-radius: 10px; padding: 0.6rem 1.2rem; margin-top: 0.8rem; width: 100%; cursor: pointer; font-size: 0.95rem; box-shadow: 0 10px 30px rgba(3,37,76,0.12); letter-spacing: 0.2px; }
+    .btn-done:hover { transform: translateY(-4px) scale(1.01); box-shadow: 0 18px 40px rgba(3,37,76,0.16); }
+    .btn-search { background: linear-gradient(90deg, var(--primary-2) 0%, var(--accent) 100%); border: none; color: white; font-weight: 800; border-radius: 12px; padding: 0.9rem 1rem; width: 100%; font-size: 1.02rem; cursor: pointer; margin-top: 1rem; box-shadow: 0 12px 32px rgba(3,37,76,0.12); }
+    .btn-search:hover { transform: translateY(-4px) scale(1.01); box-shadow: 0 20px 48px rgba(3,37,76,0.16); }
+    /* Modal styling */
+    .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5); z-index: 1000; align-items: center; justify-content: center; }
+    .modal-overlay.active { display: flex; }
+    .modal-content { background: white; border-radius: 15px; padding: 2rem; max-width: 450px; width: 90%; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3); animation: modalSlideUp 0.3s ease-out; }
+    @keyframes modalSlideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+    /* Offers Section */
+    .offers-section { background: var(--light); padding: 2.5rem 0; }
+    /* Reveal animation for sections */
+    .reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.7s ease, transform 0.7s ease; will-change: opacity, transform; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    /* Staggered items (cards inside a reveal section) */
+    .stagger-item { opacity: 0; transform: translateY(18px); transition: opacity 0.6s ease, transform 0.6s ease; will-change: opacity, transform; }
+    .stagger-item.visible { opacity: 1; transform: translateY(0); }
+    .offers-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+    .offers-header h2 { font-size: 1.5rem; font-weight: 700; color: var(--dark); margin: 0; }
+    .offers-header a { background: white; border: 1px solid var(--primary); color: var(--primary); padding: 0.5rem 1.2rem; border-radius: 20px; text-decoration: none; font-weight: 600; font-size: 0.85rem; transition: all 0.3s ease; }
+    .offers-header a:hover { background: var(--primary); color: white; }
+    .offer-card { background: linear-gradient(180deg, #fff 0%, #fbfdff 100%); border-radius: 14px; padding: 1.3rem; border: 1px solid var(--border); box-shadow: 0 8px 30px rgba(2,6,23,0.06); height: 100%; transition: transform 300ms cubic-bezier(.2,.9,.3,1), box-shadow 300ms ease; position: relative; overflow: hidden; }
+    .offer-card:hover { transform: translateY(-8px) rotate(-0.2deg); box-shadow: 0 22px 55px rgba(2,6,23,0.12); }
+    .offer-card::after { content: ''; position: absolute; right: -40px; top: -30px; width: 180px; height: 180px; background: radial-gradient(circle at 40% 40%, rgba(0,119,214,0.06), transparent 40%); transform: rotate(18deg); pointer-events: none; }
+    /* Tilt/floating effect for cards (3D micro-interaction) */
+    .tilt { transform-style: preserve-3d; perspective: 1000px; }
+    .tilt .card-inner { transition: transform 320ms cubic-bezier(.2,.9,.3,1), box-shadow 320ms ease; transform: translateZ(0); }
+    .tilt:hover .card-inner { box-shadow: 0 28px 60px rgba(3,37,76,0.12); }
+    /* Futuristic neon heading underline */
+    .hero-content h1::after { content: ''; display: block; width: 56px; height: 6px; margin: 14px auto 0; border-radius: 999px; background: linear-gradient(90deg, #00e0ff, #0077d6, #ff8c42); filter: blur(8px); opacity: 0.95; }
+    /* Animated gradient overlay */
+    .hero-gradient { position: absolute; inset:0; pointer-events:none; z-index:0; mix-blend-mode: screen; opacity:0.12; background: conic-gradient(from 120deg at 50% 50%, #0077d6, #00e0ff, #ff8c42, #0052a3); animation: rotateGrad 14s linear infinite; }
+    @keyframes rotateGrad { from { transform: rotate(0deg);} to { transform: rotate(360deg);} }
+    .offer-badge { display: inline-block; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; padding: 0.4rem 0.8rem; border-radius: 6px; font-weight: 600; margin-bottom: 0.8rem; font-size: 0.75rem; }
+    .offer-card h5 { font-size: 1.1rem; font-weight: 700; color: var(--dark); margin-bottom: 1rem; }
+    .price-item { display: flex; justify-content: space-between; align-items: center; padding: 0.6rem 0; border-bottom: 1px solid var(--border); font-size: 0.85rem; }
+    .price-item:last-child { border-bottom: none; }
+    .price-item span:first-child { color: #666; }
+    .price-item span:last-child { font-weight: 700; color: var(--accent); }
+    /* Why Choose Us Section */
+    .why-section { background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); padding: 2.5rem 0; color: white; }
+    .why-section h2 { font-size: 1.8rem; font-weight: 700; margin-bottom: 2rem; text-align: center; }
+    .why-card { background: white; border-radius: 12px; padding: 1.5rem; text-align: center; color: var(--dark); box-shadow: 0 8px 20px rgba(0,0,0,0.15); transition: all 0.3s ease; height: 100%; }
+    .why-card:hover { transform: translateY(-8px); box-shadow: 0 15px 35px rgba(0,0,0,0.2); }
+    .why-card img { height: 50px; margin-bottom: 0.8rem; }
+    .why-card h4 { font-size: 1.05rem; font-weight: 700; margin-bottom: 0.8rem; color: var(--primary); }
+    .why-card p { font-size: 0.85rem; line-height: 1.5; color: #666; }
+    /* About Section */
+    .about-section { padding: 2.5rem 0; }
+    .about-section h2 { font-size: 1.8rem; font-weight: 700; margin-bottom: 2rem; text-align: center; color: var(--dark); }
+    .about-card { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 3px 12px rgba(0,0,0,0.08); transition: all 0.3s ease; }
+    .about-card:hover { box-shadow: 0 8px 20px rgba(0,0,0,0.12); }
+    .about-card-content { display: flex; flex-direction: row; align-items: stretch; }
+    .about-card img { width: 35%; object-fit: cover; }
+    .about-card-body { padding: 1.5rem; flex: 1; display: flex; flex-direction: column; justify-content: center; }
+    .about-card-body h5 { font-size: 1.1rem; font-weight: 700; color: var(--dark); margin-bottom: 0.7rem; }
+    .about-card-body p { color: #666; line-height: 1.5; margin-bottom: 0.4rem; font-size: 0.9rem; }
+    .about-card-body small { color: #999; font-size: 0.8rem; }
+    @media (max-width: 768px) {
+        .hero-content h1 { font-size: 1.8rem; }
+        .hero-content p { font-size: 0.9rem; }
+        .booking-card { padding: 1rem; }
+        .offers-header { flex-direction: column; gap: 0.8rem; text-align: center; }
+        .about-card-content { flex-direction: column; }
+        .about-card img { width: 100%; height: 200px; }
+    }

@@ -140,6 +140,7 @@
         </div>
     </section>
 
+<<<<<<< Updated upstream
     <!-- Why Use SEAVENTURES Section -->
     {{-- <section id="why-seaventures" class="py-5 bg-primary text-white">
         <div class="container">
@@ -202,3 +203,15 @@
         </div>
     </section>--}}
 @endsection 
+=======
+<!-- Scripts -->
+<script>
+    // minimal data for external home.js
+    window.HomePageData = {
+        muaraId: {!! json_encode($ports->firstWhere('name', 'Muara')->id ?? '') !!},
+        sipingganId: {!! json_encode($ports->firstWhere('name', 'Sipinggan')->id ?? '') !!}
+    };
+</script>
+<script src="{{ asset('assets/js/home.js') }}"></script>
+@endsection
+>>>>>>> Stashed changes
