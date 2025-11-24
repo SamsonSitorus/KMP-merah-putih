@@ -6,16 +6,16 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\HomeController;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+// Route::get('/', function () {
+//     return view('welcome');
+// });
 /*Route Login */
 Route::get('/login', fn() => view('auth.login'))->name('login');
 Route::post('/firebase/logout', [Authcontroller::class,'logout'])->name('logout');
 
 Route::get('/register', fn() => view('auth.auth-register'))->name('register');
 
-Route::get('/home', [HomeController::class, 'index'])->name('home');
+Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/get-price', [HomeController::class, 'getPrice'])->name('get.price');
 
 

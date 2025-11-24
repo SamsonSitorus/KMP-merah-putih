@@ -35,6 +35,7 @@
                     id="name"
                     name="name"
                     placeholder="Enter your name"
+                    value="{{ old('name') }}"
                     autofocus />
                 </div>
                 <div class="mb-6">
@@ -45,11 +46,12 @@
                     id="phone_number"
                     name="phone_number"
                     placeholder="Enter your phone_number"
+                     value="{{ old('phone_number') }}"
                     autofocus />
                 </div>
                 <div class="mb-6">
                   <label for="email" class="form-label">Email</label>
-                  <input type="text" class="form-control" id="email" name="email" placeholder="Enter your email" />
+                  <input type="text" class="form-control" id="email" name="email" placeholder="Enter your email" value="{{ old('email') }}" />
                 </div>
                 <div class="form-password-toggle">
                   <label class="form-label" for="password">Password</label>
