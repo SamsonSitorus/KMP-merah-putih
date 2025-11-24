@@ -1,9 +1,8 @@
 <nav class="navbar navbar-expand-xl navbar-light bg-white shadow-sm sticky-top" id="layout-navbar" style="border-bottom: 2px solid #e8f0f7;">
   <div class="container-fluid px-4">
 
-    {{-- Logo --}}
-
-    <a href="/" class="navbar-brand d-flex align-items-center gap-2">
+  {{-- Logo --}}
+  <a href="/" class="navbar-brand d-flex align-items-center gap-2">
       <div class="p-2 rounded-lg" style="background: linear-gradient(135deg, #0066cc 0%, #0052a3 100%);">
         <img src="{{ asset('assets/img/cruise.png') }}" alt="Seaventures" 
              class="d-inline-block align-text-top" style="height: 40px; filter: brightness(0) invert(1);">
@@ -36,10 +35,14 @@
           <a href="#why-us" class="nav-link fw-500 text-dark transition-all" 
              style="padding: 8px 16px; border-radius: 6px; transition: all 0.3s ease;">Why Us</a>
         </li>
-        <li class="nav-item">
-          <a href="#contact" class="nav-link fw-500 text-dark transition-all" 
-             style="padding: 8px 16px; border-radius: 6px; transition: all 0.3s ease;">Contact Us</a>
-        </li>
+      <li class="nav-item">
+       <a href="#partners" class="nav-link fw-500 text-dark transition-all" 
+         style="padding: 8px 16px; border-radius: 6px; transition: all 0.3s ease;">Partners</a>
+      </li>
+      <li class="nav-item">
+       <a href="#contact" class="nav-link fw-500 text-dark transition-all" 
+         style="padding: 8px 16px; border-radius: 6px; transition: all 0.3s ease;">Contact Us</a>
+      </li>
 
         {{-- User / Guest --}}
         @auth
@@ -51,14 +54,15 @@
                    style="border-color: #0066cc !important;" />
               <span class="fw-600 text-dark d-none d-sm-inline">{{ Auth::user()->name }}</span>
             </a>
-            <ul class="dropdown-menu dropdown-menu-end">
-              <li><a class="dropdown-item" href="{{ route('profile') }}">Profile</a></li>
+            <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0" style="border-radius: 8px;">
+              <li><a class="dropdown-item fw-500" href="{{ route('profile') }}">Profile</a></li>
+              <li><hr class="dropdown-divider"></li>
               <li>
-                <form action="{{ route('logout') }}" method="POST" class="p-0 m-0">
-                @csrf
-                <button type="submit" class="dropdown-item">Logout</button>
-              </form>
-            </li>
+                <form action="{{ route('logout') }}" method="POST" class="m-0">
+                  @csrf
+                  <button type="submit" class="dropdown-item text-danger fw-500">Logout</button>
+                </form>
+              </li>
             </ul>
           </li>
         @else

@@ -21,6 +21,7 @@ Route::get('/get-price', [HomeController::class, 'getPrice'])->name('get.price')
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'profile'])->name('profile');
+    Route::put('/profile/update/{id}', [ProfileController::class, 'updateorcreate'])->name('profile.update');
 });
 
 Route::get('/find_ticket', fn() => view('user.find_ticket'))->name('find_ticket');
@@ -36,6 +37,3 @@ Route::post('/firebase/verify', [AuthController::class, 'verifyFirebase'])->name
 
 
 // Route::get('/home', [HomeController::class, 'index'])->name('home');
-
-
-

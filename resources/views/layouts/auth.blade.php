@@ -12,7 +12,8 @@
       </div>
     </div>
 
-    @include('layouts.scripts')
-   @stack('scripts')
+  {{-- Alerts (toasts) for auth pages --}}
+  @include('partials.alerts')
+  @include('layouts.scripts')
   </body>
 </html>

@@ -11,11 +11,18 @@ use Illuminate\Support\Facades\Log;
 class Authcontroller extends Controller
 {
 
-    public function register(Request $request){
+    /**
+     * Register user received from Firebase
+     *
+     * @param \Illuminate\Http\Request $req
+     */
+    public function register(Request $req){
+        // ensure local variable $request is defined for static analysis tools
+        $request = $req;
         // Ambil data JSON dari frontend
             $data = $request->all();
 
-            // Cek dulu apakah user sudah ada di tabel `users`
+            // Cek dulu apakah user sudah ada di tabel users
             $existingUser = User::where('firebase_uid', $data['uid'])->first();
             if ($existingUser) {
                 return response()->json([
@@ -23,7 +30,6 @@ class Authcontroller extends Controller
                     'data' => $existingUser
                 ]);
             }
-
             // Simpan ke tabel users
               $user = User::create([
             'firebase_uid' => $data['uid'],
@@ -32,16 +38,22 @@ class Authcontroller extends Controller
             'phone_number' => $data['phone_number'],
             'password' => null,
         ]);
-
          return response()->json([
             'message' => 'User registered successfully',
             'data' => $user
         ]);
     }
-     public function verifyFirebase(Request $request)
+    /**
+     * Verify Firebase ID token and login the corresponding Laravel user
+     *
+     * @param \Illuminate\Http\Request $req
+     */
+    public function verifyFirebase(Request $req)
     {
+        $request = $req;
         try {
-            $factory = (new Factory)->withServiceAccount(base_path('resources/credential/credential_firebase.json'));
+            // ensure explicit instantiation with parentheses for clarity
+            $factory = (new Factory())->withServiceAccount(base_path('resources/credential/credential_firebase.json'));
             $auth = $factory->createAuth();
 
             $idTokenString = $request->input('token');
@@ -54,21 +66,29 @@ class Authcontroller extends Controller
                 return response()->json(['message' => 'User not found in Laravel DB'], 404);
             }
 
-            // Bisa simpan session manual atau lanjut ke halaman dashboard
-            // session(['user' => $user]);
+            // Login the user into Laravel session
             Auth::login($user);
-            $request->session()->regenerate(); 
+            $request->session()->regenerate();
+
             return response()->json([
                 'message' => 'Login success',
                 'user' => $user
             ]);
         } catch (\Throwable $e) {
-            Log::error($e->getMessage());
+            // Log full exception for easier debugging (message + trace)
+            Log::error('Firebase verify error: ' . $e->getMessage());
+            Log::error($e->getTraceAsString());
             return response()->json(['message' => 'Invalid or expired token'], 401);
         }
     }
-    public function logout(Request $request)
+    /**
+     * Logout the current user
+     *
+     * @param \Illuminate\Http\Request $req
+     */
+    public function logout(Request $req)
     {
+        $request = $req;
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
