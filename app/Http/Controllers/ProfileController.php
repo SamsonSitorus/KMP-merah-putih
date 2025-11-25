@@ -28,6 +28,7 @@ class ProfileController extends Controller
         $request->validate([
             'name' => 'required|string|max:100',
             'email' => 'required|email|max:255',
+            'phone_number' => 'required|string|max:20',
             'foto_profil' => 'nullable|image|mimes:jpg,jpeg,png|max:10000',
             'tanggal_lahir' => 'required|date|before_or_equal:' . now()->subYears(18)->toDateString(),
             'gender' => 'required|in:Laki-laki,Perempuan',
@@ -35,32 +36,28 @@ class ProfileController extends Controller
             'nomor_identitas' => 'required|string|max:25',
             'kota_asal' => 'required|string|max:100',
             'ZipCode' => 'required|string|max:10',
-           
-
         ]);
 
         // Upload foto profil
+        $path = null;
         if ($request->hasFile('foto_profil')) {
-            if ($profile->foto_profil && Storage::disk('public')->exists($profile->foto_profil)) {
-                Storage::disk('public')->delete($profile->foto_profil);
+            if ($profile->detail && $profile->detail->foto_profil && Storage::disk('public')->exists($profile->detail->foto_profil)) {
+                Storage::disk('public')->delete($profile->detail->foto_profil);
             }
-
             $path = $request->file('foto_profil')->store('profile_photos', 'public');
-         
         }
 
-        // dd($request);
         // Update data user utama
         $profile->name = $request->name;
         $profile->email = $request->email;
-        $profile->phone_number = $request->phoneNumber;
+        $profile->phone_number = $request->phone_number;
         $profile->save();
 
         // Update atau buat UserDetail
         UserDetail::updateOrCreate(
             ['user_id' => $user->id],
             [
-                'foto_profil' => $path ?? $profile->detail->foto_profil ?? null,
+                'foto_profil' => $path ?? ($profile->detail->foto_profil ?? null),
                 'tanggal_lahir' => $request->tanggal_lahir,
                 'jenis_id' => $request->jenis_id,
                 'gender' => $request->gender,

@@ -80,18 +80,21 @@
               </div>
 
               <div class="col-md-6">
-                <label class="form-label" for="phoneNumber">Nomor Telepon</label>
+                <label class="form-label" for="phone_number">Nomor Telepon</label>
                 <div class="input-group input-group-merge">
                   <span class="input-group-text">🇮🇩</span>
                   <input
                     type="text"
-                    id="phoneNumber"
-                    name="phoneNumber"
+                    id="phone_number"
+                    name="phone_number"
                     class="form-control"
-                    value="{{ old('phoneNumber', $user->phone_number) }}"
+                    value="{{ old('phone_number', $user->phone_number) }}"
                     required
                   >
                 </div>
+                @error('phone_number')
+                  <div class="text-danger small">{{ $message }}</div>
+                @enderror
               </div>
 
               <div class="col-md-6">
@@ -104,6 +107,9 @@
                   value="{{ old('tanggal_lahir', $detail->tanggal_lahir ?? '') }}"
                   required
                 >
+                @error('tanggal_lahir')
+                  <div class="text-danger small">{{ $message }}</div>
+                @enderror
               </div>
 
               <div class="col-md-6">
@@ -113,6 +119,9 @@
                   <option value="Laki-laki" {{ (old('gender', $detail->gender ?? '') == 'Laki-laki') ? 'selected' : '' }}>Laki-laki</option>
                   <option value="Perempuan" {{ (old('gender', $detail->gender ?? '') == 'Perempuan') ? 'selected' : '' }}>Perempuan</option>
                 </select>
+                @error('gender')
+                  <div class="text-danger small">{{ $message }}</div>
+                @enderror
               </div>
 
               <div class="col-md-6">
@@ -123,6 +132,9 @@
                   <option value="SIM" {{ (old('jenis_id', $detail->jenis_id ?? '') == 'SIM') ? 'selected' : '' }}>SIM</option>
                   <option value="Paspor" {{ (old('jenis_id', $detail->jenis_id ?? '') == 'Paspor') ? 'selected' : '' }}>Paspor</option>
                 </select>
+                @error('jenis_id')
+                  <div class="text-danger small">{{ $message }}</div>
+                @enderror
               </div>
 
               <div class="col-md-6">
@@ -136,6 +148,9 @@
                   value="{{ old('nomor_identitas', $detail->nomor_identitas ?? '') }}"
                   required
                 >
+                @error('nomor_identitas')
+                  <div class="text-danger small">{{ $message }}</div>
+                @enderror
               </div>
 
               <div class="col-md-6">
@@ -149,6 +164,9 @@
                   value="{{ old('kota_asal', $detail->kota_asal ?? '') }}"
                   required
                 >
+                @error('kota_asal')
+                  <div class="text-danger small">{{ $message }}</div>
+                @enderror
               </div>
 
               <div class="col-md-6">
@@ -163,6 +181,9 @@
                   maxlength="6"
                   required
                 >
+                @error('ZipCode')
+                  <div class="text-danger small">{{ $message }}</div>
+                @enderror
               </div>
 
             </div>
@@ -172,6 +193,18 @@
             <div class="mt-4 pt-2 border-top">
               <button type="submit" class="btn btn-primary me-2">Simpan Perubahan</button>
               <button type="reset" class="btn btn-outline-secondary">Batal</button>
+              @if(session('success'))
+                <div class="alert alert-success mt-3">{{ session('success') }}</div>
+              @endif
+              @if($errors->any())
+                <div class="alert alert-danger mt-3">
+                  <ul class="mb-0">
+                    @foreach($errors->all() as $error)
+                      <li>{{ $error }}</li>
+                    @endforeach
+                  </ul>
+                </div>
+              @endif
             </div>
 
           </form>

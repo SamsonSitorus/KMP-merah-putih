@@ -16,15 +16,14 @@ document.addEventListener('DOMContentLoaded', function() {
     let anak = 0;
     let dewasaPrice = 0;
     let anakPrice = 0;
-    // Vehicle booking state
-    let vehicleCount = 0;
-    let vehiclePrice = 0;
-    let vehicleType = '';
+    // Vehicle booking state (support multiple vehicle types)
+    // vehicleSelections: { 'Motor Bebek': count, ... }
+    let vehicleSelections = {};
+    // vehiclePrices: { 'Motor Bebek': unitPrice, ... }
+    let vehiclePrices = {};
 
     const dewasaCount = document.getElementById('countDewasa');
     const anakCount = document.getElementById('countAnak');
-    const vehicleCountDisplay = document.getElementById('countVehicle');
-    const vehicleTypeSelect = document.getElementById('vehicleTypeSelect');
     const vehiclePriceDisplay = document.getElementById('vehiclePriceDisplay');
 
     function updatePassengerButtonText() {
@@ -51,7 +50,9 @@ document.addEventListener('DOMContentLoaded', function() {
             window.showAlert('Pilih pelabuhan asal dan tujuan terlebih dahulu.', 'warning', { title: 'Validasi' });
             return;
         }
-        fetchPrices(origin, destination, vehicleTypeSelect.value);
+        // fetch prices for currently selected vehicle types (if any)
+        const selectedTypes = Array.from(document.querySelectorAll('.vehicle-checkbox:checked')).map(c => c.dataset.type);
+        fetchPrices(origin, destination, selectedTypes);
         passengerModal.classList.add('active');
     });
 
@@ -73,14 +74,37 @@ document.addEventListener('DOMContentLoaded', function() {
             anakPriceDisplay.textContent = `Harga: ${anakPrice ? 'Rp ' + parseInt(anakPrice).toLocaleString('id-ID') : '-'}`;
             if (!timeInput.value && dataAnak.departure_time) timeInput.value = dataAnak.departure_time;
 
-            if (vType) {
+            // vType can be string or array. For multi-selection, vType is an array.
+            if (!vType) {
+                vehiclePrices = {};
+                vehiclePriceDisplay.textContent = 'Harga: -';
+            } else if (Array.isArray(vType)) {
+                // fetch each selected vehicle's price
+                vehiclePrices = vehiclePrices || {};
+                for (let t of vType) {
+                    try {
+                        const res = await fetch(`/get-price?origin_port_id=${origin}&destination_port_id=${destination}&vehicle_type=${encodeURIComponent(t)}`);
+                        const data = await res.json();
+                        vehiclePrices[t] = data.price || 0;
+                        // populate per-item price display if exists
+                        const slug = t.toString().toLowerCase().replace(/[^a-z0-9]+/g, '_');
+                        const el = document.getElementById('price_' + slug);
+                        if (el) el.textContent = vehiclePrices[t] ? ('Rp ' + parseInt(vehiclePrices[t]).toLocaleString('id-ID')) : '-';
+                    } catch (err) {
+                        console.warn('Error fetching vehicle price for', t, err);
+                        vehiclePrices[t] = 0;
+                    }
+                }
+                // update aggregate vehicle price display (sum of selected unit prices)
+                const sum = Object.values(vehiclePrices).reduce((s, v) => s + (v || 0), 0);
+                vehiclePriceDisplay.textContent = sum ? ('Harga: Rp ' + parseInt(sum).toLocaleString('id-ID')) : 'Harga: -';
+            } else {
+                // single string
                 const resVehicle = await fetch(`/get-price?origin_port_id=${origin}&destination_port_id=${destination}&vehicle_type=${encodeURIComponent(vType)}`);
                 const dataVehicle = await resVehicle.json();
-                vehiclePrice = dataVehicle.price || 0;
-                vehiclePriceDisplay.textContent = `Harga: ${vehiclePrice ? 'Rp ' + parseInt(vehiclePrice).toLocaleString('id-ID') : '-'}`;
-            } else {
-                vehiclePrice = 0;
-                vehiclePriceDisplay.textContent = 'Harga: -';
+                vehiclePrices = {};
+                vehiclePrices[vType] = dataVehicle.price || 0;
+                vehiclePriceDisplay.textContent = vehiclePrices[vType] ? ('Harga: Rp ' + parseInt(vehiclePrices[vType]).toLocaleString('id-ID')) : 'Harga: -';
             }
         } catch (err) {
             console.error('Error fetching prices:', err);
@@ -93,24 +117,76 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('plusAnak').addEventListener('click', (e) => { e.preventDefault(); anak++; anakCount.textContent = anak; document.getElementById('anakCountInput').value = anak; updateTotalPrice(); updatePassengerButtonText(); });
     document.getElementById('minusAnak').addEventListener('click', (e) => { e.preventDefault(); if (anak > 0) anak--; anakCount.textContent = anak; document.getElementById('anakCountInput').value = anak; updateTotalPrice(); updatePassengerButtonText(); });
 
-    document.getElementById('plusVehicle').addEventListener('click', (e) => {
-        e.preventDefault();
-        const selected = vehicleTypeSelect.value;
-        if (!selected) { window.showAlert('Pilih jenis kendaraan terlebih dahulu.', 'warning', { title: 'Validasi' }); return; }
-        vehicleType = selected;
-        vehicleCount++;
-        vehicleCountDisplay.textContent = vehicleCount;
-        document.getElementById('vehicleCountInput').value = vehicleCount;
-        document.getElementById('vehicleTypeInput').value = vehicleType;
-        updateTotalPrice();
+    // Bind plus/minus buttons per vehicle type
+    document.querySelectorAll('.vehicle-plus').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const t = btn.dataset.type;
+            // ensure checkbox is checked
+            const chk = document.querySelector(`.vehicle-checkbox[data-type="${t}"]`);
+            if (chk && !chk.checked) { chk.checked = true; }
+            vehicleSelections[t] = (vehicleSelections[t] || 0) + 1;
+            const slug = t.toString().toLowerCase().replace(/[^a-z0-9]+/g, '_');
+            const display = document.getElementById('count_' + slug);
+            if (display) display.textContent = vehicleSelections[t];
+            // fetch price for this type if not present
+            const origin = asalSelect.value; const destination = tujuanId.value;
+            if (origin && destination) fetchPrices(origin, destination, [t]).then(() => updateTotalPrice());
+            else updateTotalPrice();
+        });
     });
 
-    document.getElementById('minusVehicle').addEventListener('click', (e) => { e.preventDefault(); if (vehicleCount > 0) vehicleCount--; vehicleCountDisplay.textContent = vehicleCount; document.getElementById('vehicleCountInput').value = vehicleCount; if (vehicleCount === 0) { document.getElementById('vehicleTypeInput').value = ''; vehicleType = ''; } updateTotalPrice(); });
+    document.querySelectorAll('.vehicle-minus').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const t = btn.dataset.type;
+            if (!vehicleSelections[t]) return;
+            vehicleSelections[t] = Math.max(0, vehicleSelections[t] - 1);
+            const slug = t.toString().toLowerCase().replace(/[^a-z0-9]+/g, '_');
+            const display = document.getElementById('count_' + slug);
+            if (display) display.textContent = vehicleSelections[t];
+            if (vehicleSelections[t] === 0) {
+                const chk = document.querySelector(`.vehicle-checkbox[data-type="${t}"]`);
+                if (chk) chk.checked = false;
+                delete vehicleSelections[t];
+            }
+            updateTotalPrice();
+        });
+    });
 
-    vehicleTypeSelect.addEventListener('change', (e) => {
-        vehicleType = e.target.value; document.getElementById('vehicleTypeInput').value = vehicleType; const origin = asalSelect.value; const destination = tujuanId.value; if (!origin || !destination) { vehiclePrice = 0; vehiclePriceDisplay.textContent = 'Harga: -'; return; } if (vehicleType) { fetchPrices(origin, destination, vehicleType).then(() => { document.getElementById('vehiclePriceInput').value = vehiclePrice; updateTotalPrice(); }); } else { vehiclePrice = 0; vehiclePriceDisplay.textContent = 'Harga: -'; document.getElementById('vehiclePriceInput').value = 0; updateTotalPrice(); } });
+    // When a checkbox toggles, initialize or remove selection
+    document.querySelectorAll('.vehicle-checkbox').forEach(chk => {
+        chk.addEventListener('change', (e) => {
+            const t = chk.dataset.type;
+            if (chk.checked) {
+                vehicleSelections[t] = vehicleSelections[t] || 1;
+                const slug = t.toString().toLowerCase().replace(/[^a-z0-9]+/g, '_');
+                const display = document.getElementById('count_' + slug);
+                if (display) display.textContent = vehicleSelections[t];
+                const origin = asalSelect.value; const destination = tujuanId.value;
+                if (origin && destination) fetchPrices(origin, destination, [t]).then(() => updateTotalPrice());
+                else updateTotalPrice();
+            } else {
+                delete vehicleSelections[t];
+                const slug = t.toString().toLowerCase().replace(/[^a-z0-9]+/g, '_');
+                const display = document.getElementById('count_' + slug);
+                if (display) display.textContent = '0';
+                updateTotalPrice();
+            }
+        });
+    });
 
-    function updateTotalPrice() { const vehicleTotal = vehicleCount * vehiclePrice; const total = (dewasa * dewasaPrice) + (anak * anakPrice) + vehicleTotal; if (total > 0) priceInput.value = `Rp ${parseInt(total).toLocaleString('id-ID')}`; else priceInput.value = 'Rp 0'; }
+    function updateTotalPrice() {
+        // compute vehicle total from selections and their unit prices
+        let vehicleTotal = 0;
+        for (const [t, cnt] of Object.entries(vehicleSelections)) {
+            const unit = vehiclePrices[t] || 0;
+            vehicleTotal += (cnt || 0) * unit;
+        }
+        const total = (dewasa * dewasaPrice) + (anak * anakPrice) + vehicleTotal;
+        if (total > 0) priceInput.value = `Rp ${parseInt(total).toLocaleString('id-ID')}`;
+        else priceInput.value = 'Rp 0';
+    }
 
     // Auto-set destination using window.HomePageData (inlined by Blade)
     if (asalSelect) {
@@ -139,9 +215,31 @@ document.addEventListener('DOMContentLoaded', function() {
         e.preventDefault();
         document.getElementById('dewasaPriceInput').value = dewasaPrice;
         document.getElementById('anakPriceInput').value = anakPrice;
-        document.getElementById('vehiclePriceInput').value = vehiclePrice;
-        document.getElementById('vehicleCountInput').value = vehicleCount;
-        document.getElementById('vehicleTypeInput').value = vehicleType;
+
+        // remove any previously injected vehicle hidden inputs
+        const form = document.getElementById('ticketForm');
+        form.querySelectorAll('.injected-vehicle-input').forEach(n => n.remove());
+
+        // populate hidden inputs for selected vehicles (arrays)
+        const types = Object.keys(vehicleSelections);
+        let firstType = '';
+        let firstCount = 0;
+        let firstPrice = 0;
+        types.forEach((t, idx) => {
+            const cnt = vehicleSelections[t] || 0;
+            const unit = vehiclePrices[t] || 0;
+            const inpT = document.createElement('input'); inpT.type = 'hidden'; inpT.name = 'vehicle_types[]'; inpT.value = t; inpT.className = 'injected-vehicle-input';
+            const inpC = document.createElement('input'); inpC.type = 'hidden'; inpC.name = 'vehicle_counts[]'; inpC.value = cnt; inpC.className = 'injected-vehicle-input';
+            const inpP = document.createElement('input'); inpP.type = 'hidden'; inpP.name = 'vehicle_prices[]'; inpP.value = unit; inpP.className = 'injected-vehicle-input';
+            form.appendChild(inpT); form.appendChild(inpC); form.appendChild(inpP);
+            if (idx === 0) { firstType = t; firstCount = cnt; firstPrice = unit; }
+        });
+
+        // keep legacy single fields for backward compatibility
+        document.getElementById('vehiclePriceInput').value = firstPrice || 0;
+        document.getElementById('vehicleCountInput').value = firstCount || 0;
+        document.getElementById('vehicleTypeInput').value = firstType || '';
+
         passengerModal.classList.remove('active');
     });
 
@@ -149,16 +247,37 @@ document.addEventListener('DOMContentLoaded', function() {
     ticketForm.addEventListener('submit', function(e) {
         document.getElementById('dewasaPriceInput').value = dewasaPrice;
         document.getElementById('anakPriceInput').value = anakPrice;
-        document.getElementById('vehiclePriceInput').value = vehiclePrice;
-        document.getElementById('vehicleCountInput').value = vehicleCount;
-        document.getElementById('vehicleTypeInput').value = vehicleType;
+
+        // ensure hidden vehicle array inputs are present before submit (in case user didn't click DONE)
+        const form = document.getElementById('ticketForm');
+        form.querySelectorAll('.injected-vehicle-input').forEach(n => n.remove());
+        const types = Object.keys(vehicleSelections);
+        let firstType = '';
+        let firstCount = 0;
+        let firstPrice = 0;
+        types.forEach((t, idx) => {
+            const cnt = vehicleSelections[t] || 0;
+            const unit = vehiclePrices[t] || 0;
+            const inpT = document.createElement('input'); inpT.type = 'hidden'; inpT.name = 'vehicle_types[]'; inpT.value = t; inpT.className = 'injected-vehicle-input';
+            const inpC = document.createElement('input'); inpC.type = 'hidden'; inpC.name = 'vehicle_counts[]'; inpC.value = cnt; inpC.className = 'injected-vehicle-input';
+            const inpP = document.createElement('input'); inpP.type = 'hidden'; inpP.name = 'vehicle_prices[]'; inpP.value = unit; inpP.className = 'injected-vehicle-input';
+            form.appendChild(inpT); form.appendChild(inpC); form.appendChild(inpP);
+            if (idx === 0) { firstType = t; firstCount = cnt; firstPrice = unit; }
+        });
+
+        // set legacy fields
+        document.getElementById('vehiclePriceInput').value = firstPrice || 0;
+        document.getElementById('vehicleCountInput').value = firstCount || 0;
+        document.getElementById('vehicleTypeInput').value = firstType || '';
 
         const depInput = document.getElementById('departureDateInput');
         const depValue = depInput ? depInput.value : null;
         if (!depValue) { window.showAlert('Pilih tanggal keberangkatan.', 'warning', { title: 'Validasi' }); e.preventDefault(); return; }
         const today = new Date(); today.setHours(0,0,0,0); const depDate = new Date(depValue + 'T00:00:00'); if (depDate < today) { window.showAlert('Tanggal keberangkatan tidak boleh sebelum hari ini.', 'warning', { title: 'Validasi' }); e.preventDefault(); return; }
         if (anak > 0 && dewasa === 0) { window.showAlert('Jika memesan anak-anak, minimal harus ada 1 orang dewasa.', 'warning', { title: 'Validasi' }); e.preventDefault(); passengerModal.classList.add('active'); return; }
-        if (vehicleCount > 0 && !vehicleType) { window.showAlert('Pilih jenis kendaraan untuk kendaraan yang dipesan.', 'warning', { title: 'Validasi' }); e.preventDefault(); passengerModal.classList.add('active'); return; }
+        if (Object.keys(vehicleSelections).length > 0 && Object.values(vehicleSelections).reduce((s,v) => s + (v||0), 0) > 0 && Object.keys(vehicleSelections).length === 0) {
+            window.showAlert('Pilih jenis kendaraan untuk kendaraan yang dipesan.', 'warning', { title: 'Validasi' }); e.preventDefault(); passengerModal.classList.add('active'); return;
+        }
     });
 
     // Reveal animations

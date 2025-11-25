@@ -66,15 +66,25 @@ body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
 .btn-passenger-select.has-passengers { border-color: var(--primary); background: linear-gradient(135deg, rgba(50, 147, 243, 0.08), rgba(224, 239, 245, 0.3)); color: var(--primary); font-weight: 600; box-shadow: 0 2px 8px rgba(50, 147, 243, 0.15); }
 .btn-passenger-select.has-passengers:hover { background: linear-gradient(135deg, rgba(50, 147, 243, 0.15), rgba(224, 239, 245, 0.4)); box-shadow: 0 4px 12px rgba(50, 147, 243, 0.25); }
 .passenger-card { background: var(--light); border-radius: 10px; padding: 1rem; border: 1px solid var(--border); }
-.passenger-row { display: flex; justify-content: space-between; align-items: center; padding: 0.7rem 0; border-bottom: 1px solid var(--border); }
+.passenger-row { display: flex; justify-content: space-between; align-items: center; padding: 0.6rem 0; border-bottom: 1px solid var(--border); gap: 0.6rem; }
 .passenger-row:last-child { border-bottom: none; }
 .passenger-info h6 { margin: 0; font-weight: 600; color: var(--dark); font-size: 0.9rem; }
 .passenger-info small { color: #666; display: block; margin-top: 0.2rem; font-size: 0.75rem; }
 .price-display { font-size: 0.8rem; color: var(--accent); font-weight: 600; margin-top: 0.2rem; }
-.counter-group { display: flex; align-items: center; gap: 0.7rem; }
-.counter-btn { width: 32px; height: 32px; border: 1px solid var(--primary); background: white; color: var(--primary); border-radius: 6px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; font-size: 0.9rem; }
-.counter-btn:hover { background: var(--primary); color: white; }
-.counter-display { font-size: 1rem; font-weight: 600; color: var(--primary); min-width: 25px; text-align: center; }
+.counter-group { display: flex; align-items: center; gap: 0.5rem; min-width: 140px; justify-content: flex-end; }
+.counter-btn { width: 34px; height: 34px; border: 1px solid rgba(3,37,76,0.08); background: white; color: var(--primary); border-radius: 8px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.18s ease; font-size: 0.95rem; box-shadow: 0 6px 16px rgba(2,6,23,0.04); }
+.counter-btn:hover { background: var(--primary); color: white; transform: translateY(-2px); }
+.counter-display { font-size: 0.98rem; font-weight: 700; color: var(--dark); min-width: 30px; text-align: center; padding: 0 6px; }
+
+/* Vehicle list in modal: align label and counters cleanly */
+.vehicle-list label { display:flex; align-items:center; justify-content:space-between; gap: 0.6rem; padding: .45rem .5rem; border-radius:8px; border:1px solid transparent; }
+.vehicle-list label:hover { background: rgba(3,37,76,0.02); border-color: rgba(3,37,76,0.04); }
+.vehicle-item-price { font-size:0.82rem; color:var(--muted); margin-left: .6rem; min-width: 70px; text-align: right; }
+
+@media(min-width:700px) {
+    .modal-content { max-width:520px; padding: 1.6rem; }
+    .passenger-card { padding: 1.15rem; }
+}
 .btn-done { background: linear-gradient(135deg, var(--primary-2), var(--primary)); border: none; color: white; font-weight: 700; border-radius: 10px; padding: 0.6rem 1.2rem; margin-top: 0.8rem; width: 100%; cursor: pointer; font-size: 0.95rem; box-shadow: 0 10px 30px rgba(3,37,76,0.12); letter-spacing: 0.2px; }
 .btn-done:hover { transform: translateY(-4px) scale(1.01); box-shadow: 0 18px 40px rgba(3,37,76,0.16); }
 .btn-search { background: linear-gradient(90deg, var(--primary-2) 0%, var(--accent) 100%); border: none; color: white; font-weight: 800; border-radius: 12px; padding: 0.9rem 1rem; width: 100%; font-size: 1.02rem; cursor: pointer; margin-top: 1rem; box-shadow: 0 12px 32px rgba(3,37,76,0.12); }
@@ -141,3 +151,19 @@ body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
     .about-card-content { flex-direction: column; }
     .about-card img { width: 100%; height: 200px; }
 }
+
+/* Result cards for search results */
+.result-card { display: flex; flex-direction: column; padding: 0.9rem; border-radius: 14px; background: linear-gradient(180deg,#fff,#fbfdff); box-shadow: 0 14px 36px rgba(2,6,23,0.06); border: 1px solid rgba(3,37,76,0.06); }
+.result-card .result-top { display:flex; justify-content:space-between; align-items:center; gap:1rem; padding: .6rem 0; }
+.result-card .result-meta { color: #6b7280; font-size: 0.9rem; }
+.result-card .result-price { font-weight: 900; color: var(--accent); font-size: 1.06rem; }
+.result-card .result-actions { display:flex; gap:.6rem; align-items:center; }
+.result-card .btn-cta { background: linear-gradient(90deg,var(--primary-2), var(--accent)); color: #fff; padding:.5rem .9rem; border-radius:8px; border:none; font-weight:700; }
+.result-card .btn-ghost { background: transparent; border:1px solid rgba(3,37,76,0.06); padding:.45rem .75rem; border-radius:8px; color:var(--primary); }
+
+/* Booking detail card */
+.booking-detail-card { background: linear-gradient(180deg,#ffffff,#fbfdff); border-radius:14px; padding: .8rem; box-shadow: 0 18px 48px rgba(2,6,23,0.08); border: 1px solid rgba(3,37,76,0.06); }
+.booking-detail-card .bk-card-header { background: linear-gradient(90deg,#0077d6 0%,#00a3ff 100%); color:#fff; padding:.9rem 1rem; border-radius:10px; margin-bottom:.6rem; }
+.booking-detail-card .bk-detail-row { padding:.6rem 0; border-bottom:1px dashed rgba(15,23,36,0.04); }
+.booking-detail-card .bk-price { font-size:1.08rem; font-weight:900; color:var(--accent); }
+

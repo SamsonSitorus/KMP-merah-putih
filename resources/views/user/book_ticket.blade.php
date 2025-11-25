@@ -38,14 +38,19 @@
                 $departureTime = request()->query('departure_time');
                 $dewasaCount = (int) request()->query('dewasa_count', 0);
                 $anakCount = (int) request()->query('anak_count', 0);
-                $vehicleType = request()->query('vehicle_type');
-                $vehicleCount = (int) request()->query('vehicle_count', 0);
+                // Support multiple vehicle types passed from the search step
+                $vehicleTypes = (array) request()->query('vehicle_types', []);
+                $vehicleCounts = (array) request()->query('vehicle_counts', []);
+                $vehicleCounts = array_map(fn($v) => (int) $v, $vehicleCounts);
+                // legacy single values (for backward compatibility)
+                $vehicleType = $vehicleTypes[0] ?? null;
+                $vehicleCount = (int) ($vehicleCounts[0] ?? 0);
                 $totalPrice = request()->query('total_price');
             @endphp
 
             <!-- Detail Pemesanan -->
-            <div class="card border-0 shadow-sm mb-4">
-                <div class="card-header bk-card-header">Detail Pemesanan</div>
+            <div class="booking-detail-card mb-4">
+                <div class="bk-card-header">Detail Pemesanan</div>
                 <div class="card-body">
                     <div class="mb-3">
                         <div class="d-flex align-items-start gap-3">
@@ -58,6 +63,14 @@
                             </div>
                         </div>
                     </div>
+
+                    @if(session('booking_id'))
+                        <div class="mb-3 text-center">
+                            <a href="{{ route('book_ticket.download', session('booking_id')) }}" target="_blank" class="btn bk-btn-primary w-50 rounded-pill">
+                                Download E-Ticket
+                            </a>
+                        </div>
+                    @endif
 
                     <div class="mb-2">
                         <div class="bk-detail-row">
@@ -77,7 +90,15 @@
 
                         <div class="bk-detail-row">
                             <div><span class="fw-semibold">Kendaraan</span><div class="bk-small text-muted-2">Tipe & jumlah kendaraan</div></div>
-                            <div class="text-end">{{ $vehicleType ? $vehicleType . ' × ' . $vehicleCount : 'Tidak membawa kendaraan' }}</div>
+                            <div class="text-end">
+                                @if(count($vehicleTypes))
+                                    @foreach($vehicleTypes as $i => $vt)
+                                        <div>{{ $vt }} × {{ $vehicleCounts[$i] ?? 0 }}</div>
+                                    @endforeach
+                                @else
+                                    Tidak membawa kendaraan
+                                @endif
+                            </div>
                         </div>
 
                         <div class="bk-detail-row" style="border-bottom:none; padding-top:0.8rem;">
@@ -89,8 +110,8 @@
             </div>
 
             <!-- Upload Bukti Pembayaran -->
-            <div class="card border-0 shadow-sm">
-                <div class="card-header bk-card-header">Upload Bukti Pembayaran</div>
+            <div class="booking-detail-card">
+                <div class="bk-card-header">Upload Bukti Pembayaran</div>
                 <div class="card-body">
                     <form id="paymentForm" action="{{ route('book_ticket.confirm') }}" method="POST" enctype="multipart/form-data">
                         @csrf
@@ -99,6 +120,11 @@
                         <input type="hidden" name="departure_time" value="{{ $departureTime }}">
                         <input type="hidden" name="dewasa_count" value="{{ $dewasaCount }}">
                         <input type="hidden" name="anak_count" value="{{ $anakCount }}">
+                        @foreach($vehicleTypes as $i => $vt)
+                            <input type="hidden" name="vehicle_types[]" value="{{ $vt }}">
+                            <input type="hidden" name="vehicle_counts[]" value="{{ $vehicleCounts[$i] ?? 0 }}">
+                        @endforeach
+                        {{-- legacy single fields --}}
                         <input type="hidden" name="vehicle_type" value="{{ $vehicleType }}">
                         <input type="hidden" name="vehicle_count" value="{{ $vehicleCount }}">
                         <input type="hidden" name="total_price" value="{{ $totalPrice }}">

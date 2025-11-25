@@ -26,8 +26,14 @@ Route::middleware(['auth'])->group(function () {
 
 Route::get('/find_ticket', fn() => view('user.find_ticket'))->name('find_ticket');
 
-Route::get('/book_ticket', fn() => view('user.book_ticket'))->name('book_ticket');
+Route::get('/book_ticket', fn() => view('user.book_ticket'))
+    ->name('book_ticket')
+    ->middleware(['auth', \App\Http\Middleware\EnsureProfileComplete::class]);
 Route::post('/book_ticket/confirm', [App\Http\Controllers\BookingController::class, 'confirm'])->name('book_ticket.confirm');
+
+Route::get('/book_ticket/download/{id}', [App\Http\Controllers\BookingController::class, 'downloadTicket'])
+    ->name('book_ticket.download')
+    ->middleware(['auth', \App\Http\Middleware\EnsureProfileComplete::class]);
 
 Route::get('/user_detail', fn() => view('user.user_detail'))->name('user_detail');
 
