@@ -37,6 +37,3 @@ Route::post('/firebase/verify', [AuthController::class, 'verifyFirebase'])->name
 
 
 // Route::get('/home', [HomeController::class, 'index'])->name('home');
-
-
-

@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 class HomeController extends Controller
 {
     /**
-     * 🔹 Menampilkan halaman utama beserta data pelabuhan, stok tiket, jenis penumpang, dan kendaraan
+     * Menampilkan halaman utama beserta data pelabuhan, stok tiket, jenis penumpang, dan kendaraan
      */
     public function index()
     {
@@ -61,7 +61,7 @@ class HomeController extends Controller
     }
 
     /**
-     * 🔹 Ambil harga tiket otomatis berdasarkan asal, tujuan, dan jenis (penumpang / kendaraan)
+     * Ambil harga tiket otomatis berdasarkan asal, tujuan, dan jenis (penumpang / kendaraan)
      */
     public function getPrice(Request $request)
     {
