@@ -61,6 +61,7 @@
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0" style="border-radius: 8px;">
                             <li><a class="dropdown-item fw-500" href="{{ route('profile') }}">Profile</a></li>
+                            <li><a class="dropdown-item fw-500" href="{{ route('history') }}">History</a></li>
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
