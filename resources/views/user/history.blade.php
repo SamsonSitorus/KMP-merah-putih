@@ -19,6 +19,15 @@
                     <p class="text-muted mb-2">{{ $user->email }}</p>
                 </div>
             </div>
+            <p>Status: 
+                <strong>{{ $latest ? ucfirst($latest->status) : '-' }}</strong>
+            </p>
+            <p>
+                Jika Status <strong>Berhasil</strong>, pindah ke laman berhasil untuk mengunduh tiket Anda.
+            </p>
+            <p>
+                Jika Status <strong>Gagal</strong>, coba pesan lagi.
+            </p>
             <ul class="nav nav-tabs mt-4 mb-4">
                 <li class="nav-item">
                     <a class="nav-link {{ $status === 'berhasil' ? 'active' : '' }}"
@@ -49,7 +58,8 @@
                         <table class="table table-borderless mb-0">
                             <thead>
                                 <tr class="text-muted small">
-                                    <th>Booking ID</th>
+                                    <th>Pelabuhan Asal</th>
+                                    <th>Pelabuhan Tujuan</th>
                                     <th>Tanggal</th>
                                     <th>Status</th>
                                     <!-- <th>Aksi</th> -->
@@ -57,7 +67,8 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>{{ $b->id }}</td>
+                                    <td>{{ $b->ticketStock->originPort->name ?? '-' }}</td>
+                                    <td>{{ $b->ticketStock->destinationPort->name ?? '-' }}</td>
                                     <td>{{ $b->created_at->format('d M Y') }}</td>
                                     <td>{{ ucfirst($b->status) }}</td>
                                     <td>

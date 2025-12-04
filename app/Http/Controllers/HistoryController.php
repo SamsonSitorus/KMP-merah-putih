@@ -14,11 +14,18 @@ class HistoryController extends Controller
         {
             $user = Auth::user();
             $detail = $user->detail;
-            $booking = Booking::where('user_id', $user->id)
+            $booking = Booking::with([
+                                'ticketStock.originPort',
+                                'ticketStock.destinationPort'
+                            ])
+                            ->where('user_id', $user->id)
                             ->where('status', $status)
                             ->orderBy('created_at', 'desc')
                             ->get();
-
-            return view('user.history', compact('user', 'detail', 'booking', 'status'));
+            $latest = Booking::where('user_id', auth()->id())
+                            ->latest()
+                            ->first();
+            
+            return view('user.history', compact('user', 'detail', 'booking', 'status','latest'));
         }
 }

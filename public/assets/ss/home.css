@@ -173,4 +173,8 @@ body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
 .booking-detail-card .bk-card-header { background: linear-gradient(90deg,#0077d6 0%,#00a3ff 100%); color:#fff; padding:.9rem 1rem; border-radius:10px; margin-bottom:.6rem; }
 .booking-detail-card .bk-detail-row { padding:.6rem 0; border-bottom:1px dashed rgba(15,23,36,0.04); }
 .booking-detail-card .bk-price { font-size:1.08rem; font-weight:900; color:var(--accent); }
+.modal-content {
+    max-height: 80vh;
+    overflow-y: auto;
+}
 
