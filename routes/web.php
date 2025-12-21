@@ -10,10 +10,12 @@ use App\Http\Controllers\HistoryController;
 
 
 /*Route Login */
-Route::get('/login', fn() => view('auth.login'))->name('login');
-Route::post('/firebase/logout', [Authcontroller::class,'logout'])->name('logout');
+Route::get('/login', [Authcontroller::class,'showLoginForm'])->name('login');
+Route::get('/register', [Authcontroller::class,'showRegisterForm'])->name('register');
+Route::post('/verify/logout', [Authcontroller::class,'logout'])->name('logout');
+Route::post('/Verify/register', [AuthController::class, 'register'])->name('verify.register');
+Route::post('/verify/verify', [AuthController::class, 'login'])->name('Verify.login');
 
-Route::get('/register', fn() => view('auth.auth-register'))->name('register');
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/get-price', [HomeController::class, 'getPrice'])->name('get.price');
@@ -49,9 +51,6 @@ Route::get('/book_ticket/download/{id}', [App\Http\Controllers\BookingController
 
 Route::get('/user_detail', fn() => view('user.user_detail'))->name('user_detail');
 
-Route::post('/login', [Authcontroller::class,'login']);
-Route::post('/firebase/register', [AuthController::class, 'register'])->name('firebase.register');
-Route::post('/firebase/verify', [AuthController::class, 'verifyFirebase'])->name('firebase.verify');
 
 
 // Route::get('/home', [HomeController::class, 'index'])->name('home');

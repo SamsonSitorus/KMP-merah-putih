@@ -12,7 +12,6 @@ class User extends Authenticatable
 
     protected $fillable = [
         'name',
-        'firebase_uid',
         'email',
         'phone_number',
         'role',

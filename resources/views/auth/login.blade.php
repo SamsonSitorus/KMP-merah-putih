@@ -21,15 +21,17 @@
           <p class="mb-4">Please sign-in to your account and start the adventure</p>
 
           {{-- Alert jika login gagal --}}
-          @if (session('failed'))
-            <div class="alert alert-danger">{{ session('failed') }}</div>
-          @endif
+         @if ($errors->any())
+          <div class="alert alert-danger">
+            {{ $errors->first() }}
+          </div>
+        @endif
 
-          <form id="formLogin">
-            @csrf
+          <form id="formLogin" method="POST" action="{{ route('Verify.login') }}">
+          @csrf
             <!-- Email -->
             <div class="mb-3">
-              <label for="email" class="form-label">Email or Username</label>
+              <label for="email" class="form-label">Email</label>
               <input
                 type="text"
                 class="form-control @error('email') is-invalid @enderror"
@@ -101,14 +103,10 @@
   </div>
 </div>
 @endsection  
-@push('scripts')
-  {{-- Import file JavaScript eksternal --}}
-  <script type="module" src="{{ asset('assets/js/login.js') }}"></script>
-  {{-- Kirim route dan token ke JS --}}
-  <script>
-    window.Laravel = {
-      verifyUrl: "{{ route('firebase.verify') }}",
-      csrfToken: "{{ csrf_token() }}",
-    };
-  </script>
-@endpush  
+<script>
+document.getElementById('formLogin').addEventListener('submit', function () {
+    document.getElementById('loginBtn').disabled = true;
+    document.getElementById('btnText').classList.add('d-none');
+    document.getElementById('btnLoading').classList.remove('d-none');
+});
+</script>
