@@ -32,7 +32,9 @@
       //  Login ke Firebase
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
-      const token = await user.getIdToken(); // ambil token login firebase
+  // Force-refresh the ID token to avoid expired-token cases during debugging
+  const token = await user.getIdToken(true); // ambil token login firebase (force refresh)
+  console.debug('Firebase ID token (first 64 chars):', token && token.substring ? token.substring(0,64) : token);
 
       //  Kirim token ke server Laravel
       const response = await fetch(window.Laravel.verifyUrl, {
@@ -57,7 +59,7 @@
 
       if (response.ok) {
         window.showAlert("Login berhasil!", 'success', { title: 'Sukses' });
-        window.location.href = "/home";
+        window.location.href = "/";
       } else {
         window.showAlert("Login gagal: " + (data.message || "Token tidak valid"), 'error', { title: 'Error' });
       }

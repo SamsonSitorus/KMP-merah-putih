@@ -32,7 +32,7 @@ return new class extends Migration
 
             // Cegah duplikasi kombinasi stok & tipe
             $table->unique(['ticket_stock_id', 'passenger_type', 'vehicle_type']);
-        });
+    });
     }
 
     /**

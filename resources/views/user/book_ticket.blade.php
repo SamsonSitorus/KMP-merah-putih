@@ -2,7 +2,6 @@
 
 @section('content')
 <style>
-    /* Booking page small UI polish */
     .bk-card-header {
         background: linear-gradient(90deg,#0077d6 0%,#00a3ff 100%);
         color: #fff;
@@ -38,95 +37,155 @@
                 $departureTime = request()->query('departure_time');
                 $dewasaCount = (int) request()->query('dewasa_count', 0);
                 $anakCount = (int) request()->query('anak_count', 0);
-                $vehicleType = request()->query('vehicle_type');
-                $vehicleCount = (int) request()->query('vehicle_count', 0);
+                // Support multiple vehicle types passed from the search step
+                $vehicleTypes = (array) request()->query('vehicle_types', []);
+                $vehicleCounts = (array) request()->query('vehicle_counts', []);
+                $vehicleCounts = array_map(fn($v) => (int) $v, $vehicleCounts);
+                // legacy single values (for backward compatibility)
+                $vehicleType = $vehicleTypes[0] ?? null;
+                $vehicleCount = (int) ($vehicleCounts[0] ?? 0);
                 $totalPrice = request()->query('total_price');
             @endphp
 
             <!-- Detail Pemesanan -->
-            <div class="card border-0 shadow-sm mb-4">
-                <div class="card-header bk-card-header">Detail Pemesanan</div>
+            <div class="booking-detail-card mb-4">
+                <div class="bk-card-header">Detail Pemesanan</div>
                 <div class="card-body">
-                    <div class="mb-3">
-                        <div class="d-flex align-items-start gap-3">
-                            <div style="width:64px; height:64px; background:linear-gradient(135deg,#e6f5ff,#fff); border-radius:12px; display:flex; align-items:center; justify-content:center; box-shadow:0 6px 18px rgba(0,0,0,0.06);">
-                                <img src="{{ asset('assets/img/ticket_icon.png') }}" alt="ticket" style="width:38px; opacity:0.95;">
+                    <!-- @if(session('booking_id'))
+                        <div class="mb-3 text-center">
+                            <a href="{{ route('book_ticket.download', session('booking_id')) }}" target="_blank" class="btn bk-btn-primary w-50 rounded-pill">
+                                Download E-Ticket
+                            </a>
+                        </div>
+                    @endif -->
+                    <!-- <form id="paymentForm" action="{{ route('book_ticket.detail') }}" method="POST" enctype="multipart/form-data">
+                        <div class="mb-2">
+                            <div class="bk-detail-row">
+                                <div><span class="fw-semibold">Ticket Stock ID</span><div class="bk-small text-muted-2">ID untuk referensi pembayaran</div></div>
+                                <div class="text-end">{{ $ticketStockId ?? '-' }}</div>
                             </div>
-                            <div>
-                                <div class="bk-field-label">Rincian Pemesanan</div>
-                                <div class="bk-small">Mohon cek kembali detail sebelum mengunggah bukti pembayaran.</div>
+
+                            <div class="bk-detail-row">
+                                <div><span class="fw-semibold">Keberangkatan</span><div class="bk-small text-muted-2">Tanggal & waktu</div></div>
+                                <div class="text-end">{{ $departureDate ?? '-' }} <br><small class="bk-small">{{ $departureTime ?? '-' }}</small></div>
+                            </div>
+
+                            <div class="bk-detail-row">
+                                <div><span class="fw-semibold">Penumpang</span><div class="bk-small text-muted-2">Jumlah dan kategori</div></div>
+                                <div class="text-end">{{ $dewasaCount }} Dewasa<br><small class="bk-small">{{ $anakCount }} Anak-anak</small></div>
+                            </div>
+
+                            <div class="bk-detail-row">
+                                <div><span class="fw-semibold">Kendaraan</span><div class="bk-small text-muted-2">Tipe & jumlah kendaraan</div></div>
+                                <div class="text-end">
+                                    @if(count($vehicleTypes))
+                                        @foreach($vehicleTypes as $i => $vt)
+                                            <div>{{ $vt }} × {{ $vehicleCounts[$i] ?? 0 }}</div>
+                                        @endforeach
+                                    @else
+                                        Tidak membawa kendaraan
+                                    @endif
+                                </div>
+                            </div>
+
+                            <div class="bk-detail-row" style="border-bottom:none; padding-top:0.8rem;">
+                                <div><span class="fw-semibold">Total Harga</span><div class="bk-small text-muted-2">Sudah termasuk biaya administrasi</div></div>
+                                <div class="text-end bk-price">{{ $totalPrice ? 'Rp ' . number_format($totalPrice,0,',','.') : 'Rp 0' }}</div>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <a href="{{ route('home') }}" class="btn btn-outline-secondary w-100 rounded-pill">
+                                    Kembali
+                                </a>
+                                <button type="submit" class="btn bk-btn-primary w-100 rounded-pill" id="btnLanjut">
+                                    Lanjut Pembayaran
+                                </button>
                             </div>
                         </div>
-                    </div>
-
-                    <div class="mb-2">
-                        <div class="bk-detail-row">
-                            <div><span class="fw-semibold">Ticket Stock ID</span><div class="bk-small text-muted-2">ID untuk referensi pembayaran</div></div>
-                            <div class="text-end">{{ $ticketStockId ?? '-' }}</div>
-                        </div>
-
-                        <div class="bk-detail-row">
-                            <div><span class="fw-semibold">Keberangkatan</span><div class="bk-small text-muted-2">Tanggal & waktu</div></div>
-                            <div class="text-end">{{ $departureDate ?? '-' }} <br><small class="bk-small">{{ $departureTime ?? '-' }}</small></div>
-                        </div>
-
-                        <div class="bk-detail-row">
-                            <div><span class="fw-semibold">Penumpang</span><div class="bk-small text-muted-2">Jumlah dan kategori</div></div>
-                            <div class="text-end">{{ $dewasaCount }} Dewasa<br><small class="bk-small">{{ $anakCount }} Anak-anak</small></div>
-                        </div>
-
-                        <div class="bk-detail-row">
-                            <div><span class="fw-semibold">Kendaraan</span><div class="bk-small text-muted-2">Tipe & jumlah kendaraan</div></div>
-                            <div class="text-end">{{ $vehicleType ? $vehicleType . ' × ' . $vehicleCount : 'Tidak membawa kendaraan' }}</div>
-                        </div>
-
-                        <div class="bk-detail-row" style="border-bottom:none; padding-top:0.8rem;">
-                            <div><span class="fw-semibold">Total Harga</span><div class="bk-small text-muted-2">Sudah termasuk biaya administrasi</div></div>
-                            <div class="text-end bk-price">{{ $totalPrice ? 'Rp ' . number_format($totalPrice,0,',','.') : 'Rp 0' }}</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Upload Bukti Pembayaran -->
-            <div class="card border-0 shadow-sm">
-                <div class="card-header bk-card-header">Upload Bukti Pembayaran</div>
-                <div class="card-body">
-                    <form id="paymentForm" action="{{ route('book_ticket.confirm') }}" method="POST" enctype="multipart/form-data">
+                    </form> -->
+                    <form id="paymentForm" action="{{ route('book_ticket.detail') }}" method="POST">
                         @csrf
                         <input type="hidden" name="ticket_stock_id" value="{{ $ticketStockId }}">
                         <input type="hidden" name="departure_date" value="{{ $departureDate }}">
                         <input type="hidden" name="departure_time" value="{{ $departureTime }}">
                         <input type="hidden" name="dewasa_count" value="{{ $dewasaCount }}">
                         <input type="hidden" name="anak_count" value="{{ $anakCount }}">
-                        <input type="hidden" name="vehicle_type" value="{{ $vehicleType }}">
-                        <input type="hidden" name="vehicle_count" value="{{ $vehicleCount }}">
                         <input type="hidden" name="total_price" value="{{ $totalPrice }}">
 
-                        <div class="mb-3">
-                            <label for="payment_proof" class="form-label fw-semibold bk-field-label">Bukti Pembayaran</label>
-                            <div class="bk-file-preview" id="filePreview">
-                                <img id="fileThumb" class="bk-file-thumb" src="" alt="Preview" style="display:none;">
-                                <div class="bk-file-meta">
-                                    <div id="fileName" class="fw-semibold bk-small">Belum ada file yang dipilih</div>
-                                    <div id="fileHelp" class="bk-note">Format: JPG, PNG atau PDF. Ukuran maks 2MB.</div>
-                                </div>
+                        @foreach($vehicleTypes as $i => $vt)
+                            <input type="hidden" name="vehicle_types[]" value="{{ $vt }}">
+                            <input type="hidden" name="vehicle_counts[]" value="{{ $vehicleCounts[$i] }}">
+                        @endforeach
+                        <div class="mb-2">
+
+                            <div class="bk-detail-row">
                                 <div>
-                                    <label class="btn btn-sm bk-btn-primary" for="payment_proof" style="cursor:pointer; padding:8px 12px; border-radius:8px;">Pilih File</label>
+                                    <span class="fw-semibold">Ticket Stock ID</span>
+                                    <div class="bk-small text-muted-2">ID untuk referensi pembayaran</div>
+                                </div>
+                                <div class="text-end">{{ $ticketStockId }}</div>
+                            </div>
+
+                            <div class="bk-detail-row">
+                                <div>
+                                    <span class="fw-semibold">Keberangkatan</span>
+                                    <div class="bk-small text-muted-2">Tanggal & waktu</div>
+                                </div>
+                                <div class="text-end">
+                                    {{ $departureDate }}<br>
+                                    <small class="bk-small">{{ $departureTime }}</small>
                                 </div>
                             </div>
-                            <input type="file" class="form-control d-none" id="payment_proof" name="payment_proof" accept="image/*,.pdf" required>
-                        </div>
 
-                        <div class="mb-2">
-                            <div class="bk-small text-muted-2">Pastikan bukti pembayaran terlihat jelas. Nama file akan ditampilkan dan gambar akan diperlihatkan jika berformat gambar.</div>
-                        </div>
+                            <div class="bk-detail-row">
+                                <div>
+                                    <span class="fw-semibold">Penumpang</span>
+                                    <div class="bk-small text-muted-2">Jumlah dan kategori</div>
+                                </div>
+                                <div class="text-end">
+                                    {{ $dewasaCount }} Dewasa<br>
+                                    <small class="bk-small">{{ $anakCount }} Anak-anak</small>
+                                </div>
+                            </div>
 
-                        <button type="submit" class="btn bk-btn-primary w-100 rounded-pill" id="submitPayment">Kirim Bukti & Konfirmasi</button>
+                            <div class="bk-detail-row">
+                                <div>
+                                    <span class="fw-semibold">Kendaraan</span>
+                                    <div class="bk-small text-muted-2">Tipe & jumlah kendaraan</div>
+                                </div>
+
+                                <div class="text-end">
+                                    @if(count($vehicleTypes))
+                                        @foreach($vehicleTypes as $i => $vt)
+                                            <div>{{ $vt }} × {{ $vehicleCounts[$i] }}</div>
+                                        @endforeach
+                                    @else
+                                        Tidak membawa kendaraan
+                                    @endif
+                                </div>
+                            </div>
+
+                            <div class="bk-detail-row" style="border-bottom:none;">
+                                <div>
+                                    <span class="fw-semibold">Total Harga</span>
+                                    <div class="bk-small text-muted-2">Sudah termasuk biaya administrasi</div>
+                                </div>
+                                <div class="text-end bk-price">
+                                    Rp {{ number_format($totalPrice,0,',','.') }}
+                                </div>
+                            </div>
+
+                            <div class="d-flex gap-2">
+                                <a href="{{ route('home') }}" class="btn btn-outline-secondary w-100 rounded-pill">
+                                    Kembali
+                                </a>
+                                <button type="submit" class="btn bk-btn-primary w-100 rounded-pill" id="btnLanjut">
+                                    Lanjut Pembayaran
+                                </button>
+                            </div>
+                        </div>
                     </form>
                 </div>
             </div>
-
         </div>
     </div>
 </div>

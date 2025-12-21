@@ -1,5 +1,9 @@
 @extends('layouts.app')
 
+@php
+    use Illuminate\Support\Str;
+@endphp
+
 @section('content')
 <link rel="stylesheet" href="{{ asset('assets/ss/home.css') }}">
 
@@ -128,24 +132,33 @@
                 </div>
             </div>
 
-            <!-- Kendaraan Row -->
-            <div class="passenger-row" style="align-items: center;">
-                <div class="passenger-info">
+            <!-- Kendaraan Row (multi-select) -->
+            <div class="passenger-row" style="align-items: flex-start; gap: .5rem;">
+                <div class="passenger-info" style="flex: 1 1 320px;">
                     <h6>Kendaraan</h6>
-                    <small>Tambahkan kendaraan (opsional)</small>
+                    <small>Tambahkan satu atau lebih kendaraan (opsional)</small>
                     <div class="price-display" id="vehiclePriceDisplay">Harga: -</div>
                 </div>
-                <div class="counter-group">
-                    <select id="vehicleTypeSelect" class="form-select" style="min-width: 140px; padding: 0.4rem;">
-                        <option value="" selected>-- Pilih Kendaraan --</option>
+                <div style="flex: 1 1 320px;">
+                    <div class="vehicle-list" style="display:flex; flex-direction:column; gap:.5rem;">
                         @foreach($vehicleTypes as $vtype)
-                            <option value="{{ $vtype }}">{{ $vtype }}</option>
+                            @php
+                                $slug = Str::slug($vtype, '_');
+                            @endphp
+                            <label style="display:flex; align-items:center; gap:.5rem; justify-content:space-between;">
+                                <div style="display:flex; align-items:center; gap:.5rem;">
+                                    <input type="checkbox" class="vehicle-checkbox" data-type="{{ $vtype }}" id="vehicle_chk_{{ $slug }}">
+                                    <span>{{ $vtype }}</span>
+                                </div>
+                                <div style="display:flex; align-items:center; gap:.35rem;">
+                                    <button type="button" class="counter-btn vehicle-minus" data-type="{{ $vtype }}">−</button>
+                                    <span class="counter-display vehicle-count" data-type="{{ $vtype }}" id="count_{{ $slug }}">0</span>
+                                    <button type="button" class="counter-btn vehicle-plus" data-type="{{ $vtype }}">+</button>
+                                    <small class="vehicle-item-price" data-type="{{ $vtype }}" id="price_{{ $slug }}">-</small>
+                                </div>
+                            </label>
                         @endforeach
-                    </select>
-
-                    <button type="button" class="counter-btn" id="minusVehicle">−</button>
-                    <span id="countVehicle" class="counter-display">0</span>
-                    <button type="button" class="counter-btn" id="plusVehicle">+</button>
+                    </div>
                 </div>
             </div>
 
