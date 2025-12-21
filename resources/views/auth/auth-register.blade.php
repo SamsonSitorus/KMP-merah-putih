@@ -91,7 +91,13 @@
                     </label>
                   </div>
                 </div>
-                <button class="btn btn-primary d-grid w-100">Sign up</button>
+                <button id="registerBtn" class="btn btn-primary d-grid w-100" type="submit">
+                <span id="btnText">Register</span>
+                <span id="btnLoading" class="d-none">
+                  <span class="spinner-border spinner-border-sm me-2"></span>
+                  Loading...
+                </span>
+              </button>
               </form>
 
               <p class="text-center">

@@ -74,9 +74,16 @@
             </div>
 
             <!-- Button -->
-            <div class="mb-3">
-              <button class="btn btn-primary d-grid w-100" type="submit">Login</button>
-            </div>
+           <div class="mb-3">
+            <button id="loginBtn" class="btn btn-primary d-grid w-100" type="submit">
+              <span id="btnText">Login</span>
+              <span id="btnLoading" class="d-none">
+                <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                Loading...
+              </span>
+            </button>
+          </div>
+
           </form>
 
           <p class="text-center">

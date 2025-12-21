@@ -9,6 +9,10 @@ use App\Http\Controllers\BookingController;
 use App\Http\Controllers\HistoryController;
 
 
+<<<<<<< HEAD
+=======
+/*Route Login */
+>>>>>>> a51b4a075d0e4d1b6ce005e01035fe9e08e6e467
 Route::get('/login', fn() => view('auth.login'))->name('login');
 Route::post('/firebase/logout', [Authcontroller::class,'logout'])->name('logout');
 

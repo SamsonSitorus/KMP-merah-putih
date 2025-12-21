@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Kreait\Firebase\Factory;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
 
 class Authcontroller extends Controller
 {
@@ -16,33 +17,49 @@ class Authcontroller extends Controller
      *
      * @param \Illuminate\Http\Request $req
      */
-    public function register(Request $req){
-        // ensure local variable $request is defined for static analysis tools
-        $request = $req;
-        // Ambil data JSON dari frontend
-            $data = $request->all();
 
-            // Cek dulu apakah user sudah ada di tabel users
-            $existingUser = User::where('firebase_uid', $data['uid'])->first();
-            if ($existingUser) {
-                return response()->json([
-                    'message' => 'User sudah terdaftar di Laravel',
-                    'data' => $existingUser
-                ]);
-            }
-            // Simpan ke tabel users
-              $user = User::create([
-            'firebase_uid' => $data['uid'],
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'phone_number' => $data['phone_number'],
+    public function register(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'uid' => 'required|string',
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email',
+            'phone_number' => 'required|string|unique:users,phone_number',
+        ],
+         [
+            'email.unique' => 'Email sudah terdaftar',
+            'phone_number.unique' => 'Nomor telepon sudah terdaftar',
+            'phone_number.required' => 'Nomor telepon wajib diisi',
+            'email.required' => 'Email wajib diisi',
+        ]);
+
+        if ($validator->fails()) {  
+            return response()->json([
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        if (User::where('firebase_uid', $request->uid)->exists()) {
+            return response()->json([
+                'message' => 'User sudah terdaftar'
+            ], 409);
+        }
+
+        $user = User::create([
+            'firebase_uid' => $request->uid,
+            'name' => $request->name,
+            'email' => $request->email,
+            'phone_number' => $request->phone_number,
             'password' => null,
         ]);
-         return response()->json([
+
+        return response()->json([
             'message' => 'User registered successfully',
             'data' => $user
-        ]);
+        ], 201);
     }
+
+
     /**
      * Verify Firebase ID token and login the corresponding Laravel user
      *
