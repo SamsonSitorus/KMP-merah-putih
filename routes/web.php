@@ -9,10 +9,6 @@ use App\Http\Controllers\BookingController;
 use App\Http\Controllers\HistoryController;
 
 
-<<<<<<< HEAD
-=======
-/*Route Login */
->>>>>>> a51b4a075d0e4d1b6ce005e01035fe9e08e6e467
 Route::get('/login', fn() => view('auth.login'))->name('login');
 Route::post('/firebase/logout', [Authcontroller::class,'logout'])->name('logout');
 
@@ -55,15 +51,13 @@ Route::post('/login', [Authcontroller::class,'login']);
 Route::post('/firebase/register', [AuthController::class, 'register'])->name('firebase.register');
 Route::post('/firebase/verify', [AuthController::class, 'verifyFirebase'])->name('firebase.verify');
 
-
-
 Route::get('/admin', function () {
     return view('admin.dashboard.dashboard');
 });
 Route::get('/admin/order-list', function () {
     return view('admin.order.orderList');
 });
-// Route::get('/admin/tiket', [TiketPriceController::class, 'index']);
+Route::get('/admin/tiket', [TiketPriceController::class, 'index']);
 Route::get('/admin/order-detail', function () {
     return view('admin.order.detail_order');
 });
