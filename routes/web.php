@@ -38,5 +38,22 @@ Route::post('/firebase/verify', [AuthController::class, 'verifyFirebase'])->name
 
 // Route::get('/home', [HomeController::class, 'index'])->name('home');
 
+Route::get('/admin', function () {
+    return view('admin.dashboard.dashboard');
+});
+Route::get('/admin/order-list', function () {
+    return view('admin.order.orderList');
+});
+Route::get('/admin/tiket', function () {
+    return view('admin.tiket.index');
+});
+Route::get('/admin/order-detail', function () {
+    return view('admin.order.detail_order');
+});
+Route::get('/admin/notification', function () {
+    return view('admin.notification.index');
+});
+
+
 
 
