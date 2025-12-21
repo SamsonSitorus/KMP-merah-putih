@@ -5,7 +5,7 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\HomeController;
-
+use App\Http\Controllers\AdminController\TiketPriceController;
 Route::get('/', function () {
     return view('welcome');
 });
@@ -44,9 +44,7 @@ Route::get('/admin', function () {
 Route::get('/admin/order-list', function () {
     return view('admin.order.orderList');
 });
-Route::get('/admin/tiket', function () {
-    return view('admin.tiket.index');
-});
+Route::get('/admin/tiket', [TiketPriceController::class, 'index']);
 Route::get('/admin/order-detail', function () {
     return view('admin.order.detail_order');
 });
