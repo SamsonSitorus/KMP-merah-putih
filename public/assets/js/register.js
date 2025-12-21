@@ -1,8 +1,15 @@
+// ===============================
 // Import Firebase SDKs
+// ===============================
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
+import {
+  getAuth,
+  createUserWithEmailAndPassword
+} from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
 
-// Konfigurasi Firebase Project kamu
+// ===============================
+// Firebase config
+// ===============================
 const firebaseConfig = {
   apiKey: "AIzaSyDOGpYwwYVAjGv50tkd4Oc6OpOIIGEQACM",
   authDomain: "kmp-muara-putih.firebaseapp.com",
@@ -13,71 +20,175 @@ const firebaseConfig = {
   measurementId: "G-L614DES47M"
 };
 
-// Inisialisasi Firebase
+// ===============================
+// Init Firebase
+// ===============================
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
-// Handle register form
-document.getElementById("formAuthentication").addEventListener("submit", (e) => {
-    e.preventDefault(); // Mencegah reload halaman
+// ===============================
+// UI elements
+// ===============================
+const form = document.getElementById("formAuthentication");
+const registerBtn = document.getElementById("registerBtn");
+const btnText = document.getElementById("btnText");
+const btnLoading = document.getElementById("btnLoading");
 
-    const name = document.getElementById("name").value;
-    const email = document.getElementById("email").value;
-    const phone = document.getElementById("phone_number").value;
-    const password = document.getElementById("password").value;
-    const confirm = document.getElementById("confirm_password").value;
+// ===============================
+// Helper UI
+// ===============================
+function setLoading(isLoading) {
+  btnText.classList.toggle("d-none", isLoading);
+  btnLoading.classList.toggle("d-none", !isLoading);
+  registerBtn.disabled = isLoading;
+}
 
-    if (password !== confirm) {
-        window.showAlert("Password dan Konfirmasi Password tidak cocok!", 'warning', { title: 'Validasi' });
-        return;
+// ===============================
+// Submit handler
+// ===============================
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const name = document.getElementById("name").value.trim();
+  const email = document.getElementById("email").value.trim();
+  const phone = document.getElementById("phone_number").value.trim();
+  const password = document.getElementById("password").value;
+  const confirm = document.getElementById("confirm_password").value;
+
+  // ===============================
+  // Validasi frontend
+  // ===============================
+  if (!name || !email || !phone || !password || !confirm) {
+    window.showAlert(
+      "Semua field wajib diisi!",
+      "warning",
+      { title: "Validasi" }
+    );
+    return;
+  }
+
+  if (password !== confirm) {
+    window.showAlert(
+      "Password dan Konfirmasi Password tidak cocok!",
+      "warning",
+      { title: "Validasi" }
+    );
+    return;
+  }
+
+  setLoading(true);
+
+  let firebaseUser = null;
+
+  try {
+    // ===============================
+    // 1️⃣ Firebase Register
+    // ===============================
+    const userCredential = await createUserWithEmailAndPassword(
+      auth,
+      email,
+      password
+    );
+
+    firebaseUser = userCredential.user;
+
+    // ===============================
+    // 2️⃣ Simpan ke Laravel
+    // ===============================
+    const response = await fetch(window.Laravel.registerUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRF-TOKEN": window.Laravel.csrfToken
+      },
+      body: JSON.stringify({
+        uid: firebaseUser.uid,
+        name,
+        email,
+        phone_number: phone
+      })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      if (data.errors?.phone_number) {
+        throw { type: "phone_exists", message: data.errors.phone_number[0] };
+      }
+
+      if (data.errors?.email) {
+        throw { type: "email_exists", message: data.errors.email[0] };
+      }
+
+      throw { type: "server_error", message: data.message };
     }
 
-    createUserWithEmailAndPassword(auth, email, password)
-    .then((userCredential) => {
-        const user = userCredential.user;
-        console.log("User registered:", user);
+    // ===============================
+    // ✅ Sukses
+    // ===============================
+    window.showAlert(
+      "Registrasi berhasil! Silakan login.",
+      "success",
+      { title: "Sukses" }
+    );
 
-        // Kirim data ke Laravel
-        fetch(window.Laravel.registerUrl, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "X-CSRF-TOKEN": window.Laravel.csrfToken
-            },
-            body: JSON.stringify({
-                uid: user.uid,
-                name: name,
-                email: email,
-                phone_number: phone
-            })
-        })
-        .then(async response => {
-            const text = await response.text();
-            let data;
-            try {
-                data = JSON.parse(text);
-            } catch (e) {
-                console.error("Response bukan JSON:", text);
-                window.showAlert("Gagal simpan ke Laravel, response bukan JSON", 'error', { title: 'Server' });
-                return;
-            }
+    window.location.href = "/login";
 
-            if (response.ok) {
-                console.log("Laravel response:", data);
-                window.showAlert("Registrasi berhasil! Data tersimpan di database Laravel", 'success', { title: 'Sukses' });
-                window.location.href = "/login"; // bisa langsung pakai path
-            } else {
-                window.showAlert("Gagal registrasi: " + (data.message || "Terjadi kesalahan"), 'error', { title: 'Error' });
-            }
-        })
-        .catch(error => {
-            console.error("Error dari Laravel:", error);
-            window.showAlert("Gagal simpan ke database Laravel!", 'error', { title: 'Server' });
-        });
+  } catch (error) {
+    console.error("Register error:", error);
 
-    })
-    .catch((error) => {
-        console.error("Firebase registration error:", error);
-        window.showAlert("Gagal register di Firebase: " + error.message, 'error', { title: 'Auth' });
-    });
+    // ===============================
+    // 🔥 ROLLBACK FIREBASE
+    // ===============================
+    if (firebaseUser) {
+      try {
+        await firebaseUser.delete();
+        console.warn("Firebase user dihapus (rollback)");
+      } catch (e) {
+        console.error("Gagal rollback Firebase:", e);
+      }
+    }
+
+    // ===============================
+    // Pesan error spesifik
+    // ===============================
+    if (error.code === "auth/email-already-in-use") {
+      window.showAlert(
+        "Email sudah terdaftar. Silakan gunakan email lain.",
+        "error",
+        { title: "Email Duplikat" }
+      );
+
+    } else if (error.code === "auth/weak-password") {
+      window.showAlert(
+        "Password minimal 6 karakter.",
+        "error",
+        { title: "Password Lemah" }
+      );
+
+    } else if (error.type === "phone_exists") {
+      window.showAlert(
+        error.message,
+        "error",
+        { title: "Nomor Telepon Duplikat" }
+      );
+
+    } else if (error.type === "email_exists") {
+      window.showAlert(
+        error.message,
+        "error",
+        { title: "Email Duplikat" }
+      );
+
+    } else {
+      window.showAlert(
+        error.message || "Registrasi gagal",
+        "error",
+        { title: "Error" }
+      );
+    }
+
+  } finally {
+    setLoading(false);
+  }
 });
