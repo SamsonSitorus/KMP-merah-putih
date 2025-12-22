@@ -6,19 +6,49 @@
               <h4 class="fw-bold py-3 mb-4">Tiket Perorangan</h4>
               <!-- Examples -->
               <div class="row mb-5">
-                @foreach ($passengerPrices as $item)
-                <div class="col-md-6 col-lg-4 mb-3">
-                  <div class="card h-100">
-                    <div class="card-body">
-                      <h5 class="card-title">{{ $item->passenger_type }}</h5>
-                      <h4 class="card-text">
-                        {{ number_format($item->price) }}
-                      </h4>
-                      <a href="javascript:void(0)" class="btn btn-outline-primary">Detail</a>
-                    </div>
+
+              {{-- 🔹 Card CREATE TIKET --}}
+                  <div class="col-md-6 col-lg-4 mb-3">
+                      <div class="card h-100 border border-dashed text-center">
+                          <div class="card-body d-flex flex-column justify-content-center align-items-center">
+                              <div class="mb-3">
+                                  <i class="bx bx-plus-circle bx-lg text-primary"></i>
+                              </div>
+                              <h5 class="card-title">Tambah Tiket</h5>
+                              <p class="text-muted mb-3">Buat tiket baru</p>
+                              <a href="javascript:void(0)"
+                                class="btn btn-primary"
+                                data-bs-toggle="modal"
+                                data-bs-target="#createTiketModal">
+                                  Create Tiket
+                              </a>
+                          </div>
+                      </div>
                   </div>
-                </div>
-                @endforeach
+
+                  {{-- 🔹 Card PASSENGER --}}
+                  @foreach ($passengerPrices as $item)
+                      <div class="col-md-6 col-lg-4 mb-3">
+                          <div class="card h-100">
+                              <div class="card-body">
+                                  <h5 class="card-title">{{ $item->passenger_type }}</h5>
+                                  <h4 class="card-text">
+                                      Rp {{ number_format($item->price, 0, ',', '.') }}
+                                  </h4>
+                                  <button class="btn btn-outline-primary btn-detail"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#updateTiketModal"
+                                        data-id="{{ $item->id }}"
+                                        data-type="passenger"
+                                        data-passenger="{{ $item->passenger_type }}"
+                                        data-price="{{ $item->price }}">
+                                        Detail
+                                    </button>
+                              </div>
+                          </div>
+                      </div>
+                  @endforeach
+
               </div>
               <!-- Examples -->
 
@@ -36,7 +66,15 @@
                       <h4 class="card-text">
                         {{ number_format($item->price) }}
                       </h4>
-                      <a href="javascript:void(0)" class="btn btn-outline-primary">Detail</a>
+                      <button class="btn btn-outline-primary btn-detail"
+                            data-bs-toggle="modal"
+                            data-bs-target="#updateTiketModal"
+                            data-id="{{ $item->id }}"
+                            data-type="vehicle"
+                            data-vehicle="{{ $item->vehicle_type }}"
+                            data-price="{{ $item->price }}">
+                            Detail
+                        </button>
                     </div>
                   </div>
                 </div>
@@ -48,5 +86,165 @@
              
               <!--/ Card layout -->
             </div>
+
+
+            <!-- Modal Create Tiket -->
+    <div class="modal fade" id="createTiketModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <form action="{{ route('admin.tiket.store') }}" method="POST" class="modal-content">
+            @csrf
+
+            <div class="modal-header">
+                <h5 class="modal-title">Tambah Tiket</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+                {{-- Type --}}
+                <div class="mb-3">
+                    <label class="form-label">Jenis Tiket</label>
+                    <select name="type" class="form-select" required>
+                        <option value="">-- Pilih --</option>
+                        <option value="passenger">Passenger</option>
+                        <option value="vehicle">Vehicle</option>
+                    </select>
+                </div>
+
+                {{-- Passenger --}}
+                <div class="mb-3 d-none" id="passengerField">
+                    <label class="form-label">Passenger Type</label>
+                    <input type="text" name="passenger_type" class="form-control"
+                           placeholder="Dewasa / Anak">
+                </div>
+
+                {{-- Vehicle --}}
+                <div class="mb-3 d-none" id="vehicleField">
+                    <label class="form-label">Vehicle Type</label>
+                    <input type="text" name="vehicle_type" class="form-control"
+                           placeholder="Motor / Mobil">
+                </div>
+
+                {{-- Price --}}
+                <div class="mb-3">
+                    <label class="form-label">Harga</label>
+                    <input type="number" name="price" class="form-control" required>
+                </div>
+
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                    Batal
+                </button>
+                <button type="submit" class="btn btn-primary">
+                    Simpan
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal Detail Tiket -->
+<div class="modal fade" id="updateTiketModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <form method="POST" action="{{ route('admin.tiket.update') }}" class="modal-content">
+            @csrf
+            @method('PUT')
+
+            <input type="hidden" name="id" id="modal_id">
+            <input type="hidden" name="type" id="modal_type">
+
+            <div class="modal-header">
+                <h5 class="modal-title">Update Tiket</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+
+                {{-- Passenger --}}
+                <div class="mb-3 d-none" id="passengerField">
+                    <label class="form-label">Passenger Type</label>
+                    <input type="text" name="passenger_type"
+                        id="modal_passenger"
+                        class="form-control">
+                </div>
+
+                {{-- Vehicle --}}
+                <div class="mb-3 d-none" id="vehicleField">
+                    <label class="form-label">Vehicle Type</label>
+                    <input type="text" name="vehicle_type"
+                        id="modal_vehicle"
+                        class="form-control">
+                </div>
+
+                {{-- Price --}}
+                <div class="mb-3">
+                    <label class="form-label">Harga</label>
+                    <input type="number" name="price"
+                        id="modal_price"
+                        class="form-control" required>
+                </div>
+
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                    Batal
+                </button>
+                <button type="submit" class="btn btn-primary">
+                    Simpan Perubahan
+                </button>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+
+//java script
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+          const typeSelect = document.querySelector('select[name="type"]');
+          const passengerField = document.getElementById('passengerField');
+          const vehicleField = document.getElementById('vehicleField');
+
+          typeSelect.addEventListener('change', function () {
+              passengerField.classList.toggle('d-none', this.value !== 'passenger');
+              vehicleField.classList.toggle('d-none', this.value !== 'vehicle');
+          });
+      });
+
+      //js for modal update
+      document.addEventListener('DOMContentLoaded', function () {
+          document.querySelectorAll('.btn-detail').forEach(btn => {
+              btn.addEventListener('click', function () {
+
+                  const type = this.dataset.type;
+
+                  document.getElementById('modal_id').value = this.dataset.id;
+                  document.getElementById('modal_type').value = type;
+                  document.getElementById('modal_price').value = this.dataset.price;
+
+                  // Reset
+                  document.getElementById('passengerField').classList.add('d-none');
+                  document.getElementById('vehicleField').classList.add('d-none');
+
+                  if (type === 'passenger') {
+                      document.getElementById('passengerField').classList.remove('d-none');
+                      document.getElementById('modal_passenger').value = this.dataset.passenger;
+                  }
+
+                  if (type === 'vehicle') {
+                      document.getElementById('vehicleField').classList.remove('d-none');
+                      document.getElementById('modal_vehicle').value = this.dataset.vehicle;
+                  }
+              });
+          });
+      });
+
+    </script>
+
+    
 
 @endsection

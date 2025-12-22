@@ -62,7 +62,12 @@ Route::get('/admin', function () {
 Route::get('/admin/order-list', [BookingAdminController::class, 'index']);
 Route::get('/admin/order-detail/{id}', [BookingAdminController::class, 'detail'])->whereNumber('id');
 Route::get('/admin/order/{id}/update-status-order', [BookingAdminController::class, 'update']);
+
 Route::get('/admin/tiket', [TiketPriceController::class, 'index']);
+Route::post('/admin/tiket/store', [TiketPriceController::class, 'store'])
+    ->name('admin.tiket.store');
+Route::put('/admin/tiket/update', [TiketPriceController::class, 'update'])
+    ->name('admin.tiket.update');
 Route::get('/admin/notification', function () {
     return view('admin.notification.index');
 });

@@ -28,4 +28,51 @@ class TiketPriceController extends Controller
             'vehiclePrices'
         ));
     }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'type'            => 'required|in:passenger,vehicle',
+            'price'           => 'required|numeric|min:0'
+        ]);
+
+        TicketPrice::create([
+            'ticket_stock_id' => 1,
+            'passenger_type'  => $request->type === 'passenger'
+                                    ? $request->passenger_type
+                                    : null,
+            'vehicle_type'    => $request->type === 'vehicle'
+                                    ? $request->vehicle_type
+                                    : null,
+            'price'           => $request->price
+        ]);
+
+        return redirect()->back()->with('success', 'Tiket berhasil dibuat');
+    }
+
+
+    public function update(Request $request)
+    {
+        $request->validate([
+            'id'    => 'required|exists:ticket_prices,id',
+            'type'  => 'required|in:passenger,vehicle',
+            'price' => 'required|numeric|min:0'
+        ]);
+
+        $data = [
+            'price' => $request->price,
+        ];
+
+        if ($request->type === 'passenger') {
+            $data['passenger_type'] = $request->passenger_type;
+            $data['vehicle_type'] = null; // 🔑 PENTING
+        } else {
+            $data['vehicle_type'] = $request->vehicle_type;
+            $data['passenger_type'] = null; // 🔑 PENTING
+        }
+
+        TicketPrice::where('id', $request->id)->update($data);
+
+        return redirect()->back()->with('success', 'Tiket berhasil diperbarui');
+    }
 }
