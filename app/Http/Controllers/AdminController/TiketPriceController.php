@@ -75,4 +75,15 @@ class TiketPriceController extends Controller
 
         return redirect()->back()->with('success', 'Tiket berhasil diperbarui');
     }
+
+    public function destroy(Request $request)
+    {
+        $request->validate([
+            'id' => 'required|exists:ticket_prices,id'
+        ]);
+
+        TicketPrice::where('id', $request->id)->delete();
+
+        return redirect()->back()->with('success', 'Tiket berhasil dihapus');
+    }
 }

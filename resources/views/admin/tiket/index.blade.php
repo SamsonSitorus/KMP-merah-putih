@@ -28,25 +28,34 @@
 
                   {{-- 🔹 Card PASSENGER --}}
                   @foreach ($passengerPrices as $item)
-                      <div class="col-md-6 col-lg-4 mb-3">
-                          <div class="card h-100">
-                              <div class="card-body">
-                                  <h5 class="card-title">{{ $item->passenger_type }}</h5>
-                                  <h4 class="card-text">
-                                      Rp {{ number_format($item->price, 0, ',', '.') }}
-                                  </h4>
-                                  <button class="btn btn-outline-primary btn-detail"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#updateTiketModal"
-                                        data-id="{{ $item->id }}"
-                                        data-type="passenger"
-                                        data-passenger="{{ $item->passenger_type }}"
-                                        data-price="{{ $item->price }}">
-                                        Detail
-                                    </button>
-                              </div>
+                  <div class="col-md-6 col-lg-4 mb-3">
+                      <div class="card h-100 position-relative">
+
+                          {{-- ❌ Delete Icon --}}
+                          <button class="btn btn-sm btn-icon btn-danger position-absolute top-0 end-0 m-2 btn-delete"
+                              data-bs-toggle="modal"
+                              data-bs-target="#deleteTiketModal"
+                              data-id="{{ $item->id }}"
+                              data-name="{{ $item->passenger_type }}">
+                              <i class="bx bx-x"></i>
+                          </button>
+
+                          <div class="card-body">
+                              <h5 class="card-title">{{ $item->passenger_type }}</h5>
+                              <h4>Rp {{ number_format($item->price, 0, ',', '.') }}</h4>
+
+                              <button class="btn btn-outline-primary btn-detail"
+                                  data-bs-toggle="modal"
+                                  data-bs-target="#updateTiketModal"
+                                  data-id="{{ $item->id }}"
+                                  data-type="passenger"
+                                  data-passenger="{{ $item->passenger_type }}"
+                                  data-price="{{ $item->price }}">
+                                  Detail
+                              </button>
                           </div>
                       </div>
+                  </div>
                   @endforeach
 
               </div>
@@ -59,26 +68,35 @@
               <!-- Examples -->
               <div class="row mb-5">
                  @foreach ($vehiclePrices as $item)
-                <div class="col-md-6 col-lg-4 mb-3">
-                  <div class="card h-100">
-                    <div class="card-body">
-                      <h5 class="card-title">{{ $item->vehicle_type }}</h5>
-                      <h4 class="card-text">
-                        {{ number_format($item->price) }}
-                      </h4>
-                      <button class="btn btn-outline-primary btn-detail"
-                            data-bs-toggle="modal"
-                            data-bs-target="#updateTiketModal"
-                            data-id="{{ $item->id }}"
-                            data-type="vehicle"
-                            data-vehicle="{{ $item->vehicle_type }}"
-                            data-price="{{ $item->price }}">
-                            Detail
-                        </button>
-                    </div>
+                  <div class="col-md-6 col-lg-4 mb-3">
+                      <div class="card h-100 position-relative">
+
+                          {{-- ❌ Delete Icon --}}
+                          <button class="btn btn-sm btn-icon btn-danger position-absolute top-0 end-0 m-2 btn-delete"
+                              data-bs-toggle="modal"
+                              data-bs-target="#deleteTiketModal"
+                              data-id="{{ $item->id }}"
+                              data-name="{{ $item->vehicle_type }}">
+                              <i class="bx bx-x"></i>
+                          </button>
+
+                          <div class="card-body">
+                              <h5 class="card-title">{{ $item->vehicle_type }}</h5>
+                              <h4>Rp {{ number_format($item->price, 0, ',', '.') }}</h4>
+
+                              <button class="btn btn-outline-primary btn-detail"
+                                  data-bs-toggle="modal"
+                                  data-bs-target="#updateTiketModal"
+                                  data-id="{{ $item->id }}"
+                                  data-type="vehicle"
+                                  data-vehicle="{{ $item->vehicle_type }}"
+                                  data-price="{{ $item->price }}">
+                                  Detail
+                              </button>
+                          </div>
+                      </div>
                   </div>
-                </div>
-                @endforeach
+                  @endforeach
               </div>
             
               <!-- Examples -->
@@ -113,8 +131,11 @@
                 {{-- Passenger --}}
                 <div class="mb-3 d-none" id="passengerField">
                     <label class="form-label">Passenger Type</label>
-                    <input type="text" name="passenger_type" class="form-control"
-                           placeholder="Dewasa / Anak">
+                    <select name="passenger_type" class="form-select" required>
+                        <option value="">-- Pilih --</option>
+                        <option value="Dewasa">Dewasa</option>
+                        <option value="Bayi">Bayi</option>
+                    </select>
                 </div>
 
                 {{-- Vehicle --}}
@@ -200,6 +221,41 @@
     </div>
 </div>
 
+<!-- Modal Delete -->
+ <div class="modal fade" id="deleteTiketModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <form method="POST" action="{{ route('admin.tiket.delete') }}" class="modal-content">
+            @csrf
+            @method('DELETE')
+
+            <input type="hidden" name="id" id="delete_ticket_id">
+
+            <div class="modal-header">
+                <h5 class="modal-title text-danger">Hapus Tiket</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+                <p>
+                    Yakin ingin menghapus tiket
+                    <strong id="delete_ticket_name"></strong> ?
+                </p>
+                <small class="text-muted">Data yang dihapus tidak bisa dikembalikan.</small>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary"
+                    data-bs-dismiss="modal">
+                    Batal
+                </button>
+                <button type="submit" class="btn btn-danger">
+                    Ya, Hapus
+                </button>
+            </div>
+
+        </form>
+    </div>
+</div>
 
 //java script
 
@@ -242,6 +298,16 @@
               });
           });
       });
+
+      //js for delete ticket
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('.btn-delete').forEach(btn => {
+                btn.addEventListener('click', function () {
+                    document.getElementById('delete_ticket_id').value = this.dataset.id;
+                    document.getElementById('delete_ticket_name').innerText = this.dataset.name;
+                });
+            });
+        });
 
     </script>
 

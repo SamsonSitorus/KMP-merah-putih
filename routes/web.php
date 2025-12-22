@@ -68,6 +68,9 @@ Route::post('/admin/tiket/store', [TiketPriceController::class, 'store'])
     ->name('admin.tiket.store');
 Route::put('/admin/tiket/update', [TiketPriceController::class, 'update'])
     ->name('admin.tiket.update');
+Route::delete('/admin/tiket/delete', [TiketPriceController::class, 'destroy'])
+    ->name('admin.tiket.delete');
+
 Route::get('/admin/notification', function () {
     return view('admin.notification.index');
 });
