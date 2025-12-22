@@ -16,7 +16,8 @@ document.addEventListener('DOMContentLoaded', function() {
     let anak = 0;
     let dewasaPrice = 0;
     let anakPrice = 0;
-    // Vehicle booking state (support multiple vehicle types)
+    // Vehicle bocls
+    // oking state (support multiple vehicle types)
     // vehicleSelections: { 'Motor Bebek': count, ... }
     let vehicleSelections = {};
     // vehiclePrices: { 'Motor Bebek': unitPrice, ... }
