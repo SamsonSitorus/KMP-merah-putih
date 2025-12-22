@@ -10,9 +10,13 @@ class TicketStockSeeder extends Seeder
 {
     public function run()
     {
-        // If no ticket stocks exist, create sample stocks.
+        /**
+         * ==========================
+         * TICKET STOCK
+         * ==========================
+         */
         if (TicketStock::count() === 0) {
-            $sampleStocks = [
+            $stocks = [
                 [
                     'origin_port_id' => 1,
                     'destination_port_id' => 2,
@@ -31,37 +35,68 @@ class TicketStockSeeder extends Seeder
                 ],
             ];
 
-            foreach ($sampleStocks as $data) {
-                TicketStock::create($data);
+            foreach ($stocks as $stock) {
+                TicketStock::create($stock);
             }
         }
 
-        // Create default prices (idempotent)
-        $vehicles = [
-            ['vehicle_type' => 'Motor', 'price' => 20000],
-            ['vehicle_type' => 'Mobil Sedan', 'price' => 100000],
-            ['vehicle_type' => 'Mobil Box', 'price' => 150000],
-            ['vehicle_type' => 'Mobil Truck', 'price' => 250000],
-            ['vehicle_type' => 'Mobil SUV', 'price' => 300000],
+        /**
+         * ==========================
+         * HARGA PENUMPANG
+         * ==========================
+         */
+        $passengers = [
+            ['passenger_type' => 'Dewasa', 'price' => 13000],
+            ['passenger_type' => 'Bayi',   'price' => 2000],
         ];
 
-        foreach (TicketStock::all() as $stock) {
-            // Passenger prices
-            TicketPrice::firstOrCreate(
-                ['ticket_stock_id' => $stock->id, 'passenger_type' => 'Dewasa'],
-                ['price' => 50000]
-            );
+        /**
+         * ==========================
+         * HARGA KENDARAAN
+         * ==========================
+         */
+        $vehicles = [
+            ['vehicle_type' => 'Sepeda Dayung', 'price' => 13000],
+            ['vehicle_type' => 'Sepeda Motor', 'price' => 25000],
+            ['vehicle_type' => 'Becak / Sepeda Motor > 500 cc', 'price' => 50000],
+            ['vehicle_type' => 'Mini Bus Roda 4', 'price' => 180000],
+            ['vehicle_type' => 'Pick Up', 'price' => 190000],
+            ['vehicle_type' => 'Bus Sedang Roda 4', 'price' => 240000],
+            ['vehicle_type' => 'Kendaraan Barang Roda 4', 'price' => 250000],
+        ];
 
-            TicketPrice::firstOrCreate(
-                ['ticket_stock_id' => $stock->id, 'passenger_type' => 'Anak-anak'],
-                ['price' => 30000]
-            );
+        /**
+         * ==========================
+         * INSERT PRICES
+         * ==========================
+         */
+        foreach (TicketStock::all() as $stock) {
+
+            // Passenger prices
+            foreach ($passengers as $p) {
+                TicketPrice::firstOrCreate(
+                    [
+                        'ticket_stock_id' => $stock->id,
+                        'passenger_type' => $p['passenger_type'],
+                        'vehicle_type' => null,
+                    ],
+                    [
+                        'price' => $p['price'],
+                    ]
+                );
+            }
 
             // Vehicle prices
-            foreach ($vehicles as $vehicle) {
+            foreach ($vehicles as $v) {
                 TicketPrice::firstOrCreate(
-                    ['ticket_stock_id' => $stock->id, 'vehicle_type' => $vehicle['vehicle_type']],
-                    ['price' => $vehicle['price']]
+                    [
+                        'ticket_stock_id' => $stock->id,
+                        'passenger_type' => null,
+                        'vehicle_type' => $v['vehicle_type'],
+                    ],
+                    [
+                        'price' => $v['price'],
+                    ]
                 );
             }
         }
