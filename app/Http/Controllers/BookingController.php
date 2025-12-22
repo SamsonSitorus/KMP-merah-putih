@@ -95,8 +95,6 @@ class BookingController extends Controller
             'vehicle_types' => 'nullable|array',
             'vehicle_counts' => 'nullable|array',
         ]);
-
-        // 1. SIMPAN BOOKING
         $user = Auth::user();
         $booking = Booking::create([
             'user_id' => $user ? $user->id : null,
@@ -106,7 +104,7 @@ class BookingController extends Controller
             'dewasa_count'    => $data['dewasa_count'],
             'anak_count'      => $data['anak_count'],
             'total_price'     => $data['total_price'],
-            'status'          => 'pending', 
+            'status'          => 'menunggu_pembayaran ', 
         ]);
         if (!empty($request->vehicle_types)) {
             foreach ($request->vehicle_types as $index => $type) {
@@ -142,13 +140,10 @@ class BookingController extends Controller
 
         $booking->update([
             'payment_proof_path' => $path,
-            'status' => 'menunggu', 
+            'status' => 'menunggu_persetujuan', 
         ]);
-        // return redirect()
-        // ->route('book_ticket')
-        // ->with('message', 'Bukti pembayaran berhasil diunggah!');
         return redirect()
-        ->route('history.status', 'menunggu')
+        ->route('history.status', 'menunggu_persetujuan')
         ->with('message', 'Bukti pembayaran berhasil diunggah!');
     }
     public function cancel(Request $request)

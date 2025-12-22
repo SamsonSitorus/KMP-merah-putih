@@ -10,67 +10,95 @@ use App\Http\Controllers\HistoryController;
 use App\Http\Controllers\AdminController\TiketPriceController;
 use App\Http\Controllers\AdminController\BookingAdminController;
 
+Route::middleware('guest')->group(function () {
+    Route::get('/login', [AuthController::class,'showLoginForm'])->name('login');
+    Route::get('/register', [AuthController::class,'showRegisterForm'])->name('register');
 
-Route::get('/login', fn() => view('auth.login'))->name('login');
-Route::post('/firebase/logout', [Authcontroller::class,'logout'])->name('logout');
+    Route::post('/verify/register', [AuthController::class, 'register'])->name('verify.register');
+    Route::post('/verify/login', [AuthController::class, 'login'])->name('verify.login');
+});
 
-Route::get('/register', fn() => view('auth.auth-register'))->name('register');
+Route::post('/verify/logout', [AuthController::class,'logout'])
+    ->middleware('auth')
+    ->name('logout');
 
-Route::get('/', [HomeController::class, 'index'])->name('home');
-Route::get('/get-price', [HomeController::class, 'getPrice'])->name('get.price');
+/*
+|--------------------------------------------------------------------------
+| CUSTOMER (USER)
+|--------------------------------------------------------------------------
+*/
+Route::middleware(['auth', 'customer'])->group(function () {
 
+    Route::get('/', [HomeController::class, 'index'])->name('home');
 
-Route::middleware(['auth'])->group(function () {
+    Route::get('/get-price', [HomeController::class, 'getPrice'])->name('get.price');
+    Route::get('/find_ticket', fn() => view('user.find_ticket'))->name('find_ticket');
+
     Route::get('/profile', [ProfileController::class, 'profile'])->name('profile');
+
     Route::get('/history', [HistoryController::class, 'history'])->name('history');
     Route::get('/history/{status}', [HistoryController::class, 'history'])
-    ->name('history.status');
+        ->name('history.status');
 
+    Route::get('/book_ticket', fn() => view('user.book_ticket'))
+        ->name('book_ticket')
+        ->middleware(\App\Http\Middleware\EnsureProfileComplete::class);
+
+    Route::post('/book_ticket/detail', [BookingController::class, 'detail'])
+        ->name('book_ticket.detail');
+
+    Route::get('/book_ticket/confirm', [BookingController::class, 'showPayment'])
+        ->name('book_ticket.confirm');
+
+    Route::post('/book_ticket/confirm', [BookingController::class, 'confirm'])
+        ->name('book_ticket.confirm.payment');
+
+    Route::post('/booking/cancel', [BookingController::class, 'cancel'])
+        ->name('booking.cancel');
+
+    Route::get('/book_ticket/download/{id}', [BookingController::class, 'downloadTicket'])
+        ->name('book_ticket.download');
+
+    Route::get('/user_detail', fn() => view('user.user_detail'))
+        ->name('user_detail');
 });
 
-Route::get('/find_ticket', fn() => view('user.find_ticket'))->name('find_ticket');
+/*
+|--------------------------------------------------------------------------
+| ADMIN
+|--------------------------------------------------------------------------
+*/
+Route::middleware(['auth', 'admin'])
+    ->prefix('admin')
+    ->name('admin.')
+    ->group(function () {
 
-Route::get('/book_ticket', fn() => view('user.book_ticket'))
-    ->name('book_ticket')
-    ->middleware(['auth', \App\Http\Middleware\EnsureProfileComplete::class]);
-Route::post('/book_ticket/detail', [BookingController::class, 'detail'])->name('book_ticket.detail');
-// Route::post('/book_ticket/confirm', [App\Http\Controllers\BookingController::class, 'confirm'])->name('book_ticket.confirm');
-Route::get('/book_ticket/confirm', [BookingController::class, 'showPayment'])
-    ->name('book_ticket.confirm');
-Route::post('/book_ticket/confirm', [BookingController::class, 'confirm'])
-    ->name('book_ticket.confirm.payment');
+        Route::get('/dashboard', fn() =>
+            view('admin.dashboard.dashboard')
+        )->name('dashboard');
 
-Route::post('/booking/cancel', [BookingController::class, 'cancel'])
-    ->name('booking.cancel');
+        Route::get('/order-list', [BookingAdminController::class, 'index'])
+            ->name('orders.index');
 
-Route::get('/book_ticket/download/{id}', [App\Http\Controllers\BookingController::class, 'downloadTicket'])
-    ->name('book_ticket.download')
-    ->middleware(['auth', \App\Http\Middleware\EnsureProfileComplete::class]);
+        Route::get('/order-detail/{id}', [BookingAdminController::class, 'detail'])
+            ->whereNumber('id')
+            ->name('orders.detail');
 
-Route::get('/user_detail', fn() => view('user.user_detail'))->name('user_detail');
+        Route::get('/order/{id}/update-status-order', [BookingAdminController::class, 'update'])
+            ->name('orders.update-status');
 
-Route::post('/login', [Authcontroller::class,'login']);
-Route::post('/firebase/register', [AuthController::class, 'register'])->name('firebase.register');
-Route::post('/firebase/verify', [AuthController::class, 'verifyFirebase'])->name('firebase.verify');
+        Route::get('/tiket', [TiketPriceController::class, 'index'])
+            ->name('tiket.index');
 
+        Route::post('/tiket/store', [TiketPriceController::class, 'store'])
+            ->name('tiket.store');
 
-//AdminController
+        Route::put('/tiket/update', [TiketPriceController::class, 'update'])
+            ->name('tiket.update');
 
-Route::get('/admin', function () {
-    return view('admin.dashboard.dashboard');
-});
-Route::get('/admin/order-list', [BookingAdminController::class, 'index']);
-Route::get('/admin/order-detail/{id}', [BookingAdminController::class, 'detail'])->whereNumber('id');
-Route::get('/admin/order/{id}/update-status-order', [BookingAdminController::class, 'update']);
+        Route::delete('/tiket/delete', [TiketPriceController::class, 'destroy'])
+            ->name('tiket.delete');
 
-Route::get('/admin/tiket', [TiketPriceController::class, 'index']);
-Route::post('/admin/tiket/store', [TiketPriceController::class, 'store'])
-    ->name('admin.tiket.store');
-Route::put('/admin/tiket/update', [TiketPriceController::class, 'update'])
-    ->name('admin.tiket.update');
-Route::delete('/admin/tiket/delete', [TiketPriceController::class, 'destroy'])
-    ->name('admin.tiket.delete');
-
-Route::get('/admin/notification', function () {
-    return view('admin.notification.index');
+        Route::get('/notification', fn() => view('admin.notification.index'))
+            ->name('notification');
 });

@@ -36,9 +36,9 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {{ $status === 'menunggu' ? 'active' : '' }}"
-                       href="{{ route('history.status', 'menunggu') }}">
-                        Menunggu
+                    <a class="nav-link {{ $status === 'menunggu_persetujuan' ? 'active' : '' }}"
+                       href="{{ route('history.status', 'menunggu_persetujuan') }}">
+                        Menunggu Persetujuan
                     </a>
                 </li>
                 <li class="nav-item">

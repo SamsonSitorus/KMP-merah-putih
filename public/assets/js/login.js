@@ -73,8 +73,8 @@ form.addEventListener("submit", async (e) => {
     // ✅ Sukses
     window.showAlert("Login berhasil!", 'success', { title: 'Sukses' });
 
-    // 🔄 INI YANG MEMUNCULKAN ICON TAB BERPUTAR (SEPERTI GPT)
-    window.location.href = "/";
+
+    // window.location.href = "/";
 
   } catch (error) {
     console.error("Login error:", error.message);

@@ -131,9 +131,10 @@
                 {{-- Passenger --}}
                 <div class="mb-3 d-none" id="passengerField">
                     <label class="form-label">Passenger Type</label>
-                    <select name="passenger_type" class="form-select" required>
-                        <option value="">-- Pilih --</option>
+                    <select name="passenger_type" class="form-select">
+                        <option value="">-- Pilih Passenger --</option>
                         <option value="Dewasa">Dewasa</option>
+                        <option value="Anak">Anak</option>
                         <option value="Bayi">Bayi</option>
                     </select>
                 </div>
@@ -141,8 +142,16 @@
                 {{-- Vehicle --}}
                 <div class="mb-3 d-none" id="vehicleField">
                     <label class="form-label">Vehicle Type</label>
-                    <input type="text" name="vehicle_type" class="form-control"
-                           placeholder="Motor / Mobil">
+                    <select name="vehicle_type" class="form-select">
+                        <option value="">-- Pilih Kendaraan --</option>
+                        <option value="Sepeda Dayung">Sepeda Dayung</option>
+                        <option value="Sepeda Motor">Sepeda Motor</option>
+                        <option value="Becak / Sepeda Motor > 500 cc">Becak / Sepeda Motor > 500 cc</option>
+                        <option value="Mini Bus Roda 4">Mini Bus Roda 4</option>
+                        <option value="Pick Up">Pick Up</option>
+                        <option value="Bus Sedang Roda 4">Bus Sedang Roda 4</option>
+                        <option value="Kendaraan Barang Roda 4">Kendaraan Barang Roda 4</option>
+                    </select>
                 </div>
 
                 {{-- Price --}}

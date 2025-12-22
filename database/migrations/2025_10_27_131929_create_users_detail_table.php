@@ -20,7 +20,6 @@ return new class extends Migration
         $table->string('nomor_identitas');
         $table->string('kota_asal');
         $table->string('ZipCode');
-        $table->string('foto_profil')->nullable();
         $table->timestamps();
     });
     }

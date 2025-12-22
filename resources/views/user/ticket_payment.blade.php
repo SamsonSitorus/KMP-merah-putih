@@ -51,7 +51,7 @@
             <!-- <div class="bk- card-header">Upload Bukti Pembayaran</div> -->
                 <div class="card-body">
                     <form id="paymentForm" 
-                        action="{{ route('book_ticket.confirm') }}" 
+                    action="{{ route('book_ticket.confirm') }}" 
                         method="POST" 
                         enctype="multipart/form-data">
                         @csrf
@@ -68,13 +68,16 @@
                         <input type="hidden" name="vehicle_type" value="{{ $vehicleType }}">
                         <input type="hidden" name="vehicle_count" value="{{ $vehicleCount }}">
                         <input type="hidden" name="total_price" value="{{ $totalPrice }}">
+                        <label for="payment_proof" class="form-label fw-semibold bk-field-label" name="status">
+                            Status Pembayaran : {{ $booking -> status }}
+                        </label> 
                         <!-- <div class="mb-3">
                             <label class="form-label">Upload Bukti Pembayaran</label>
                             <input type="file" name="payment_proof" class="form-control" required>
                         </div> -->
                         <div class="mb-3"> 
                             <label for="payment_proof" class="form-label fw-semibold bk-field-label">
-                                Bukti Pembayaran
+                                Kirim Bukti Pembayaran
                             </label> 
                             <div class="bk-file-preview" id="filePreview"> 
                                 <img id="fileThumb" class="bk-file-thumb" src="" alt="Preview" style="display:none;"> 
