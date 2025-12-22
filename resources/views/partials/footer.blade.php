@@ -76,22 +76,8 @@
                   </div>
                   <div>
                     <h6 class="mb-1 small fw-semibold">Telepon</h6>
-                    <a href="tel:+62215550123" class="text-secondary text-decoration-none">+62 21 555 0123</a>
+                    <a href="tel:+62215550123" class="text-secondary text-decoration-none">0821-6319-2246</a>
                     <p class="small text-muted mb-0">Senin - Minggu, 08:00 - 22:00 WIB</p>
-                  </div>
-                </div>
-              </li>
-              <li class="mb-3">
-                <div class="d-flex align-items-start gap-3">
-                  <div class="contact-icon rounded-circle d-flex align-items-center justify-content-center" 
-                       style="width: 40px; height: 40px; background: rgba(0, 102, 204, 0.1);">
-                    <i class="bx bx-envelope text-primary"></i>
-                  </div>
-                  <div>
-                    <h6 class="mb-1 small fw-semibold">Email</h6>
-                    <a href="mailto:support@muaraputih.co.id" class="text-secondary text-decoration-none">
-                      support@muaraputih.co.id
-                    </a>
                   </div>
                 </div>
               </li>
@@ -103,7 +89,7 @@
                   </div>
                   <div>
                     <h6 class="mb-1 small fw-semibold">Alamat</h6>
-                    <p class="text-secondary mb-0">Jl. Pelabuhan No. 123<br>Jakarta Utara, DKI Jakarta 14450</p>
+                    <p class="text-secondary mb-0">Jl. Singa, Unte Mungkur,<br>Kabupaten Tapanuli Utara, Sumatera Utara 22476, Indonesia.</p>
                   </div>
                 </div>
               </li>
@@ -112,25 +98,21 @@
 
           <!-- Newsletter & Social -->
           <div class="col-lg-3 col-md-6">
-            <h5 class="footer-title mb-4 fw-semibold" style="color: #1a1a1a;">
-    
-            <!-- Social Media -->
+             <h5 class="footer-title mb-4 fw-semibold" style="color: #1a1a1a;">
+              <i class="bx bx-headphone me-2"></i>Ikuti kami
+            </h5>
             <div class="social-section">
-              <h6 class="fw-semibold mb-3" style="color: #1a1a1a;">Ikuti Kami</h6>
               <div class="d-flex gap-2">
                 <a href="#" class="social-btn btn-facebook d-flex align-items-center justify-content-center">
                   <i class="bx bxl-facebook"></i>
                 </a>
-                <a href="#" class="social-btn btn-twitter d-flex align-items-center justify-content-center">
-                  <i class="bx bxl-twitter"></i>
-                </a>
-                <a href="#" class="social-btn btn-instagram d-flex align-items-center justify-content-center">
+                <a href="https://www.instagram.com/kmp_muaraputih_1?igsh=M29pa250NmNrcW0z" class="social-btn btn-instagram d-flex align-items-center justify-content-center">
                   <i class="bx bxl-instagram"></i>
                 </a>
-                <a href="#" class="social-btn btn-youtube d-flex align-items-center justify-content-center">
+                <a href="https://youtube.com/@muaraputih2172?si=fwkz0VI-kcAUbeu_" class="social-btn btn-youtube d-flex align-items-center justify-content-center">
                   <i class="bx bxl-youtube"></i>
                 </a>
-                <a href="#" class="social-btn btn-whatsapp d-flex align-items-center justify-content-center">
+                <a href="https://wa.me/6282163192246?text=Halo%20saya%20ingin%20bertanya" target="_blank" class="social-btn btn-whatsapp d-flex align-items-center justify-content-center">
                   <i class="bx bxl-whatsapp"></i>
                 </a>
               </div>
