@@ -181,7 +181,7 @@
           <h6 class="m-0"><a href=" javascript:void(0)" data-bs-toggle="modal" data-bs-target="#addNewAddress">Lihat</a></h6>
         </div>
         <div class="card-body">
-          
+          <img src="{{ asset('storage/'.$order->payment_proof_path) }}" alt="Image">
         </div>
       </div>
     </div>

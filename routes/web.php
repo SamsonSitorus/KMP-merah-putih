@@ -19,11 +19,11 @@ Route::post('/verify/logout', [Authcontroller::class,'logout'])->name('logout');
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/get-price', [HomeController::class, 'getPrice'])->name('get.price');
-Route::get('/find_ticket', fn() => view('user.find_ticket'))->name('find_ticket');
 
 Route::middleware(['auth', 'customer'])->group(function () {
 
     Route::get('/profile', [ProfileController::class, 'profile'])->name('profile');
+    Route::put('/profile/update/{id}', [ProfileController::class, 'updateorcreate'])->name('profile.update');
     
     Route::get('/history', [HistoryController::class, 'history'])->name('history');
     Route::get('/history/{status}', [HistoryController::class, 'history'])
@@ -50,6 +50,8 @@ Route::middleware(['auth', 'customer'])->group(function () {
 
     Route::get('/user_detail', fn() => view('user.user_detail'))
         ->name('user_detail');
+
+    Route::get('/find_ticket', fn() => view('user.find_ticket'))->name('find_ticket');
 });
 
 Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
