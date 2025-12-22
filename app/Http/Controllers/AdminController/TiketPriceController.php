@@ -4,9 +4,9 @@ namespace App\Http\Controllers\AdminController;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Model\TicketPrice;
+use App\Models\TicketPrice;
 
-class TiketController extends Controller
+class TiketPriceController extends Controller
 {
     public function index()
     {

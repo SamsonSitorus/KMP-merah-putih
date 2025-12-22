@@ -6,11 +6,27 @@
           
   <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-6 row-gap-4">
     <div class="d-flex flex-column justify-content-center">
-      <div class="mb-1"><span class="h5">Order #32543 </span><span class="badge bg-label-success me-1 ms-2">Paid</span> <span class="badge bg-label-info">Ready to Pickup</span></div>
-      <p class="mb-0">Aug 17, <span id="orderYear">2025</span>, 5:48 (ET)</p>
+      <div class="mb-1">
+        <span class="h5">Order Tiket#{{$order->id}} </span>
+          @if($order->status == 'pending')
+              <span class="badge bg-label-warning me-1 ms-2">Pending</span>
+          @elseif($order->status == 'berhasil')
+              <span class="badge bg-label-success me-1 ms-2">Selesai</span>
+          @elseif($order->status == 'menunggu')
+              <span class="badge bg-label-info me-1 ms-2">Menunggu Persetujuan</span>
+          @elseif($order->status == 'ditolak')
+              <span class="badge bg-label-danger me-1 ms-2">Ditolak</span>
+          @elseif($order->status == 'cancel')
+              <span class="badge bg-label-danger me-1 ms-2">Dibatalkan</span>
+          @else
+              <span class="badge bg-secondary me-1 ms-2">Unknown</span>
+          @endif
+      </div>
+      <p class="mb-0">{{$order->created_at}}</p>
     </div>
     <div class="d-flex align-content-center flex-wrap gap-2">
-      <button class="btn btn-danger">Delete Order</button>
+      <a href=""><button class="btn btn-outline-danger">Tolak Pesanan</button></a>
+      <a href="/admin/order/{{$order->id}}/update-status-order"><button class="btn btn-outline-success">Terima Pesanan</button></a>
     </div>
   </div>
 
@@ -40,16 +56,8 @@
                                     <span class="dt-column-title">Tiket</span>
                                     <span class="dt-column-order"></span>
                                 </th>
-                                <th class="dt-orderable-none">
-                                    <span class="dt-column-title">Harga</span>
-                                    <span class="dt-column-order"></span>
-                                </th>
-                                <th class="dt-orderable-none">
+                                <th class="w-50 dt-orderable-none">
                                     <span class="dt-column-title">Banyak</span>
-                                    <span class="dt-column-order"></span>
-                                </th>
-                                <th class="dt-orderable-none">
-                                    <span class="dt-column-title">Total</span>
                                     <span class="dt-column-order"></span>
                                 </th>
                             </tr>
@@ -57,24 +65,68 @@
                         <tbody>
                             <tr class="">
                                 <td>
-                                    <div class="d-flex justify-content-start align-items-center text-nowrap">
+                                    <div class="w-50  d-flex justify-content-start align-items-center text-nowrap">
                                         <div class="d-flex flex-column">
-                                            <h6 class="text-body mb-0">Oneplus 10</h6>
-                                            <small>Storage:128gb</small>
+                                            <h6 class="text-body mb-0">Dewasa</h6>
                                         </div>
                                     </div>
                                 </td>
                                 <td class="dt-type-numeric" >
-                                    <span>$896</span>
+                                    <span>{{$order->dewasa_count}}</span>
+                                </td>
+                            </tr>
+                            <tr class="">
+                                <td>
+                                    <div class="w-50  d-flex justify-content-start align-items-center text-nowrap">
+                                        <div class="d-flex flex-column">
+                                            <h6 class="text-body mb-0">Anak - anak</h6>
+                                        </div>
+                                    </div>
                                 </td>
                                 <td class="dt-type-numeric" >
-                                    <span class="text-body">3</span>
-                                </td>
-                                <td class="dt-type-numeric">
-                                    <span class="text-body">2688</span>
+                                    <span>{{$order->anak_count}}</span>
                                 </td>
                             </tr>
                             
+                        </tbody>
+                        <tfoot>
+
+                        </tfoot>
+                    </table>
+                </div>
+                <div class="d-md-flex justify-content-between align-items-center dt-layout-full table-responsive">
+                    <table class="datatables-order-details table dataTable dtr-column mb-0 collapsed" id="DataTables_Table_0" style="width: 100%;">
+                        <colgroup><col data-dt-column="0" style="width: 60.2812px;"><col data-dt-column="1" style="width: 72.8438px;">
+                            <col data-dt-column="2" style="width: 194.875px;">
+                         </colgroup>
+                         <thead>
+                            <tr>
+                                
+                                <th class="w-50 dt-orderable-none" data-dt-column="2" rowspan="1" colspan="1" aria-label="products">
+                                    <span class="dt-column-title">Tiket Kendaraan</span>
+                                    <span class="dt-column-order"></span>
+                                </th>
+                                <th class="w-50 dt-orderable-none">
+                                    <span class="dt-column-title">Banyak</span>
+                                    <span class="dt-column-order"></span>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                          @foreach($vehicles as $item)
+                            <tr class="">
+                                <td>
+                                    <div class="d-flex justify-content-start align-items-center text-nowrap">
+                                        <div class="d-flex flex-column">
+                                            <h6 class="text-body mb-0">{{$item->vehicle_type}}</h6>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="dt-type-numeric" >
+                                    <span>{{$item->count}}</span>
+                                </td>
+                            </tr>
+                          @endforeach
                         </tbody>
                         <tfoot>
 
@@ -94,7 +146,7 @@
             <div class="order-calculations">
               <div class="d-flex justify-content-start">
                 <h6 class="w-px-100 mb-0">Total:</h6>
-                <h6 class="mb-0">$2113</h6>
+                <h6 class="mb-0">Rp. {{number_format($order->total_price)}}</h6>
               </div>
             </div>
           </div>
@@ -104,7 +156,7 @@
     <div class="col-12 col-lg-4">
       <div class="card mb-6">
         <div class="card-header">
-          <h5 class="card-title m-0">Customer details</h5>
+          <h5 class="card-title m-0">Detail Pemesan</h5>
         </div>
         <div class="card-body">
           <div class="d-flex justify-content-start align-items-center mb-6">
@@ -113,20 +165,14 @@
             </div>
             <div class="d-flex flex-column">
               <a href="app-user-view-account.html" class="text-body text-nowrap">
-                <h6 class="mb-0">Shamus Tuttle</h6>
+                <h6 class="mb-0">{{$order->user_name}}</h6>
               </a>
-              <span>Customer ID: #58909</span>
             </div>
-          </div>
-          <div class="d-flex justify-content-start align-items-center mb-6">
-            <span class="avatar rounded-circle bg-label-success me-3 d-flex align-items-center justify-content-center"><i class="icon-base bx bx-cart icon-lg"></i></span>
-            <h6 class="text-nowrap mb-0">12 Orders</h6>
           </div>
           <div class="d-flex justify-content-between">
             <h6 class="mb-1">Contact info</h6>
           </div>
-          <p class=" mb-1">Email: Shamus889@yahoo.com</p>
-          <p class=" mb-0">Mobile: +1 (609) 972-22-22</p>
+          <p class=" mb-0">Mobile: {{$order->phone_number}}</p>
         </div>
       </div>
       <div class="card mb-6">

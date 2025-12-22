@@ -4,9 +4,9 @@
 
     <div class="container-xxl flex-grow-1 container-p-y">
               <h4 class="fw-bold py-3 mb-4">Tiket Perorangan</h4>
-              @foreach ($passengerPrices as $item)
               <!-- Examples -->
               <div class="row mb-5">
+                @foreach ($passengerPrices as $item)
                 <div class="col-md-6 col-lg-4 mb-3">
                   <div class="card h-100">
                     <div class="card-body">
@@ -18,8 +18,8 @@
                     </div>
                   </div>
                 </div>
+                @endforeach
               </div>
-              @endforeach
               <!-- Examples -->
 
               <hr>
@@ -27,8 +27,8 @@
               <h4 class="fw-bold py-3 mb-4">Tiket Kendaraan</h4>
 
               <!-- Examples -->
-               @foreach ($vehiclePrices as $item)
               <div class="row mb-5">
+                 @foreach ($vehiclePrices as $item)
                 <div class="col-md-6 col-lg-4 mb-3">
                   <div class="card h-100">
                     <div class="card-body">
@@ -40,8 +40,9 @@
                     </div>
                   </div>
                 </div>
+                @endforeach
               </div>
-              @endforeach
+            
               <!-- Examples -->
 
              

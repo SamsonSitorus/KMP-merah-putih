@@ -7,6 +7,8 @@ use App\Http\Controllers\TicketController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\HistoryController;
+use App\Http\Controllers\AdminController\TiketPriceController;
+use App\Http\Controllers\AdminController\BookingAdminController;
 
 
 Route::get('/login', fn() => view('auth.login'))->name('login');
@@ -51,16 +53,16 @@ Route::post('/login', [Authcontroller::class,'login']);
 Route::post('/firebase/register', [AuthController::class, 'register'])->name('firebase.register');
 Route::post('/firebase/verify', [AuthController::class, 'verifyFirebase'])->name('firebase.verify');
 
+
+//AdminController
+
 Route::get('/admin', function () {
     return view('admin.dashboard.dashboard');
 });
-Route::get('/admin/order-list', function () {
-    return view('admin.order.orderList');
-});
+Route::get('/admin/order-list', [BookingAdminController::class, 'index']);
+Route::get('/admin/order-detail/{id}', [BookingAdminController::class, 'detail'])->whereNumber('id');
+Route::get('/admin/order/{id}/update-status-order', [BookingAdminController::class, 'update']);
 Route::get('/admin/tiket', [TiketPriceController::class, 'index']);
-Route::get('/admin/order-detail', function () {
-    return view('admin.order.detail_order');
-});
 Route::get('/admin/notification', function () {
     return view('admin.notification.index');
 });
