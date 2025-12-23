@@ -80,4 +80,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
 
     //Route for port section
     Route::get('/schedule', [PortAdminController::class, 'index']);
+    Route::post('/schedule/store', [PortAdminController::class, 'store'])
+    ->name('admin.schedule.store');
+    Route::delete('/schedule/{id}', [PortAdminController::class, 'destroy'])
+    ->name('admin.schedule.delete');
 });

@@ -11,8 +11,9 @@ class TicketStock extends Model
         'destination_port_id',
         'departure_date',
         'departure_time',
-        'total_stock',
-        'remaining_stock',
+        'stock_roda_4',
+        'stock_roda_2',
+        'stock_passenger'
     ];
 
     public function originPort()

@@ -17,8 +17,9 @@ return new class extends Migration
             $table->foreignId('destination_port_id')->constrained('ports')->onDelete('cascade');
             $table->date('departure_date');
             $table->time('departure_time')->default('08:00:00');
-            $table->integer('total_stock');
-            $table->integer('remaining_stock');
+            $table->integer('stock_roda_4');
+            $table->integer('stock_roda_2');
+            $table->integer('stock_passenger');
             $table->timestamps();
         });
     }

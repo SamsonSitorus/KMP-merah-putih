@@ -22,16 +22,18 @@ class TicketStockSeeder extends Seeder
                     'destination_port_id' => 2,
                     'departure_date' => '2025-11-03',
                     'departure_time' => '08:00:00',
-                    'total_stock' => 100,
-                    'remaining_stock' => 100,
+                    'stock_roda_4' => 10,
+                    'stock_roda_2' => 10,
+                    'stock_passenger' => 100,
                 ],
                 [
                     'origin_port_id' => 2,
                     'destination_port_id' => 1,
                     'departure_date' => '2025-11-03',
                     'departure_time' => '14:00:00',
-                    'total_stock' => 100,
-                    'remaining_stock' => 100,
+                    'stock_roda_4' => 10,
+                    'stock_roda_2' => 10,
+                    'stock_passenger' => 100,
                 ],
             ];
 

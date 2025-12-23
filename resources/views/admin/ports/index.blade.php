@@ -55,30 +55,55 @@
                       </tr>
                     </thead>
                     <tbody class="table-border-bottom-0">
+                      @foreach($ticketStocks as $item)
+
                       <tr>
-                        <td><i class="fab fa-angular fa-lg text-danger me-3"></i><strong>Muara</strong></td>
-                        <td><i class="fab fa-angular fa-lg text-danger me-3"></i><strong>Simarpinggan</strong></td>
+                        <td><i class="fab fa-angular fa-lg text-danger me-3"></i><strong>{{$item->origin_name}}</strong></td>
+                        <td><i class="fab fa-angular fa-lg text-danger me-3"></i><strong>{{$item->destination_name}}</strong></td>
                         <td>
-                         2025-12-24
+                         {{$item -> departure_date}}
                         </td>
-                        <td>08:00</td>
+                        <td>{{$item -> departure_time}}</td>
                         <td>
                           <div class="dropdown">
                             <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
                               <i class="bx bx-dots-vertical-rounded"></i>
                             </button>
+
                             <div class="dropdown-menu">
-                              <a class="dropdown-item" href="javascript:void(0);"
-                                ><i class="bx bx-edit-alt me-1"></i> Detail</a
-                              >
-                              <a class="dropdown-item" href="javascript:void(0);"
-                                ><i class="bx bx-trash me-1"></i> Delete</a
-                              >
-                            </div>
+                                  {{-- DETAIL --}}
+                                  <a class="dropdown-item btn-detail"
+                                    href="#"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#detailModal"
+                                    data-origin="{{ $item->origin_name }}"
+                                    data-destination="{{ $item->destination_name }}"
+                                    data-date="{{ $item->departure_date }}"
+                                    data-time="{{ $item->departure_time }}"
+                                    data-roda4="{{ $item->stock_roda_4 }}"
+                                    data-roda2="{{ $item->stock_roda_2 }}"
+                                    data-passenger="{{ $item->stock_passenger }}">
+                                      <i class="bx bx-info-circle me-1"></i> Detail
+                                  </a>
+
+                                  {{-- DELETE --}}
+                                  <a class="dropdown-item text-danger btn-delete"
+                                    href="#"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#deleteModal"
+                                    data-id="{{ $item->id }}"
+                                    data-route="{{ $item->origin_name }} → {{ $item->destination_name }}"
+                                    data-date="{{ $item->departure_date }}"
+                                    data-time="{{ $item->departure_time }}">
+                                      <i class="bx bx-trash me-1"></i> Delete
+                                  </a>
+                              </div>
+                            
                           </div>
                         </td>
                       </tr>
                       
+                      @endforeach
                     </tbody>
                   </table>
                 </div>
@@ -87,125 +112,190 @@
             </div>
 
             <!-- Modal Tambah Jadwal -->
-<div class="modal fade" id="addScheduleModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
-        <div class="modal-content">
-            <form action="" method="POST">
-                @csrf
+            <div class="modal fade" id="addScheduleModal" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-lg modal-dialog-centered">
+                    <div class="modal-content">
+                        <form action="{{ route('admin.schedule.store') }}" method="POST">
+                            @csrf
 
-                <div class="modal-header">
-                    <h5 class="modal-title">Tambah Jadwal Berlayar</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-
-                <div class="modal-body">
-
-                    {{-- Asal --}}
-                    <div class="mb-3">
-                        <label class="form-label">Asal</label>
-                        <select name="origin" class="form-select" required>
-                            <option value="">-- Pilih Asal --</option>
-                            <option value="Muara">Muara</option>
-                            <option value="Simarpinggan">Simarpinggan</option>
-                        </select>
-                    </div>
-
-                    {{-- Tujuan --}}
-                    <div class="mb-3">
-                        <label class="form-label">Tujuan</label>
-                        <select name="destination" class="form-select" required>
-                            <option value="">-- Pilih Tujuan --</option>
-                            <option value="Muara">Muara</option>
-                            <option value="Simarpinggan">Simarpinggan</option>
-                        </select>
-                    </div>
-
-                    {{-- Tanggal --}}
-                    <div class="mb-4">
-                        <label class="form-label">Tanggal Berangkat</label>
-                        <input type="date" name="departure_date" class="form-control" required>
-                    </div>
-
-                    <hr>
-
-                    {{-- Jadwal Dinamis --}}
-                    <label class="form-label fw-bold mb-2">Detail Jadwal & Kendaraan</label>
-
-                    <div id="scheduleWrapper">
-
-                        {{-- Item --}}
-                        <div class="row g-2 mb-2 schedule-item">
-                            <div class="col-md-4">
-                                <input
-                                    type="time"
-                                    name="schedules[0][time]"
-                                    class="form-control"
-                                    required
-                                >
+                            <div class="modal-header">
+                                <h5 class="modal-title">Tambah Jadwal Berlayar</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                             </div>
 
-                            <div class="col-md-4">
-                                <input
-                                    type="number"
-                                    name="schedules[0][stock]"
-                                    class="form-control"
-                                    min="1"
-                                    placeholder="Stok Roda 4"
-                                    required
-                                >
-                            </div>
+                            <div class="modal-body">
 
-                            <div class="col-md-3">
-                                <input
-                                    type="number"
-                                    name="schedules[0][stock]"
-                                    class="form-control"
-                                    min="1"
-                                    placeholder="Stok Roda 2/Motor/Becak"
-                                    required
-                                >
-                            </div>
+                                {{-- Asal --}}
+                                <div class="mb-3">
+                                    <label class="form-label">Asal</label>
+                                    <select name="origin" class="form-select" required>
+                                        <option value="">-- Pilih Asal --</option>
+                                        <option value="1">Muara</option>
+                                        <option value="2">Simarpinggan</option>
+                                    </select>
+                                </div>
 
-                            <div class="col-md-1 d-flex align-items-center">
+                                {{-- Tujuan --}}
+                                <div class="mb-3">
+                                    <label class="form-label">Tujuan</label>
+                                    <select name="destination" class="form-select" required>
+                                        <option value="">-- Pilih Tujuan --</option>
+                                        <option value="1">Muara</option>
+                                        <option value="2">Simarpinggan</option>
+                                    </select>
+                                </div>
+
+                                {{-- Tanggal --}}
+                                <div class="mb-4">
+                                    <label class="form-label">Tanggal Berangkat</label>
+                                    <input type="date" name="departure_date" class="form-control" required>
+                                </div>
+
+                                <hr>
+
+                                {{-- Jadwal Dinamis --}}
+                                <label class="form-label fw-bold mb-2">Detail Jadwal & Kendaraan</label>
+
+                                <div id="scheduleWrapper">
+
+                                    {{-- Item --}}
+                                    <div class="row g-2 mb-2 schedule-item">
+                                        <div class="col-md-4">
+                                            <input
+                                                type="time"
+                                                name="schedules[0][time]"
+                                                class="form-control"
+                                                required
+                                            >
+                                        </div>
+
+                                        <div class="col-md-4">
+                                            <input
+                                                type="number"
+                                                name="schedules[0][stock_roda_4]"
+                                                class="form-control"
+                                                min="1"
+                                                placeholder="Stok Roda 4"
+                                                required
+                                            >
+                                        </div>
+
+                                        <div class="col-md-3">
+                                            <input
+                                                type="number"
+                                                name="schedules[0][stock_roda_2]"
+                                                class="form-control"
+                                                min="1"
+                                                placeholder="Stok Roda 2/Motor/Becak"
+                                                required
+                                            >
+                                        </div>
+
+                                        <div class="col-md-1 d-flex align-items-center">
+                                            <button
+                                                type="button"
+                                                class="btn btn-outline-danger remove-schedule"
+                                            >
+                                                <i class="bx bx-x"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                </div>
+
                                 <button
                                     type="button"
-                                    class="btn btn-outline-danger remove-schedule"
+                                    class="btn btn-outline-primary btn-sm mt-2"
+                                    id="addScheduleBtn"
                                 >
-                                    <i class="bx bx-x"></i>
+                                    <i class="bx bx-plus"></i> Tambah Jadwal
+                                </button>
+
+                            </div>
+
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                    Batal
+                                </button>
+                                <button type="submit" class="btn btn-success">
+                                    Simpan
                                 </button>
                             </div>
-                        </div>
 
+                        </form>
                     </div>
+                </div>
+            </div>
 
-                    <button
-                        type="button"
-                        class="btn btn-outline-primary btn-sm mt-2"
-                        id="addScheduleBtn"
-                    >
-                        <i class="bx bx-plus"></i> Tambah Jadwal
-                    </button>
+            <!-- Modal Detail -->
+            <div class="modal fade" id="detailModal" tabindex="-1">
+                  <div class="modal-dialog modal-lg modal-dialog-centered">
+                      <div class="modal-content">
 
+                          <div class="modal-header">
+                              <h5 class="modal-title">Detail Jadwal Berlayar</h5>
+                              <button class="btn-close" data-bs-dismiss="modal"></button>
+                          </div>
+
+                          <div class="modal-body">
+                              <table class="table table-borderless">
+                                  <tr><th>Asal</th><td id="d-origin"></td></tr>
+                                  <tr><th>Tujuan</th><td id="d-destination"></td></tr>
+                                  <tr><th>Tanggal</th><td id="d-date"></td></tr>
+                                  <tr><th>Jam</th><td id="d-time"></td></tr>
+                                  <tr><th>Stok Roda 4</th><td id="d-roda4"></td></tr>
+                                  <tr><th>Stok Roda 2</th><td id="d-roda2"></td></tr>
+                                  <tr><th>Stok Penumpang</th><td id="d-passenger"></td></tr>
+                              </table>
+                          </div>
+
+                          <div class="modal-footer">
+                              <button class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                          </div>
+
+                      </div>
+                  </div>
+              </div>
+
+              <!-- Modal Delete -->
+              <div class="modal fade" id="deleteModal" tabindex="-1">
+                    <div class="modal-dialog modal-sm modal-dialog-centered">
+                        <div class="modal-content">
+
+                            <form method="POST" id="deleteForm">
+                                @csrf
+                                @method('DELETE')
+
+                                <div class="modal-header">
+                                    <h5 class="modal-title text-danger">Hapus Jadwal</h5>
+                                    <button class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+
+                                <div class="modal-body text-center">
+                                    <p>Yakin ingin menghapus jadwal:</p>
+                                    <strong id="del-route"></strong>
+                                    <p class="text-muted mt-1">
+                                        <span id="del-date"></span> | <span id="del-time"></span>
+                                    </p>
+                                </div>
+
+                                <div class="modal-footer">
+                                    <button class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                                    <button class="btn btn-danger">Ya, Hapus</button>
+                                </div>
+                            </form>
+
+                        </div>
+                    </div>
                 </div>
 
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                        Batal
-                    </button>
-                    <button type="submit" class="btn btn-success">
-                        Simpan
-                    </button>
-                </div>
 
-            </form>
-        </div>
-    </div>
-</div>
 
 
 <!-- script modal create stok ticket for rute and jadwal -->
 
 <script>
+
 let scheduleIndex = 1;
 
 document.getElementById('addScheduleBtn').addEventListener('click', function () {
@@ -220,11 +310,11 @@ document.getElementById('addScheduleBtn').addEventListener('click', function () 
         </div>
 
         <div class="col-md-4">
-            <input type="number" name="schedules[${scheduleIndex}][stock]" class="form-control" min="1" placeholder="Stok Roda 4" required>
+            <input type="number" name="schedules[${scheduleIndex}][stock_roda_4]" class="form-control" min="1" placeholder="Stok Roda 4" required>
         </div>
 
         <div class="col-md-3">
-            <input type="number" name="schedules[${scheduleIndex}][stock]" class="form-control" min="1" placeholder="Stok Roda 2/Motor/Becak" required>
+            <input type="number" name="schedules[${scheduleIndex}][stock_roda_2]" class="form-control" min="1" placeholder="Stok Roda 2/Motor/Becak" required>
         </div>
 
         <div class="col-md-1 d-flex align-items-center">
@@ -248,6 +338,30 @@ document.addEventListener('click', function (e) {
         }
     }
 });
+
+document.querySelectorAll('.btn-detail').forEach(btn => {
+    btn.addEventListener('click', function () {
+        document.getElementById('d-origin').innerText = this.dataset.origin;
+        document.getElementById('d-destination').innerText = this.dataset.destination;
+        document.getElementById('d-date').innerText = this.dataset.date;
+        document.getElementById('d-time').innerText = this.dataset.time;
+        document.getElementById('d-roda4').innerText = this.dataset.roda4;
+        document.getElementById('d-roda2').innerText = this.dataset.roda2;
+        document.getElementById('d-passenger').innerText = this.dataset.passenger;
+    });
+});
+
+document.querySelectorAll('.btn-delete').forEach(btn => {
+    btn.addEventListener('click', function () {
+        document.getElementById('del-route').innerText = this.dataset.route;
+        document.getElementById('del-date').innerText = this.dataset.date;
+        document.getElementById('del-time').innerText = this.dataset.time;
+
+        document.getElementById('deleteForm').action =
+            `/admin/schedule/${this.dataset.id}`;
+    });
+});
+
 </script>
 
 @endsection
