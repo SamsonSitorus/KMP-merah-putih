@@ -9,6 +9,7 @@ use App\Http\Controllers\BookingController;
 use App\Http\Controllers\HistoryController;
 use App\Http\Controllers\AdminController\TiketPriceController;
 use App\Http\Controllers\AdminController\BookingAdminController;
+use App\Http\Controllers\AdminController\PortAdminController;
 
 Route::get('/login', [Authcontroller::class,'showLoginForm'])->name('login');
 Route::get('/register', [Authcontroller::class,'showRegisterForm'])->name('register');
@@ -76,4 +77,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
         ->name('admin.tiket.delete');
 
     Route::get('/notification', fn() => view('admin.notification.index'));
+
+    //Route for port section
+    Route::get('/schedule', [PortAdminController::class, 'index']);
 });
