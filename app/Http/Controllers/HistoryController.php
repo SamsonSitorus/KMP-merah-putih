@@ -22,7 +22,7 @@ class HistoryController extends Controller
                             ->where('status', $status)
                             ->orderBy('created_at', 'desc')
                             ->get();
-            $latest = Booking::where('user_id', auth()->id())
+            $latest = Booking::where('user_id', $user->id)
                             ->latest()
                             ->first();
             

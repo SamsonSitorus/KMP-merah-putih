@@ -40,6 +40,6 @@ class Booking extends Model
 
     public function detail()
     {
-        return $this->hasMany(BookingDetail::class);
+        return $this->hasMany(BookingPessanger::class);
     }
 }
