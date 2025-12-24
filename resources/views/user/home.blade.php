@@ -148,7 +148,7 @@
                 <div class="passenger-row" style="align-items: flex-start; gap: .5rem;">
                     <div class="passenger-info" style="flex: 1 1 320px;">
                         <h6>Kendaraan</h6>
-                        <small>Tambahkan satu atau lebih kendaraan (opsional)</small>
+                        <small>(sudah termasuk hanya supir)</small>
                         <div class="price-display" id="vehiclePriceDisplay">Harga: -</div>
                     </div>
                     <div style="flex: 1 1 320px;">
