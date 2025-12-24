@@ -117,13 +117,13 @@
                         @endforeach
                         <div class="mb-2">
 
-                            <div class="bk-detail-row">
+                            <!-- <div class="bk-detail-row">
                                 <div>
                                     <span class="fw-semibold">Ticket Stock ID</span>
                                     <div class="bk-small text-muted-2">ID untuk referensi pembayaran</div>
                                 </div>
                                 <div class="text-end">{{ $ticketStockId }}</div>
-                            </div>
+                            </div> -->
 
                             <div class="bk-detail-row">
                                 <div>

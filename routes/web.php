@@ -13,6 +13,9 @@ use App\Http\Controllers\AdminController\PortAdminController;
 
 Route::get('/login', [Authcontroller::class,'showLoginForm'])->name('login');
 Route::get('/register', [Authcontroller::class,'showRegisterForm'])->name('register');
+Route::post('/verify/logout', [Authcontroller::class,'logout'])->name('logout');
+Route::post('/Verify/register', [AuthController::class, 'register'])->name('verify.register');
+Route::post('/verify/Login', [AuthController::class, 'login'])->name('Verify.login');
 
 Route::post('/verify/register', [AuthController::class, 'register'])->name('verify.register');
 Route::post('/verify/login', [AuthController::class, 'login'])->name('verify.login');
