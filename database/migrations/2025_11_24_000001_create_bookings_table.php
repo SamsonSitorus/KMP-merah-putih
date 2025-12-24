@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('payment_proof_path')->nullable();
             $table->string('status')->default('pending');
             $table->string('booksource');
+            $table->string('booker_name');
             $table->timestamps();
         });
     }
