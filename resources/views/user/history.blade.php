@@ -62,7 +62,7 @@
                                     <th>Pelabuhan Tujuan</th>
                                     <th>Tanggal</th>
                                     <th>Status</th>
-                                    <!-- <th>Aksi</th> -->
+                                    <th>Aksi</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -72,9 +72,9 @@
                                     <td>{{ $b->created_at->format('d M Y') }}</td>
                                     <td>{{ ucfirst($b->status) }}</td>
                                     <td>
-                                        @if($status === 'berhasil' && session('booking_id'))
+                                        @if($status === 'berhasil')
                                             <div class="mb-3 text-center">
-                                                <a href="{{ route('book_ticket.download', session('booking_id')) }}" target="_blank" class="btn bk-btn-primary w-50 rounded-pill">
+                                                <a href="{{ route('book_ticket.download', $b->id) }}" target="_blank" class="btn bk-btn-primary w-50 rounded-pill">
                                                     Download E-Ticket
                                                 </a>
                                             </div>

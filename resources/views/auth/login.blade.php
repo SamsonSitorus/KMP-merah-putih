@@ -26,8 +26,6 @@
             {{ $errors->first() }}
           </div>
         @endif
-
-<<<<<<< Updated upstream
           <form id="formLogin" method="POST" action="{{ route('Verify.login') }}">
 
         {{--  alert ketika session habis --}}
@@ -36,7 +34,6 @@
                 Session kamu sudah habis. Silakan login kembali.
             </div>
         @endif
-
           <form id="formLogin" method="POST" action="{{ route('verify.login') }}">
           @csrf
             <!-- Email -->
