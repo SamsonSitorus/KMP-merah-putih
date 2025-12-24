@@ -52,6 +52,14 @@
 
                         <div>
                             <label class="form-label">Jam Keberangkatan</label>
+                            <select id="jamselect" name="departure_time" class="form-select">
+                                <option selected disabled>Pilih Jam Keberangkatan</option>
+                                @foreach ($ports as $port)
+                                    <option value="{{ $port->id }}" data-name="{{ strtolower($port->name) }}">
+                                        {{ $port->name }}
+                                    </option>
+                                @endforeach
+                            </select>
                             <input type="text" id="jamKeberangkatan" name="departure_time" class="form-control" readonly>
                         </div>
                     </div>
@@ -354,7 +362,7 @@
     </section>
 
     <!-- Contact Section -->
-    <section id="contact" class="py-5 bg-[#f8fafc] reveal">
+    {{-- <section id="contact" class="py-5 bg-[#f8fafc] reveal">
         <div style="max-width:1100px; margin:0 auto; padding:0 1rem;">
             <h4 style="font-weight:700; margin-bottom:0.5rem;">Contact Us</h4>
             <p style="color:#555; margin-bottom:1rem;">Butuh bantuan? Hubungi kami di
@@ -365,7 +373,7 @@
                 <a href="tel:+62215550123" class="btn-done" style="width:auto; padding:0.6rem 1rem;">Call Us</a>
             </div>
         </div>
-    </section>
+    </section> --}}
 
     <!-- Scripts -->
     <script>

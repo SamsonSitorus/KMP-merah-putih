@@ -14,10 +14,8 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {   
         $this->call(PortsSeeder::class);
-        $this->call([
-            UserSeeder::class,
-            
-        ]);
-        $this->call(TicketStockSeeder::class);
+        $this->call([UserSeeder::class,TicketTypesSeeder::class,
+]);
+        // $this->call(TicketStockSeeder::class);
     }
 }

@@ -15,11 +15,13 @@ return new class extends Migration
             $table->id();
             $table->foreignId('origin_port_id')->constrained('ports')->onDelete('cascade');
             $table->foreignId('destination_port_id')->constrained('ports')->onDelete('cascade');
+            $table->foreignId('ticket_type_id')->constrained('ticket_types')->cascadeOnDelete();
             $table->date('departure_date');
-            $table->time('departure_time')->default('08:00:00');
+            $table->time('departure_time');
             $table->integer('total_stock');
             $table->integer('remaining_stock');
             $table->timestamps();
+           $table->unique(['ticket_type_id','origin_port_id','destination_port_id','departure_date','departure_time'],'uniq_ticket_stock');
         });
     }
 

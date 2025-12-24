@@ -9,10 +9,11 @@ class TicketStock extends Model
     protected $fillable = [
         'origin_port_id',
         'destination_port_id',
+        'ticket_type_id',
         'departure_date',
         'departure_time',
         'total_stock',
-        'remaining_stock',
+        'remaining_stock'
     ];
 
     public function originPort()
@@ -23,6 +24,11 @@ class TicketStock extends Model
     public function destinationPort()
     {
         return $this->belongsTo(Port::class, 'destination_port_id');
+    }
+
+    public function ticketType()
+    {
+        return $this->belongsTo(Tickettype::class, 'ticket_type_id');
     }
 
     // Relasi ke harga tiket

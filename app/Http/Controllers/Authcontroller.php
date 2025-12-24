@@ -52,32 +52,40 @@ class AuthController extends Controller
     {
         return view('auth.login');
     }
-    public function login(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'email' => 'required|string|email',
-            'password' => 'required|string',
-        ]);
+   public function login(Request $request)
+{
+    $validator = Validator::make($request->all(), [
+        'email' => 'required|string|email',
+        'password' => 'required|string',
+    ]);
 
-        if ($validator->fails()) {
-            return redirect()->back()
-                ->withErrors($validator)
-                ->withInput();
-        }
-
-        $credentials = $request->only('email', 'password');
-        $remember = $request->filled('remember');
-
-        if (Auth::attempt($credentials, $remember)) {
-            $request->session()->regenerate();
-
-            return redirect()->route('home')->with('success', 'Login successful!');
-        }
-
-        return back()->withErrors([
-            'email' => 'The provided credentials do not match our records.',
-        ])->onlyInput('email');
+    if ($validator->fails()) {
+        return redirect()->back()
+            ->withErrors($validator)
+            ->withInput();
     }
+
+    $credentials = $request->only('email', 'password');
+    $remember = $request->filled('remember');
+
+    if (Auth::attempt($credentials, $remember)) {
+        $request->session()->regenerate();
+
+        $user = Auth::user();
+
+        // 🔑 Redirect berdasarkan role
+        if ($user->role === 'admin') {
+            return redirect()->route('admin.dashboard'); // /admin
+        }
+
+        return redirect()->route('home'); // /
+    }
+
+    return back()->withErrors([
+        'email' => 'The provided credentials do not match our records.',
+    ])->onlyInput('email');
+}
+
 
     /**
      * Logout user

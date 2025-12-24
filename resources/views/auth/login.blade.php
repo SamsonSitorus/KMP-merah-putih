@@ -27,7 +27,17 @@
           </div>
         @endif
 
+<<<<<<< Updated upstream
           <form id="formLogin" method="POST" action="{{ route('Verify.login') }}">
+
+        {{--  alert ketika session habis --}}
+        @if(request('reason') === 'expired')
+            <div class="alert alert-warning">
+                Session kamu sudah habis. Silakan login kembali.
+            </div>
+        @endif
+
+          <form id="formLogin" method="POST" action="{{ route('verify.login') }}">
           @csrf
             <!-- Email -->
             <div class="mb-3">
