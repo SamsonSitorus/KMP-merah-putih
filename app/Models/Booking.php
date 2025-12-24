@@ -38,7 +38,7 @@ class Booking extends Model
         return $this->belongsTo(TicketStock::class, 'ticket_stock_id');
     }
 
-    public function detail()
+    public function Pessanger()
     {
         return $this->hasMany(BookingPessanger::class);
     }
