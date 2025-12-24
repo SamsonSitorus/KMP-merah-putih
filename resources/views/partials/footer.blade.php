@@ -13,7 +13,7 @@
                 <h4 class="fw-bold mb-0" style="color: #0066cc;">KMP Muara Putih</h4>
               </div>
               <p class="text-secondary mb-4" style="line-height: 1.6;">
-                Penyelenggara transportasi laut terpercaya yang menghubungkan berbagai destinasi dengan layanan berkualitas, 
+                Penyelenggara transportasi Danau terpercaya yang menghubungkan berbagai destinasi dengan layanan berkualitas, 
                 kenyamanan, dan keamanan terbaik bagi penumpang.
               </p>
               <div class="d-flex align-items-center gap-3">
@@ -76,8 +76,13 @@
                   </div>
                   <div>
                     <h6 class="mb-1 small fw-semibold">Telepon</h6>
+<<<<<<< Updated upstream
                     <a href="tel:+62215550123" class="text-secondary text-decoration-none">0821-6319-2246</a>
                     <p class="small text-muted mb-0">Senin - Minggu, 08:00 - 22:00 WIB</p>
+=======
+                    <a href="tel:+6282360709163 " class="text-secondary text-decoration-none">Muara :+62 823-6070-9163</a><br>
+                    <a href="tel:+6281265814245" class="text-secondary text-decoration-none">Sipinggan : +62 812-6581-4245</a>
+>>>>>>> Stashed changes
                   </div>
                 </div>
               </li>

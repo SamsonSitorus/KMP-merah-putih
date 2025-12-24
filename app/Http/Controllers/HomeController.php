@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Port;
 use App\Models\TicketStock;
 use App\Models\TicketPrice;
+use App\Models\Tickettype;
 use Illuminate\Http\Request;
 
 class HomeController extends Controller
@@ -21,16 +22,20 @@ class HomeController extends Controller
         $ticketStocks = TicketStock::all();
 
         // Ambil semua jenis penumpang unik
-        $passengerTypes = TicketPrice::whereNotNull('passenger_type')
-            ->select('passenger_type')
-            ->distinct()
-            ->pluck('passenger_type');
-
+        $passengerTypes = TicketStock::where('ticket_type_id', 1)
+                            ->distinct()
+                            ->pluck('ticket_type_id');
         // Ambil semua jenis kendaraan unik
-        $vehicleTypes = TicketPrice::whereNotNull('vehicle_type')
-            ->select('vehicle_type')
-            ->distinct()
-            ->pluck('vehicle_type');
+        $vehicleTypes = TicketStock::whereIn('ticket_type_id', [1, 2])
+                            ->distinct()
+                            ->pluck('ticket_type_id');
+
+        // ambil jam berdasarkan stok tiket
+        // $jamKeberangkatan = Jadwal::where('port_asal', $portAsal)
+        // ->where('port_tujuan', $portTujuan)
+        // ->where('tanggal_keberangkatan', $tanggalKeberangkatan)
+        // ->pluck('jam');  // ambil kolom jam saja
+
 
         // Ambil peta harga untuk kendaraan dan penumpang (ambil entri pertama per tipe sebagai default)
         $allPrices = TicketPrice::all();

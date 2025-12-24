@@ -19,7 +19,11 @@
                     </thead>
                     <tbody class="table-border-bottom-0">
                       <tr>
+<<<<<<< HEAD
+                        <td><i class="fab fa-angular fa-lg text-danger me-3"></i><strong>Muara - Sipinggan</strong></td>
+=======
                         <td><i class="fab fa-angular fa-lg text-danger me-3"></i><strong>Balige - Onan Runggu</strong></td>
+>>>>>>> 84a8b6a677b93c24d6e3772cab3801e4de0bb2b9
                         <td>Albert Cook</td>
                         <td>
                           Rp.200.000,-
@@ -42,7 +46,11 @@
                         </td>
                       </tr>
                       <tr>
+<<<<<<< HEAD
+                        <td><i class="fab fa-react fa-lg text-info me-3"></i><strong>Muara - Sipinggan</strong></td>
+=======
                         <td><i class="fab fa-react fa-lg text-info me-3"></i><strong>Balige - Onan Runggu</strong></td>
+>>>>>>> 84a8b6a677b93c24d6e3772cab3801e4de0bb2b9
                         <td>Barry Hunter</td>
                         <td>
                           Rp.200.000,-
@@ -65,7 +73,11 @@
                         </td>
                       </tr>
                       <tr>
+<<<<<<< HEAD
+                        <td><i class="fab fa-vuejs fa-lg text-success me-3"></i><strong>Muara - Sipinggan</strong></td>
+=======
                         <td><i class="fab fa-vuejs fa-lg text-success me-3"></i><strong>Balige - Onan Runggu</strong></td>
+>>>>>>> 84a8b6a677b93c24d6e3772cab3801e4de0bb2b9
                         <td>Trevor Baker</td>
                         <td>
                           Rp.200.000,-
@@ -89,7 +101,11 @@
                       </tr>
                       <tr>
                         <td>
+<<<<<<< HEAD
+                          <i class="fab fa-bootstrap fa-lg text-primary me-3"></i><strong>Muara - Sipinggan</strong>
+=======
                           <i class="fab fa-bootstrap fa-lg text-primary me-3"></i><strong>Balige - Onan Runggu</strong>
+>>>>>>> 84a8b6a677b93c24d6e3772cab3801e4de0bb2b9
                         </td>
                         <td>Jerry Milton</td>
                         <td>

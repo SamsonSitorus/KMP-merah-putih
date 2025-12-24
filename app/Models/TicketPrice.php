@@ -2,23 +2,27 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class TicketPrice extends Model
 {
+    use HasFactory;
+
+    protected $table = 'ticket_prices';
+
     protected $fillable = [
-        'ticket_stock_id',
-        'passenger_type',
-        'vehicle_type',
+        'name',
+        'ticket_type_id',
         'price',
     ];
 
     /**
      * Relasi ke tabel TicketStock
      */
-    public function stock()
+    public function tickettype()
     {
-        return $this->belongsTo(TicketStock::class, 'ticket_stock_id');
+        return $this->belongsTo(Tickettype::class, 'ticket_type_id');
     }
 
     /**
