@@ -22,8 +22,8 @@
             <p>Status: 
                 <strong>{{ $latest ? ucfirst($latest->status) : '-' }}</strong>
             </p>
-            <p>
-                Jika Status <strong>Berhasil</strong>, pindah ke laman berhasil untuk mengunduh tiket Anda.
+            <p> 
+                Jika Status <strong>Berhasil</strong>, pindah ke laman <b>"Berhasil"</b> untuk mengunduh tiket Anda.
             </p>
             <p>
                 Jika Status <strong>Gagal</strong>, coba pesan lagi.
