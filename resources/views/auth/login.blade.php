@@ -26,7 +26,7 @@
             {{ $errors->first() }}
           </div>
         @endif
-          <form id="formLogin" method="POST" action="{{ route('Verify.login') }}">
+          <form id="formLogin" method="POST" action="{{ route('verify.login') }}">
 
         {{--  alert ketika session habis --}}
         @if(request('reason') === 'expired')
