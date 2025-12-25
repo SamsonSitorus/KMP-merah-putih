@@ -2,68 +2,92 @@
 
 @section('content')
 @php
-    use App\Models\Port;
-    use App\Models\TicketStock;
+use App\Models\Port;
+use App\Models\TicketStock;
+use App\Models\TicketPrice;
 
     $originId = request()->query('origin_port_id');
     $destinationId = request()->query('destination_port_id');
     $departureDate = request()->query('departure_date');
+    $departureTime = request()->query('departure_time'); // dapat dari request juga
     $dewasaCount = (int) request()->query('dewasa_count', 0);
-    $anakCount = (int) request()->query('anak_count', 0);
+    $bayiCount = (int) request()->query('bayi_count', 0);
 
-    // Support multiple vehicle types: vehicle_types[] and vehicle_counts[]
     $vehicleTypes = (array) request()->query('vehicle_types', []);
     $vehicleCounts = (array) request()->query('vehicle_counts', []);
-    // normalize counts to integers
     $vehicleCounts = array_map(fn($v) => (int) $v, $vehicleCounts);
 
     $origin = $originId ? Port::find($originId) : null;
     $destination = $destinationId ? Port::find($destinationId) : null;
 
-    // Gunakan method model untuk mencari stok tiket agar logic tidak bercampur di view
-    $results = TicketStock::searchByRoute($originId, $destinationId, $departureDate);
-@endphp
-<div class="container py-4">
+    // Ambil semua harga tiket, keyBy 'name' untuk akses gampang
+    $prices = TicketPrice::all()->keyBy('name');
+    $dewasaPrice = $prices['Dewasa']->price ?? 0;
+    $bayiPrice = $prices['Bayi']->price ?? 0;
 
+    $vehiclePrices = [];
+    foreach ($vehicleTypes as $type) {
+        $vehiclePrices[$type] = $prices[$type]->price ?? 0;
+    }
+
+    $results = TicketStock::searchByRoute($originId, $destinationId, $departureDate, $departureTime);
+
+@endphp
+
+<div class="container py-4">
     <!-- Search Summary -->
     <div class="bg-white shadow-sm p-4 rounded mb-4 d-flex justify-content-between align-items-center">
         <div>
             <h4 class="mb-1">{{ $origin->name ?? '-' }} → {{ $destination->name ?? '-' }}</h4>
-            <p class="text-muted mb-0">{{ $departureDate ?? '-' }} | {{ $dewasaCount }} Dewasa • {{ $anakCount }} Anak-anak</p>
+            <p class="text-muted mb-0">{{ $departureDate ?? '-' }} | {{ $dewasaCount }} Dewasa • {{ $bayiCount }} Bayi</p>
         </div>
-
         <a href="{{ route('home') }}" class="btn btn-outline-secondary">Ubah Pencarian</a>
     </div>
 
     @if($results->isEmpty())
-
         <div class="alert alert-warning">
             Tidak ditemukan jadwal untuk rute dan tanggal yang dipilih.
         </div>
-
     @else
-
         <div class="row gy-3">
-
             @foreach($results as $stock)
                 @php
-                    $prices = $stock->prices()->get();
-                    $passengerPrices = $prices->whereNotNull('passenger_type')->groupBy('passenger_type')->map(fn($g) => $g->first()->price);
-                    $vehiclePrices = $prices->whereNotNull('vehicle_type')->groupBy('vehicle_type')->map(fn($g) => $g->first()->price);
+                    // Stok penumpang dan kendaraan berdasarkan kolom di table ticket_stocks
+                    $passengerStock = $stock->stock_passenger ?? 0;
+                    $vehicleStockMap = [
+                        'Mobil' => $stock->stock_roda_4 ?? 0,
+                        'Motor' => $stock->stock_roda_2 ?? 0,
+                    ];
 
-                    $total = 0;
-                    $total += ($dewasaCount * ($passengerPrices['Dewasa'] ?? 0));
-                    $total += ($anakCount * ($passengerPrices['Anak-anak'] ?? 0));
-
-                    $vehicleTotal = 0;
-                    foreach ($vehicleTypes as $i => $vt) {
-                        $cnt = $vehicleCounts[$i] ?? 0;
-                        $unit = $vehiclePrices[$vt] ?? 0;
-                        $vehicleTotal += ($cnt * $unit);
+                    // Batasi jumlah penumpang yang bisa dipesan sesuai stok
+                    $totalPassengersRequested = $dewasaCount + $bayiCount;
+                    if ($totalPassengersRequested > $passengerStock) {
+                        $totalPassengersRequested = $passengerStock;
+                        // Opsional: kamu bisa juga batasi dewasa & bayi secara proporsional jika ingin lebih akurat
                     }
 
+                    // Hitung harga total penumpang dengan stok terbatas
+                    $total = 0;
+                    if ($totalPassengersRequested > 0) {
+                        // Asumsi stok penumpang dibagi proporsional
+                        $dewasaEffective = min($dewasaCount, $totalPassengersRequested);
+                        $bayiEffective = min($bayiCount, $totalPassengersRequested - $dewasaEffective);
+                        $total += ($dewasaEffective * $dewasaPrice) + ($bayiEffective * $bayiPrice);
+                    }
+
+                    // Hitung harga kendaraan dan batasi stok kendaraan
+                    $vehicleTotal = 0;
+                    foreach ($vehicleTypes as $i => $vt) {
+                        $countRequested = $vehicleCounts[$i] ?? 0;
+                        $stockAvailable = $vehicleStockMap[$vt] ?? 0;
+                        $countUsed = min($countRequested, $stockAvailable);
+                        $unitPrice = $vehiclePrices[$vt] ?? 0;
+                        $vehicleTotal += $countUsed * $unitPrice;
+                    }
                     $total += $vehicleTotal;
+
                 @endphp
+
                 <div class="col-12">
                     <div class="offer-card result-card">
                         <!-- Top Information -->
@@ -72,7 +96,13 @@
                                 <h5 class="mb-1">
                                     Berangkat {{ \Carbon\Carbon::parse($stock->departure_time)->format('H:i') }}
                                 </h5>
-                                <div class="result-meta">Stok tersisa: {{ $stock->remaining_stock }}</div>
+                                <div class="result-meta">Stok penumpang tersisa: {{ $passengerStock }}</div>
+                                <div class="result-meta">
+                                    Stok kendaraan:
+                                    @foreach($vehicleStockMap as $type => $stok)
+                                        <div>{{ $type }}: {{ $stok }}</div>
+                                    @endforeach
+                                </div>
                             </div>
                             <div class="text-end">
                                 <div class="result-price">
@@ -84,7 +114,7 @@
                                         <input type="hidden" name="departure_date" value="{{ $departureDate }}">
                                         <input type="hidden" name="departure_time" value="{{ $stock->departure_time }}">
                                         <input type="hidden" name="dewasa_count" value="{{ $dewasaCount }}">
-                                        <input type="hidden" name="anak_count" value="{{ $anakCount }}">
+                                        <input type="hidden" name="bayi_count" value="{{ $bayiCount }}">
                                         @foreach($vehicleTypes as $i => $vt)
                                             <input type="hidden" name="vehicle_types[]" value="{{ $vt }}">
                                             <input type="hidden" name="vehicle_counts[]" value="{{ $vehicleCounts[$i] ?? 0 }}">
@@ -98,20 +128,17 @@
                                 </div>
                             </div>
                         </div>
+
                         <!-- Bottom Detail -->
                         <div class="pt-3 mt-2" style="border-top:1px solid rgba(3,37,76,0.04);">
                             <div class="d-flex gap-4 flex-wrap">
                                 <div>
                                     Dewasa:
-                                    {{ isset($passengerPrices['Dewasa'])
-                                        ? 'Rp ' . number_format($passengerPrices['Dewasa'], 0, ',', '.')
-                                        : '-' }}
+                                    {{ $dewasaPrice ? 'Rp ' . number_format($dewasaPrice, 0, ',', '.') : '-' }}
                                 </div>
                                 <div>
-                                    Anak-anak:
-                                    {{ isset($passengerPrices['Anak-anak'])
-                                        ? 'Rp ' . number_format($passengerPrices['Anak-anak'], 0, ',', '.')
-                                        : '-' }}
+                                    Bayi:
+                                    {{ $bayiPrice ? 'Rp ' . number_format($bayiPrice, 0, ',', '.') : '-' }}
                                 </div>
                                 <div style="min-width: 180px;">
                                     Kendaraan:
@@ -137,3 +164,4 @@
     @endif
 </div>
 @endsection
+    

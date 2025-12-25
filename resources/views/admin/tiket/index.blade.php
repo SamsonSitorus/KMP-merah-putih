@@ -128,6 +128,7 @@
                     </select>
                 </div>
 
+<<<<<<< Updated upstream
                 {{-- Passenger --}}
                 <div class="mb-3 d-none" id="passengerField">
                     <label class="form-label">Passenger Type</label>
@@ -152,6 +153,18 @@
                         <option value="Bus Sedang Roda 4">Bus Sedang Roda 4</option>
                         <option value="Kendaraan Barang Roda 4">Kendaraan Barang Roda 4</option>
                     </select>
+=======
+                {{-- Passenger Category --}}
+                <div class="mb-3">
+                    <label class="form-label">Kategori Penumpang</label>
+                    <input
+                        type="text"
+                        name="passenger_type"
+                        class="form-control"
+                        placeholder="Contoh: Dewasa / Bayi / Motor / Mini Bus / dll"
+                        required
+                    >
+>>>>>>> Stashed changes
                 </div>
 
                 {{-- Price --}}

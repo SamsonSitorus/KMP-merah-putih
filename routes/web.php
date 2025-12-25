@@ -23,6 +23,7 @@ Route::post('/verify/logout', [Authcontroller::class,'logout'])->name('logout');
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/get-price', [HomeController::class, 'getPrice'])->name('get.price');
+Route::get('/get-departure-times', [TicketController::class, 'getDepartureTimes'])->name('get.departure.times');
 
 Route::middleware(['auth', 'customer'])->group(function () {
 

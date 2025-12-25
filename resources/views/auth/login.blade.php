@@ -28,7 +28,7 @@
         {{--  alert ketika session habis --}}
         @if(request('reason') === 'expired')
             <div class="alert alert-warning">
-                Session kamu sudah habis. Silakan login kembali.
+                Silakan login !.
             </div>
         @endif
           <form id="formLogin" method="POST" action="{{ route('verify.login') }}">

@@ -25,7 +25,7 @@
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
                         <div>
                             <label class="form-label">Pelabuhan Asal</label>
-                            <select id="asalSelect" name="origin_port_id" class="form-select">
+                            <select id="asalSelect" name="origin_port_id" class="form-select" required>
                                 <option selected disabled>Pilih Pelabuhan Asal</option>
                                 @foreach ($ports as $port)
                                     <option value="{{ $port->id }}" data-name="{{ strtolower($port->name) }}">
@@ -49,36 +49,35 @@
                             <input type="date" name="departure_date" class="form-control" id="departureDateInput"
                                 min="{{ date('Y-m-d') }}" required>
                         </div>
-
                         <div>
                             <label class="form-label">Jam Keberangkatan</label>
                             <select id="jamselect" name="departure_time" class="form-select">
                                 <option selected disabled>Pilih Jam Keberangkatan</option>
-                                @foreach ($ports as $port)
-                                    <option value="{{ $port->id }}" data-name="{{ strtolower($port->name) }}">
-                                        {{ $port->name }}
-                                    </option>
-                                @endforeach
                             </select>
-                            <input type="text" id="jamKeberangkatan" name="departure_time" class="form-control" readonly>
                         </div>
                     </div>
 
+                    <div class="section">
+   
+                    <input type="hidden" name="booking_items" id="bookingItems">
                     <!-- Passenger selector button now displays selected passengers live -->
                     <div style="margin-bottom: 1rem;">
                         <label class="form-label">Penumpang</label>
                         <button type="button" class="btn-passenger-select" id="passengerSelectBtn">
-                            <span>👥</span> Pilih Penumpang
+                            <span>👥</span> Pilih Penumpang dan Kendaraan
                         </button>
-                        <input type="hidden" name="dewasa_count" id="dewasaCountInput" value="0">
-                        <input type="hidden" name="anak_count" id="anakCountInput" value="0">
-                        <input type="hidden" name="dewasa_price" id="dewasaPriceInput" value="0">
-                        <input type="hidden" name="anak_price" id="anakPriceInput" value="0">
-                        <!-- Vehicle booking fields -->
+                        <!-- Penumpang -->
+                        <input type="hidden" name="passenger_type" id="passengerTypeInput" value="">
+                        <input type="hidden" name="passenger_count" id="passengerCountInput" value="0">
+                        <input type="hidden" name="passenger_price" id="passengerPriceInput" value="0">
+
+                        <!-- Kendaraan -->
                         <input type="hidden" name="vehicle_type" id="vehicleTypeInput" value="">
                         <input type="hidden" name="vehicle_count" id="vehicleCountInput" value="0">
                         <input type="hidden" name="vehicle_price" id="vehiclePriceInput" value="0">
+
                     </div>
+                    
 
                     <!-- Total Price -->
                     <div style="margin-bottom: 1rem;">
@@ -111,78 +110,73 @@
     </div>
 
     <!-- Modal for passenger selection -->
-    <div class="modal-overlay" id="passengerModal">
-        <div class="modal-content">
-            <div class="modal-header">Pilih Penumpang</div>
+<div class="modal-overlay" id="passengerModal" style="display:none;">
+    <div class="modal-content">
+        <div class="modal-header">Pilih Penumpang</div>
 
-            <div class="passenger-card">
-                <!-- Dewasa Row -->
-                <div class="passenger-row">
+        <div class="passenger-card">
+            {{-- Loop untuk penumpang --}}
+            @foreach ($passengerTypes as $ptype)
+                @php
+                    $slug = Str::slug($ptype->name, '_');
+                    // Format harga display
+                    $priceDisplay = $ptype->price ? 'Rp ' . number_format($ptype->price, 0, ',', '.') : '-';
+                @endphp
+                <div class="passenger-row" data-slug="{{ $slug }}">
                     <div class="passenger-info">
-                        <h6>Dewasa</h6>
-                        <small>Usia 5 tahun ke atas</small>
-                        <div class="price-display" id="dewasaPriceDisplay">Harga: -</div>
+                        <h6>{{ $ptype->name }}</h6>
+                        {{-- <small>{{ $ptype->description ?? '' }}</small> --}}
+                        <div class="price-display" id="{{ $slug }}PriceDisplay">Harga: {{ $priceDisplay }}</div>
                     </div>
                     <div class="counter-group">
-                        <button type="button" class="counter-btn" id="minusDewasa">−</button>
-                        <span id="countDewasa" class="counter-display">0</span>
-                        <button type="button" class="counter-btn" id="plusDewasa">+</button>
+                        <button type="button" class="counter-btn" id="minus{{ $slug }}">−</button>
+                        <span id="count{{ $slug }}" class="counter-display">0</span>
+                        <button type="button" class="counter-btn" id="plus{{ $slug }}">+</button>
                     </div>
                 </div>
+            @endforeach
 
-                <!-- Anak-anak Row -->
-                <div class="passenger-row">
-                    <div class="passenger-info">
-                        <h6>Anak-anak</h6>
-                        <small>Usia 2–5 tahun</small>
-                        <div class="price-display" id="anakPriceDisplay">Harga: -</div>
-                    </div>
-                    <div class="counter-group">
-                        <button type="button" class="counter-btn" id="minusAnak">−</button>
-                        <span id="countAnak" class="counter-display">0</span>
-                        <button type="button" class="counter-btn" id="plusAnak">+</button>
+            {{-- Kendaraan --}}
+            <div class="passenger-row" style="align-items: flex-start; gap: .5rem;">
+                <div class="passenger-info" style="flex: 1 1 320px;">
+                    <h6>Kendaraan</h6>
+                    <small>(sudah termasuk hanya supir)</small>
+                    <div class="price-display" id="vehiclePriceDisplay">Harga: -</div>
+                </div>
+                <div style="flex: 1 1 320px;">
+                    <div class="vehicle-list" style="display:flex; flex-direction:column; gap:.5rem;">
+                        @foreach ($vehicleTypes as $vtype)
+                            @php
+                                $slug = Str::slug($vtype->name, '_');
+                                $priceDisplay = $vtype->price ? 'Rp ' . number_format($vtype->price, 0, ',', '.') : '-';
+                            @endphp
+                            <label style="display:flex; align-items:center; gap:.5rem; justify-content:space-between;">
+                                <div style="display:flex; align-items:center; gap:.5rem;">
+                                    <input type="checkbox" class="vehicle-checkbox" data-type="{{ $vtype->name }}"
+                                        id="vehicle_chk_{{ $slug }}">
+                                    <span>{{ $vtype->name }}</span>
+                                </div>
+                                <div style="display:flex; align-items:center; gap:.35rem;">
+                                    <button type="button" class="counter-btn vehicle-minus"
+                                        data-type="{{ $vtype->name }}">−</button>
+                                    <span class="counter-display vehicle-count" data-type="{{ $vtype->name }}"
+                                        id="count_{{ $slug }}">0</span>
+                                    <button type="button" class="counter-btn vehicle-plus"
+                                        data-type="{{ $vtype->name }}">+</button>
+                                    <small class="vehicle-item-price" data-type="{{ $vtype->name }}"
+                                        id="price_{{ $slug }}">{{ $priceDisplay }}</small>
+                                </div>
+                            </label>
+                        @endforeach
                     </div>
                 </div>
-
-                <!-- Kendaraan Row (multi-select) -->
-                <div class="passenger-row" style="align-items: flex-start; gap: .5rem;">
-                    <div class="passenger-info" style="flex: 1 1 320px;">
-                        <h6>Kendaraan</h6>
-                        <small>(sudah termasuk hanya supir)</small>
-                        <div class="price-display" id="vehiclePriceDisplay">Harga: -</div>
-                    </div>
-                    <div style="flex: 1 1 320px;">
-                        <div class="vehicle-list" style="display:flex; flex-direction:column; gap:.5rem;">
-                            @foreach ($vehicleTypes as $vtype)
-                                @php
-                                    $slug = Str::slug($vtype, '_');
-                                @endphp
-                                <label style="display:flex; align-items:center; gap:.5rem; justify-content:space-between;">
-                                    <div style="display:flex; align-items:center; gap:.5rem;">
-                                        <input type="checkbox" class="vehicle-checkbox" data-type="{{ $vtype }}"
-                                            id="vehicle_chk_{{ $slug }}">
-                                        <span>{{ $vtype }}</span>
-                                    </div>
-                                    <div style="display:flex; align-items:center; gap:.35rem;">
-                                        <button type="button" class="counter-btn vehicle-minus"
-                                            data-type="{{ $vtype }}">−</button>
-                                        <span class="counter-display vehicle-count" data-type="{{ $vtype }}"
-                                            id="count_{{ $slug }}">0</span>
-                                        <button type="button" class="counter-btn vehicle-plus"
-                                            data-type="{{ $vtype }}">+</button>
-                                        <small class="vehicle-item-price" data-type="{{ $vtype }}"
-                                            id="price_{{ $slug }}">-</small>
-                                    </div>
-                                </label>
-                            @endforeach
-                        </div>
-                    </div>
-                </div>
-
-                <button type="button" class="btn-done" id="donePassenger">SELESAI</button>
             </div>
+
+            <button type="button" class="btn-done" id="donePassenger">SELESAI</button>
         </div>
     </div>
+</div>
+
 
     <!-- Latest Offers Section -->
     <section id="offers" class="offers-section reveal">
@@ -399,11 +393,16 @@
     </style>
 
     <script>
-        // minimal data for external home.js
-        window.HomePageData = {
-            muaraId: {!! json_encode($ports->firstWhere('name', 'Muara')->id ?? '') !!},
-            sipingganId: {!! json_encode($ports->firstWhere('name', 'Sipinggan')->id ?? '') !!}
-        };
-    </script>
-    <script src="{{ asset('assets/js/home.js') }}"></script>
+    window.HomePageData = {
+        muaraId: {!! json_encode($ports->firstWhere('name', 'Muara')->id ?? null) !!},
+        sipingganId: {!! json_encode($ports->firstWhere('name', 'Sipinggan')->id ?? null) !!}
+    };
+
+    window.AppConfig = {
+        getDepartureTimesUrl: "{{ route('get.departure.times') }}"
+    };
+</script>
+
+<script src="{{ asset('assets/js/home.js') }}"></script>
+
 @endsection

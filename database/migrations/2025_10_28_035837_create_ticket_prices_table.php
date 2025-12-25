@@ -11,15 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('ticket_prices', function (Blueprint $table) {
-            $table->id();
-            $table->string('name'); // Dewasa, Anak, Mobil pickup, dll
-            $table->foreignId('ticket_type_id')->constrained('ticket_types')->cascadeOnDelete();
-            $table->unsignedInteger('price');
-            $table->timestamps();
-            $table->unique(['name']);
-            $table->unique(['ticket_type_id', 'name']);
-        });
+            Schema::create('ticket_prices', function (Blueprint $table) {
+                $table->id();
+                $table->string('name'); // Dewasa, Anak, Mobil pickup, dll
+                $table->foreignId('ticket_type_id')->constrained('ticket_types')->cascadeOnDelete();
+                $table->unsignedInteger('price');
+                $table->timestamps();
+                $table->unique(['name']);
+                $table->unique(['ticket_type_id', 'name']);
+            });
     }
 
     public function down(): void

@@ -52,22 +52,41 @@ class TicketStock extends Model
      * @param string|null $departureDate (Y-m-d)
      * @return \Illuminate\Database\Eloquent\Collection
      */
-    public static function searchByRoute($originId = null, $destinationId = null, $departureDate = null)
-    {
-        $query = self::query();
+    // public static function searchByRoute($originId = null, $destinationId = null, $departureDate = null)
+    // {
+    //     $query = self::query();
 
-        if ($originId) {
-            $query->where('origin_port_id', $originId);
-        }
+    //     if ($originId) {
+    //         $query->where('origin_port_id', $originId);
+    //     }
 
-        if ($destinationId) {
-            $query->where('destination_port_id', $destinationId);
-        }
+    //     if ($destinationId) {
+    //         $query->where('destination_port_id', $destinationId);
+    //     }
 
-        if ($departureDate) {
-            $query->where('departure_date', $departureDate);
-        }
+    //     if ($departureDate) {
+    //         $query->where('departure_date', $departureDate);
+    //     }
 
-        return $query->get();
+    //     return $query->get();
+    // }
+    //   public function prices()
+    // {
+    //     return $this->hasMany(TicketPrice::class, 'ticket_stock_id');
+    // }
+
+    public static function searchByRoute($originId, $destinationId, $departureDate, $departureTime = null)
+{
+    $query = self::where('origin_port_id', $originId)
+                ->where('destination_port_id', $destinationId)
+                ->where('departure_date', $departureDate);
+
+    if ($departureTime) {
+        // Bisa disesuaikan, misal jam tepat atau rentang jam
+        $query->where('departure_time', $departureTime);
     }
+
+    return $query->orderBy('departure_time')->get();
+}
+
 }

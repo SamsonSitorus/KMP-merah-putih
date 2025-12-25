@@ -178,3 +178,70 @@ body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
     overflow-y: auto;
 }
 
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-overlay.active {
+  display: flex !important;
+}
+
+.modal-content {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 8px;
+  max-width: 450px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+}
+
+.passenger-card {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.passenger-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.counter-group button {
+  width: 32px;
+  height: 32px;
+  font-size: 20px;
+  line-height: 20px;
+  border: none;
+  background: #0077d6;
+  color: white;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.counter-group span {
+  margin: 0 0.5rem;
+  min-width: 24px;
+  text-align: center;
+  display: inline-block;
+}
+
+.btn-done {
+  background-color: #0077d6;
+  color: white;
+  padding: 0.6rem 1.2rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 600;
+  align-self: flex-end;
+  margin-top: 1rem;
+}
