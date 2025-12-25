@@ -17,7 +17,7 @@
 
         <div class="hero-content">
             <h1>Temukan Perjalananmu</h1>
-            <p>Set Your Arrival and Departure Schedule at the Port</p>
+            <p>Atur jadwal kedatangan dan keberangkatan Anda di pelabuhan</p>
 
             <!-- Booking Form -->
             <div class="booking-card">
@@ -88,7 +88,7 @@
                     </div>
 
                     <button type="submit" class="btn-search">
-                        🎫 Find Your Ticket
+                        🎫 Temukan Perjalananmu
                     </button>
                 </form>
             </div>
@@ -188,8 +188,7 @@
     <section id="offers" class="offers-section reveal">
         <div style="max-width: 1100px; margin: 0 auto; padding: 0 1rem;">
             <div class="offers-header">
-                <h2>🏷️ Latest Offers</h2>
-                <a href="#">View All Special Offers</a>
+                <h2>🏷️ Penawaran Terbaru</h2>
             </div>
 
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem;">
@@ -336,7 +335,7 @@
             <div style="display: grid; gap: 1.5rem;">
                 <div class="about-card">
                     <div class="about-card-content">
-                        <img src="../assets/img/elements/18.png" alt="About">
+                        <img src="{{ asset('assets/img/kmp1.jpg') }}" alt="About">
                         <div class="about-card-body">
                             <h5>Visi Kami</h5>
                             <p>Menjadi platform terdepan dalam industri transportasi laut yang memberikan pengalaman terbaik
@@ -348,7 +347,7 @@
 
                 <div class="about-card">
                     <div class="about-card-content" style="flex-direction: row-reverse;">
-                        <img src="../assets/img/elements/19.png" alt="About">
+                        <img src="{{ asset('assets/img/kmp2.jpg') }}" alt="About">
                         <div class="about-card-body">
                             <h5>Misi Kami</h5>
                             <p>Menyediakan layanan pemesanan tiket ferry yang mudah, aman, dan terjangkau untuk semua
@@ -360,6 +359,7 @@
             </div>
         </div>
     </section>
+
 
     <!-- Contact Section -->
     {{-- <section id="contact" class="py-5 bg-[#f8fafc] reveal">
@@ -376,6 +376,28 @@
     </section> --}}
 
     <!-- Scripts -->
+
+    <style>
+        .about-card {
+            max-width: 1200px;
+            padding: 30px;
+            margin: 40px auto;
+        }
+
+        .about-card-content {
+            display: flex;
+            align-items: center;
+            gap: 40px;
+        }
+
+        .about-card-content img {
+            width: 520px;
+            height: 380px;
+            object-fit: cover;
+            border-radius: 12px;
+        }
+    </style>
+
     <script>
         // minimal data for external home.js
         window.HomePageData = {

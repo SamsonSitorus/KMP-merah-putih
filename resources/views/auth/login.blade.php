@@ -12,13 +12,10 @@
           <!-- Logo -->
           <div class="app-brand justify-content-center mb-4">
             <a href="/" class="app-brand-link gap-2">
-              <img src="{{ asset('assets/img/cruise.png') }}" alt="Seaventures" 
-           class="d-inline-block align-text-top" style="height:50px;">
-              <span class="app-brand-text demo text-heading fw-bold">KMP Muara Putih</span>
-            </a>
+              <img src="{{ asset('assets/img/logo.webp') }}" alt="Seaventures" 
+           class="d-inline-block align-text-top" style="height:120px;">
+                  </a>
           </div>
-          <!-- /Logo -->
-          <p class="mb-4">Please sign-in to your account and start the adventure</p>
 
           {{-- Alert jika login gagal --}}
          @if ($errors->any())
@@ -44,7 +41,7 @@
                 class="form-control @error('email') is-invalid @enderror"
                 id="email"
                 name="email"
-                placeholder="Enter your email or username"
+                placeholder="Masukkan email atau nama pengguna Anda"
                 value="{{ old('email') }}"
                 autofocus
               />
@@ -55,7 +52,7 @@
 
             <!-- Password -->
             <div class="mb-3 form-password-toggle">
-              <label class="form-label" for="password">Password</label>
+              <label class="form-label" for="password">Kata Sandi</label>
               <div class="input-group input-group-merge">
                 <input
                   type="password"
@@ -75,20 +72,18 @@
             <div class="mb-3 d-flex justify-content-between">
               <div class="form-check">
                 <input class="form-check-input" type="checkbox" id="remember-me" name="remember" />
-                <label class="form-check-label" for="remember-me"> Remember Me </label>
+                <label class="form-check-label" for="remember-me"> Ingat Saya </label>
               </div>
-              <a href="{{--  --}}">
-                <small>Forgot Password?</small>
-              </a>
+              {{-- <a href="{{--  --}}
             </div>
 
             <!-- Button -->
            <div class="mb-3">
             <button id="loginBtn" class="btn btn-primary d-grid w-100" type="submit">
-              <span id="btnText">Login</span>
+              <span id="btnText">Masuk</span>
               <span id="btnLoading" class="d-none">
                 <span class="spinner-border spinner-border-sm me-2" role="status"></span>
-                Loading...
+                Memproses...
               </span>
             </button>
           </div>
@@ -96,9 +91,9 @@
           </form>
 
           <p class="text-center">
-            <span>New on our platform?</span>
+            <span>Baru di platform kami?</span>
             <a href="{{route('register')}}">
-              <span>Create an account</span>
+              <strong>Buat akun</strong>
             </a>
           </p>
 

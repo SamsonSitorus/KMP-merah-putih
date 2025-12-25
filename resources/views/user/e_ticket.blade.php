@@ -63,15 +63,15 @@
 
 <div class="eticket-container">
     <div class="eticket-header">
-        <div class="eticket-title">E-Ticket Booking Confirmation</div>
-        <div class="eticket-subtitle">Booking ID: {{ $booking->id }}</div>
-        <div class="eticket-subtitle">Date of Issue: {{ now()->format('d-m-Y') }}</div>
+        <div class="eticket-title">Konfirmasi E-Tiket Pemesanan</div>
+        <div class="eticket-subtitle">ID Pemesanan: {{ $booking->id }}</div>
+        <div class="eticket-subtitle">Tanggal Penerbitan: {{ now()->format('d-m-Y') }}</div>
     </div>
 
     <div class="eticket-section">
-        <h3>Passenger Info</h3>
+        <h3>Informasi Penumpang</h3>
         <div class="eticket-detail-row">
-            <div>Name</div>
+            <div>Nama</div>
             <div>{{ $booking->user->name ?? 'N/A' }}</div>
         </div>
         <div class="eticket-detail-row">
@@ -81,31 +81,31 @@
     </div>
 
     <div class="eticket-section">
-        <h3>Booking Details</h3>
+        <h3>Detail Pemesanan</h3>
         <div class="eticket-detail-row">
-            <div>Ticket Stock ID</div>
+            <div>ID Tiket Stock</div>
             <div>{{ $booking->ticket_stock_id }}</div>
         </div>
         <div class="eticket-detail-row">
-            <div>Departure Date</div>
+            <div>Tanggal Keberangkatan</div>
             <div>{{ $booking->departure_date }}</div>
         </div>
         <div class="eticket-detail-row">
-            <div>Departure Time</div>
+            <div>Waktu Keberangkatan</div>
             <div>{{ $booking->departure_time }}</div>
         </div>
         <div class="eticket-detail-row">
-            <div>Adults</div>
+            <div>Penumpang Dewasa</div>
             <div>{{ $booking->dewasa_count }}</div>
         </div>
         <div class="eticket-detail-row">
-            <div>Children</div>
+            <div>Penumpang Anak-anak</div>
             <div>{{ $booking->anak_count }}</div>
         </div>
     </div>
 
     <div class="eticket-section">
-        <h3>Vehicle Details</h3>
+        <h3>Detail Kendaraan</h3>
         @if($booking->vehicles->count())
             @foreach($booking->vehicles as $vehicle)
                 <div class="eticket-detail-row">
@@ -114,12 +114,12 @@
                 </div>
             @endforeach
         @else
-            <div>No vehicles booked</div>
+            <div>Tidak ada kendaraan yang dipesan</div>
         @endif
     </div>
 
     <div class="eticket-section">
-        <h3>Total Price</h3>
+        <h3>Total Harga</h3>
         <div class="eticket-detail-row">
             <div></div>
             <div><strong>Rp {{ number_format($booking->total_price, 0, ',', '.') }}</strong></div>
@@ -127,7 +127,7 @@
     </div>
 
     <div class="eticket-footer no-print">
-        <button class="btn-print" onclick="window.print()">Print / Save PDF</button>
+        <button class="btn-print" onclick="window.print()">Cetak / Simpan PDF</button>
     </div>
 </div>
 

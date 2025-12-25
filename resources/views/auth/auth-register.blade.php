@@ -17,8 +17,8 @@
                   <span class="app-brand-text demo text-heading fw-bold">KMP Muara Putih</span>
                 </a>
               </div>
-              <!-- /Logo -->
-              <h4 class="mb-1">Adventure starts here 🚀</h4>
+              {{-- <!-- /Logo -->
+              <h4 class="mb-1">Petualangan dimulai di sini 🚀</h4> --}}
 
              <form id="formAuthentication"
                 method="POST"
@@ -80,7 +80,7 @@
 
               {{-- Password --}}
               <div class="mb-3">
-                  <label for="password" class="form-label">Password</label>
+                  <label for="password" class="form-label">Kata Sandi</label>
                   <div class="input-group">
                     <input 
                       type="password" 
@@ -94,10 +94,48 @@
                       <i class="bx bx-hide"></i>
                     </button>
                   </div>
+                  
+                  {{-- Password Strength Indicator --}}
+                  <div class="mt-2" id="passwordStrengthContainer" style="display: none;">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                      <small class="text-muted">Kekuatan password:</small>
+                      <small id="passwordStrengthText" class="fw-medium"></small>
+                    </div>
+                    <div class="progress" style="height: 5px;">
+                      <div id="passwordStrengthBar" 
+                           class="progress-bar" 
+                           role="progressbar" 
+                           style="width: 0%; transition: width 0.3s;">
+                      </div>
+                    </div>
+                    <div id="passwordCriteria" class="mt-2">
+                      <small class="d-block">
+                        <i id="criteriaLength" class="bx bx-x text-danger me-1"></i>
+                        Minimal 8 karakter
+                      </small>
+                      <small class="d-block">
+                        <i id="criteriaLowercase" class="bx bx-x text-danger me-1"></i>
+                        Minimal 1 huruf kecil
+                      </small>
+                      <small class="d-block">
+                        <i id="criteriaUppercase" class="bx bx-x text-danger me-1"></i>
+                        Minimal 1 huruf besar
+                      </small>
+                      <small class="d-block">
+                        <i id="criteriaNumber" class="bx bx-x text-danger me-1"></i>
+                        Minimal 1 angka
+                      </small>
+                      <small class="d-block">
+                        <i id="criteriaSpecial" class="bx bx-x text-danger me-1"></i>
+                        Minimal 1 karakter khusus (@$!%*?&)
+                      </small>
+                    </div>
+                  </div>
+                  
                   @error('password') 
                     <div class="invalid-feedback d-block">{{ $message }}</div> 
                   @enderror
-                  <small class="text-muted">Minimal 8 karakter dengan kombinasi huruf dan angka</small>
+                  <small class="text-muted">Password harus mengandung kombinasi huruf besar, huruf kecil, angka, dan karakter khusus</small>
               </div>
 
               {{-- Confirm Password --}}
@@ -115,6 +153,18 @@
                     <button class="btn btn-outline-secondary" type="button" id="togglePasswordConfirmation">
                       <i class="bx bx-hide"></i>
                     </button>
+                  </div>
+                  <div id="passwordMatch" class="mt-1" style="display: none;">
+                    <small>
+                      <i class="bx bx-check text-success"></i>
+                      <span>Password cocok</span>
+                    </small>
+                  </div>
+                  <div id="passwordMismatch" class="mt-1" style="display: none;">
+                    <small class="text-danger">
+                      <i class="bx bx-x"></i>
+                      <span>Password tidak cocok</span>
+                    </small>
                   </div>
               </div>
 
@@ -142,7 +192,7 @@
               </div>
 
               {{-- Button --}}
-              <button id="registerBtn" class="btn btn-primary w-100" type="submit">
+              <button id="registerBtn" class="btn btn-primary w-100" type="submit" disabled>
                   <span id="btnText">Daftar Sekarang</span>
                   <span id="btnLoading" class="d-none">
                       <span class="spinner-border spinner-border-sm me-2"></span>
@@ -253,11 +303,249 @@
           document.getElementById('termsError').style.display = 'none';
         });
 
+        // Password validation and strength checking
+        const passwordInput = document.getElementById('password');
+        const confirmPasswordInput = document.getElementById('password_confirmation');
+        const passwordStrengthContainer = document.getElementById('passwordStrengthContainer');
+        const passwordStrengthBar = document.getElementById('passwordStrengthBar');
+        const passwordStrengthText = document.getElementById('passwordStrengthText');
+        const registerBtn = document.getElementById('registerBtn');
+
+        // Check password strength and combination
+        function checkPasswordStrength(password) {
+          const criteria = {
+            length: password.length >= 8,
+            lowercase: /[a-z]/.test(password),
+            uppercase: /[A-Z]/.test(password),
+            number: /[0-9]/.test(password),
+            special: /[@$!%*?&]/.test(password)
+          };
+
+          let score = 0;
+          let totalCriteria = Object.keys(criteria).length;
+          
+          Object.values(criteria).forEach(met => {
+            if (met) score++;
+          });
+
+          // Update criteria icons
+          updateCriteriaIcons(criteria);
+
+          // Calculate percentage
+          let percentage = (score / totalCriteria) * 100;
+
+          // Determine strength level
+          let strengthLevel = '';
+          let barColor = '';
+          
+          if (score === 0) {
+            strengthLevel = 'Sangat Lemah';
+            barColor = '#dc3545'; // Red
+          } else if (score <= 2) {
+            strengthLevel = 'Lemah';
+            barColor = '#ffc107'; // Yellow
+          } else if (score <= 3) {
+            strengthLevel = 'Cukup';
+            barColor = '#17a2b8'; // Teal
+          } else if (score <= 4) {
+            strengthLevel = 'Kuat';
+            barColor = '#28a745'; // Green
+          } else {
+            strengthLevel = 'Sangat Kuat';
+            barColor = '#007bff'; // Blue
+          }
+
+          // Update UI
+          if (password.length > 0) {
+            passwordStrengthContainer.style.display = 'block';
+            passwordStrengthBar.style.width = percentage + '%';
+            passwordStrengthBar.style.backgroundColor = barColor;
+            passwordStrengthText.textContent = strengthLevel;
+            passwordStrengthText.className = 'fw-medium';
+            
+            // Set text color based on strength
+            if (score <= 1) {
+              passwordStrengthText.classList.add('text-danger');
+              passwordStrengthText.classList.remove('text-warning', 'text-info', 'text-success', 'text-primary');
+            } else if (score <= 2) {
+              passwordStrengthText.classList.add('text-warning');
+              passwordStrengthText.classList.remove('text-danger', 'text-info', 'text-success', 'text-primary');
+            } else if (score <= 3) {
+              passwordStrengthText.classList.add('text-info');
+              passwordStrengthText.classList.remove('text-danger', 'text-warning', 'text-success', 'text-primary');
+            } else if (score <= 4) {
+              passwordStrengthText.classList.add('text-success');
+              passwordStrengthText.classList.remove('text-danger', 'text-warning', 'text-info', 'text-primary');
+            } else {
+              passwordStrengthText.classList.add('text-primary');
+              passwordStrengthText.classList.remove('text-danger', 'text-warning', 'text-info', 'text-success');
+            }
+          } else {
+            passwordStrengthContainer.style.display = 'none';
+          }
+
+          return {
+            score: score,
+            criteria: criteria,
+            isValid: score >= 3 && criteria.length && criteria.lowercase && criteria.uppercase && criteria.number && criteria.special
+          };
+        }
+
+        // Update criteria icons based on validation
+        function updateCriteriaIcons(criteria) {
+          const icons = {
+            length: document.getElementById('criteriaLength'),
+            lowercase: document.getElementById('criteriaLowercase'),
+            uppercase: document.getElementById('criteriaUppercase'),
+            number: document.getElementById('criteriaNumber'),
+            special: document.getElementById('criteriaSpecial')
+          };
+
+          for (const [key, icon] of Object.entries(icons)) {
+            if (criteria[key]) {
+              icon.classList.remove('bx-x', 'text-danger');
+              icon.classList.add('bx-check', 'text-success');
+            } else {
+              icon.classList.remove('bx-check', 'text-success');
+              icon.classList.add('bx-x', 'text-danger');
+            }
+          }
+        }
+
+        // Check password match
+        function checkPasswordMatch() {
+          const password = passwordInput.value;
+          const confirmPassword = confirmPasswordInput.value;
+          const matchDiv = document.getElementById('passwordMatch');
+          const mismatchDiv = document.getElementById('passwordMismatch');
+
+          if (confirmPassword.length === 0) {
+            matchDiv.style.display = 'none';
+            mismatchDiv.style.display = 'none';
+            return false;
+          }
+
+          if (password === confirmPassword) {
+            matchDiv.style.display = 'block';
+            mismatchDiv.style.display = 'none';
+            return true;
+          } else {
+            matchDiv.style.display = 'none';
+            mismatchDiv.style.display = 'block';
+            return false;
+          }
+        }
+
+        // Validate form before enabling submit button
+        function validateForm() {
+          const password = passwordInput.value;
+          const confirmPassword = confirmPasswordInput.value;
+          const termsChecked = document.getElementById('terms').checked;
+          
+          const passwordStrength = checkPasswordStrength(password);
+          const passwordsMatch = checkPasswordMatch();
+          
+          const isValidPassword = passwordStrength.isValid;
+          const isValidForm = isValidPassword && passwordsMatch && termsChecked;
+          
+          // Enable/disable submit button
+          registerBtn.disabled = !isValidForm;
+          
+          // Add/remove visual feedback
+          if (!isValidPassword && password.length > 0) {
+            passwordInput.classList.add('is-invalid');
+            passwordInput.classList.remove('is-valid');
+          } else if (isValidPassword) {
+            passwordInput.classList.add('is-valid');
+            passwordInput.classList.remove('is-invalid');
+          } else {
+            passwordInput.classList.remove('is-invalid', 'is-valid');
+          }
+          
+          if (!passwordsMatch && confirmPassword.length > 0) {
+            confirmPasswordInput.classList.add('is-invalid');
+            confirmPasswordInput.classList.remove('is-valid');
+          } else if (passwordsMatch && confirmPassword.length > 0) {
+            confirmPasswordInput.classList.add('is-valid');
+            confirmPasswordInput.classList.remove('is-invalid');
+          } else {
+            confirmPasswordInput.classList.remove('is-invalid', 'is-valid');
+          }
+          
+          return isValidForm;
+        }
+
+        // Event listeners for password validation
+        passwordInput.addEventListener('input', function() {
+          checkPasswordStrength(this.value);
+          checkPasswordMatch();
+          validateForm();
+        });
+
+        confirmPasswordInput.addEventListener('input', function() {
+          checkPasswordMatch();
+          validateForm();
+        });
+
+        document.getElementById('terms').addEventListener('change', function() {
+          validateForm();
+        });
+
+        // Initial form validation
+        validateForm();
+
         // Form submission handler
         document.getElementById('formAuthentication').addEventListener('submit', function(e) {
+          const password = passwordInput.value;
+          const confirmPassword = confirmPasswordInput.value;
           const termsCheckbox = document.getElementById('terms');
           const termsError = document.getElementById('termsError');
           
+          // Validate password strength
+          const passwordStrength = checkPasswordStrength(password);
+          if (!passwordStrength.isValid) {
+            e.preventDefault();
+            
+            // Show error message
+            const errorMessage = 'Password harus mengandung minimal 8 karakter dengan kombinasi huruf besar, huruf kecil, angka, dan karakter khusus (@$!%*?&)';
+            
+            // Create or update error display
+            let existingError = passwordInput.parentElement.querySelector('.password-error');
+            if (!existingError) {
+              existingError = document.createElement('div');
+              existingError.className = 'invalid-feedback password-error d-block';
+              passwordInput.parentElement.appendChild(existingError);
+            }
+            existingError.textContent = errorMessage;
+            passwordInput.classList.add('is-invalid');
+            
+            // Scroll to error
+            passwordInput.scrollIntoView({ 
+              behavior: 'smooth', 
+              block: 'center' 
+            });
+            
+            // Focus on password input
+            passwordInput.focus();
+            
+            return false;
+          }
+          
+          // Validate password match
+          if (password !== confirmPassword) {
+            e.preventDefault();
+            
+            confirmPasswordInput.classList.add('is-invalid');
+            confirmPasswordInput.scrollIntoView({ 
+              behavior: 'smooth', 
+              block: 'center' 
+            });
+            confirmPasswordInput.focus();
+            
+            return false;
+          }
+          
+          // Validate terms
           if (!termsCheckbox.checked) {
             e.preventDefault();
             
@@ -376,29 +664,6 @@
             e.target.value = value;
           });
         }
-
-        // Password strength indicator (optional)
-        const passwordInput = document.getElementById('password');
-        if (passwordInput) {
-          passwordInput.addEventListener('input', function() {
-            const strength = checkPasswordStrength(this.value);
-            updatePasswordStrengthIndicator(strength);
-          });
-        }
-
-        function checkPasswordStrength(password) {
-          let score = 0;
-          if (password.length >= 8) score++;
-          if (/[A-Z]/.test(password)) score++;
-          if (/[0-9]/.test(password)) score++;
-          if (/[^A-Za-z0-9]/.test(password)) score++;
-          return score;
-        }
-
-        function updatePasswordStrengthIndicator(score) {
-          // Optional: Add password strength indicator UI
-          console.log('Password strength score:', score);
-        }
       });
 
       // Clear saved data when navigating away
@@ -408,4 +673,37 @@
         }
       });
     </script>
+    
+    <style>
+      .progress {
+        background-color: #e9ecef;
+        border-radius: 0.375rem;
+        overflow: hidden;
+      }
+      
+      .progress-bar {
+        border-radius: 0.375rem;
+      }
+      
+      #passwordCriteria small {
+        font-size: 0.8rem;
+        margin-bottom: 0.25rem;
+      }
+      
+      #passwordCriteria i {
+        font-size: 0.9rem;
+      }
+      
+      .is-valid {
+        border-color: #28a745 !important;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3e%3cpath fill='%2328a745' d='M2.3 6.73L.6 4.53c-.4-1.04.46-1.4 1.1-.8l1.1 1.4 3.4-3.8c.6-.63 1.6-.27 1.2.7l-4 4.6c-.43.5-.8.4-1.1.1z'/%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right calc(0.375em + 0.1875rem) center;
+        background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
+      }
+      
+      .is-invalid {
+        border-color: #dc3545 !important;
+      }
+    </style>
     @endpush
