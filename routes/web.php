@@ -15,9 +15,6 @@ Route::get('/login', [Authcontroller::class,'showLoginForm'])->name('login');
 Route::get('/register', [Authcontroller::class,'showRegisterForm'])->name('register');
 Route::post('/verify/logout', [Authcontroller::class,'logout'])->name('logout');
 Route::post('/Verify/register', [AuthController::class, 'register'])->name('verify.register');
-Route::post('/verify/Login', [AuthController::class, 'login'])->name('Verify.login');
-
-Route::post('/verify/register', [AuthController::class, 'register'])->name('verify.register');
 Route::post('/verify/login', [AuthController::class, 'login'])->name('verify.login');
 Route::post('/verify/logout', [Authcontroller::class,'logout'])->name('logout');
 
@@ -66,6 +63,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::get('/order-list', [BookingAdminController::class, 'index']);
     Route::get('/order-detail/{id}', [BookingAdminController::class, 'detail'])
         ->whereNumber('id');
+
+    Route::get('/order/offline', [BookingAdminController::class, 'openForm']);
 
     Route::get('/order/{id}/update-status-order', [BookingAdminController::class, 'update']);
 

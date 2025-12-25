@@ -121,7 +121,7 @@
               <span class="menu-header-text">Pemesanan Langsung</span>
             </li>
             <li class="menu-item">
-              <a href="javascript:void(0);" class="menu-link menu-toggle">
+              <a href="/admin/order/offline" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-file"></i>
                 <div data-i18n="Account Settings">Tambah Pemesanan</div>
               </a>

@@ -86,4 +86,8 @@ class BookingAdminController extends Controller
 
         return redirect()->back()->with('success', 'Status booking berhasil diperbarui');
     }
+
+    public function openForm(){
+        return view('admin.order.add_order');
+    }
 }
