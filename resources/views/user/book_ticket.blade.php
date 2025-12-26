@@ -18,6 +18,8 @@
     .bk-btn-primary { background: linear-gradient(90deg,#0077d6 0%, #ff8c42 100%); border:none; color:white; font-weight:800; }
     .bk-note { font-size:0.82rem; color:#525252; }
     .text-muted-2 { color:#7b8794; }
+    .passenger-section { background: #f8fafc; padding: 1.2rem; border-radius: 8px; margin-bottom: 1.5rem; }
+    .passenger-inputs-row { display: flex; flex-direction: column; gap: 0.8rem; }
 </style>
 
 <div class="container py-5">
@@ -37,11 +39,9 @@
                 $departureTime = request()->query('departure_time');
                 $dewasaCount = (int) request()->query('dewasa_count', 0);
                 $anakCount = (int) request()->query('anak_count', 0);
-                // Support multiple vehicle types passed from the search step
                 $vehicleTypes = (array) request()->query('vehicle_types', []);
                 $vehicleCounts = (array) request()->query('vehicle_counts', []);
                 $vehicleCounts = array_map(fn($v) => (int) $v, $vehicleCounts);
-                // legacy single values (for backward compatibility)
                 $vehicleType = $vehicleTypes[0] ?? null;
                 $vehicleCount = (int) ($vehicleCounts[0] ?? 0);
                 $totalPrice = request()->query('total_price');
@@ -49,59 +49,17 @@
 
             <!-- Detail Pemesanan -->
             <div class="booking-detail-card mb-4">
-                <div class="bk-card-header">Detail Pemesanan</div>
+                <div class="bk-card-header">Detail Pemesanan & Nama Penumpang</div>
                 <div class="card-body">
-                    <!-- @if(session('booking_id'))
-                        <div class="mb-3 text-center">
-                            <a href="{{ route('book_ticket.download', session('booking_id')) }}" target="_blank" class="btn bk-btn-primary w-50 rounded-pill">
-                                Download E-Ticket
-                            </a>
+                    @if ($errors->any())
+                        <div class="alert alert-danger">
+                            <ul>
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
                         </div>
-                    @endif -->
-                    <!-- <form id="paymentForm" action="{{ route('book_ticket.detail') }}" method="POST" enctype="multipart/form-data">
-                        <div class="mb-2">
-                            <div class="bk-detail-row">
-                                <div><span class="fw-semibold">Ticket Stock ID</span><div class="bk-small text-muted-2">ID untuk referensi pembayaran</div></div>
-                                <div class="text-end">{{ $ticketStockId ?? '-' }}</div>
-                            </div>
-
-                            <div class="bk-detail-row">
-                                <div><span class="fw-semibold">Keberangkatan</span><div class="bk-small text-muted-2">Tanggal & waktu</div></div>
-                                <div class="text-end">{{ $departureDate ?? '-' }} <br><small class="bk-small">{{ $departureTime ?? '-' }}</small></div>
-                            </div>
-
-                            <div class="bk-detail-row">
-                                <div><span class="fw-semibold">Penumpang</span><div class="bk-small text-muted-2">Jumlah dan kategori</div></div>
-                                <div class="text-end">{{ $dewasaCount }} Dewasa<br><small class="bk-small">{{ $anakCount }} Anak-anak</small></div>
-                            </div>
-
-                            <div class="bk-detail-row">
-                                <div><span class="fw-semibold">Kendaraan</span><div class="bk-small text-muted-2">Tipe & jumlah kendaraan</div></div>
-                                <div class="text-end">
-                                    @if(count($vehicleTypes))
-                                        @foreach($vehicleTypes as $i => $vt)
-                                            <div>{{ $vt }} × {{ $vehicleCounts[$i] ?? 0 }}</div>
-                                        @endforeach
-                                    @else
-                                        Tidak membawa kendaraan
-                                    @endif
-                                </div>
-                            </div>
-
-                            <div class="bk-detail-row" style="border-bottom:none; padding-top:0.8rem;">
-                                <div><span class="fw-semibold">Total Harga</span><div class="bk-small text-muted-2">Sudah termasuk biaya administrasi</div></div>
-                                <div class="text-end bk-price">{{ $totalPrice ? 'Rp ' . number_format($totalPrice,0,',','.') : 'Rp 0' }}</div>
-                            </div>
-                            <div class="d-flex gap-2">
-                                <a href="{{ route('home') }}" class="btn btn-outline-secondary w-100 rounded-pill">
-                                    Kembali
-                                </a>
-                                <button type="submit" class="btn bk-btn-primary w-100 rounded-pill" id="btnLanjut">
-                                    Lanjut Pembayaran
-                                </button>
-                            </div>
-                        </div>
-                    </form> -->
+                    @endif
                     <form id="paymentForm" action="{{ route('book_ticket.detail') }}" method="POST">
                         @csrf
                         <input type="hidden" name="ticket_stock_id" value="{{ $ticketStockId }}">
@@ -115,15 +73,8 @@
                             <input type="hidden" name="vehicle_types[]" value="{{ $vt }}">
                             <input type="hidden" name="vehicle_counts[]" value="{{ $vehicleCounts[$i] }}">
                         @endforeach
-                        <div class="mb-2">
 
-                            <!-- <div class="bk-detail-row">
-                                <div>
-                                    <span class="fw-semibold">Ticket Stock ID</span>
-                                    <div class="bk-small text-muted-2">ID untuk referensi pembayaran</div>
-                                </div>
-                                <div class="text-end">{{ $ticketStockId }}</div>
-                            </div> -->
+                        <div class="mb-2">
 
                             <div class="bk-detail-row">
                                 <div>
@@ -174,7 +125,78 @@
                                 </div>
                             </div>
 
-                            <div class="d-flex gap-2">
+                            @if($dewasaCount > 0 || $anakCount > 0)
+                                <div class="passenger-section mt-4">
+                                    <h5 class="bk-field-label mb-3">Masukkan Nama Penumpang</h5>
+
+                                    @if($dewasaCount > 0)
+                                        <div class="mb-3">
+                                            <label class="form-label fw-semibold" style="color:#0f1724;">👤 Penumpang Dewasa</label>
+                                            <div class="passenger-inputs-row">
+                                                @for($i = 1; $i <= $dewasaCount; $i++)
+                                                    <input 
+                                                        type="text" 
+                                                        name="passengers[dewasa][]" 
+                                                        class="form-control" 
+                                                        placeholder="Nama penumpang dewasa #{{ $i }}"
+                                                        required>
+                                                @endfor
+                                            </div>
+                                        </div>
+                                    @endif
+
+                                    @if($anakCount > 0)
+                                        <div class="mb-3">
+                                            <label class="form-label fw-semibold" style="color:#0f1724;">👶 Penumpang Anak-anak</label>
+                                            <div class="passenger-inputs-row">
+                                                @for($i = 1; $i <= $anakCount; $i++)
+                                                    <input 
+                                                        type="text" 
+                                                        name="passengers[anak][]" 
+                                                        class="form-control" 
+                                                        placeholder="Nama penumpang anak-anak #{{ $i }}"
+                                                        required>
+                                                @endfor
+                                            </div>
+                                        </div>
+                                    @endif
+                                </div>
+                                <div class="passenger-section mt-4">
+    <h5 class="bk-field-label mb-3">Data Kendaraan</h5>
+    @foreach($vehicleTypes as $i => $vt)
+        @php 
+            $count = $vehicleCounts[$i];
+        @endphp
+
+        <div class="vehicle-card mb-3 p-3"
+            style="background:#f1f5f9;border-radius:12px;border:1px solid #dbe2ea;">
+
+            <h6 class="fw-bold mb-3" style="color:#0f1724;">
+                🚗 {{ ucfirst($vt) }} — {{ $count }} unit
+            </h6>
+
+            @for($n = 1; $n <= $count; $n++)
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">
+                        Nomor Plat #{{ $n }}
+                        @if(strtolower($vt) === 'sepeda')
+                            <small class="text-muted">(opsional)</small>
+                        @endif
+                    </label>
+
+                    <input 
+                        type="text"
+                        name="no_plat[{{ $i }}][]"
+                        class="form-control"
+                        placeholder="Cth: BB1234XY">
+                </div>
+            @endfor
+
+        </div>
+    @endforeach
+</div>
+                            @endif
+                            <div class="d-flex gap-2 mt-4">
                                 <a href="{{ route('home') }}" class="btn btn-outline-secondary w-100 rounded-pill">
                                     Kembali
                                 </a>
@@ -191,41 +213,39 @@
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function(){
-        const realInput = document.getElementById('payment_proof');
-        const fileThumb = document.getElementById('fileThumb');
-        const fileName = document.getElementById('fileName');
-        const fileHelp = document.getElementById('fileHelp');
-        const filePreview = document.getElementById('filePreview');
-        const allowedTypes = ['image/jpeg','image/png','application/pdf'];
-        const maxSize = 2 * 1024 * 1024; // 2MB
+document.addEventListener('DOMContentLoaded', function(){
+    const realInput = document.getElementById('payment_proof');
+    const fileThumb = document.getElementById('fileThumb');
+    const fileName = document.getElementById('fileName');
+    const fileHelp = document.getElementById('fileHelp');
+    const allowedTypes = ['image/jpeg','image/png','application/pdf'];
+    const maxSize = 2 * 1024 * 1024;
 
-        // When user clicks the custom label, it triggers the hidden input via for attribute
+    if (realInput) {
         realInput.addEventListener('change', function(e){
             const f = this.files[0];
             if (!f) return;
 
-            // Validate type
             if (!allowedTypes.includes(f.type)) {
-                if (window.showAlert) window.showAlert('Tipe file tidak didukung. Gunakan JPG, PNG, atau PDF.', 'warning', { title: 'Tipe File' });
+                if (window.showAlert) window.showAlert('Tipe file tidak didukung.', 'warning');
                 this.value = '';
                 return;
             }
 
-            // Validate size
             if (f.size > maxSize) {
-                if (window.showAlert) window.showAlert('Ukuran file melebihi 2MB. Kompres atau pilih file yang lebih kecil.', 'warning', { title: 'Ukuran File' });
+                if (window.showAlert) window.showAlert('Ukuran file lebih dari 2MB.', 'warning');
                 this.value = '';
                 return;
             }
 
-            // Update UI
             fileName.textContent = f.name;
-            fileHelp.textContent = (f.type === 'application/pdf') ? 'PDF terpilih — pratinjau tidak tersedia.' : 'Pratinjau gambar di samping.';
+            fileHelp.textContent = (f.type === 'application/pdf') 
+                ? 'PDF terpilih — pratinjau tidak tersedia.' 
+                : 'Pratinjau gambar di samping.';
 
             if (f.type.startsWith('image/')) {
                 const reader = new FileReader();
-                reader.onload = function(ev){
+                reader.onload = ev => {
                     fileThumb.src = ev.target.result;
                     fileThumb.style.display = 'block';
                 };
@@ -235,27 +255,35 @@
                 fileThumb.src = '';
             }
         });
-
-        // Form submit: small client-side guard
-        const form = document.getElementById('paymentForm');
-        form.addEventListener('submit', function(e){
-            const f = realInput.files[0];
-            if (!f) {
-                if (window.showAlert) window.showAlert('Silakan unggah bukti pembayaran sebelum melanjutkan.', 'warning', { title: 'Bukti Pembayaran' });
+    }
+    const form = document.getElementById('paymentForm');
+    form.addEventListener('submit', function(e){
+        const nameInputs = form.querySelectorAll('input[name^="passengers"]');
+        for (let input of nameInputs) {
+            if (!input.value.trim()) {
                 e.preventDefault();
+                window.showAlert?.('Harap isi semua nama penumpang.', 'warning');
                 return;
             }
-            // Already validated on change, but re-check
-            if (!allowedTypes.includes(f.type) || f.size > maxSize) {
-                if (window.showAlert) window.showAlert('File tidak valid. Periksa tipe atau ukuran file.', 'error', { title: 'File Invalid' });
-                e.preventDefault();
-                return;
+        }
+        const vehicleRows = document.querySelectorAll('[data-vehicle-row]');
+        for (let row of vehicleRows) {
+            let type = row.getAttribute('data-type'); 
+            let plateInputs = row.querySelectorAll('.vehicle-plate-input');
+            if (type !== 'sepeda') {
+                for (let inp of plateInputs) {
+                    if (!inp.value.trim()) {
+                        e.preventDefault();
+                        window.showAlert?.(
+                            `Harap isi nomor plat untuk kendaraan tipe ${type}.`,
+                            'warning'
+                        );
+                        return;
+                    }
+                }
             }
-
-            // Show small feedback toast
-            if (window.showAlert) window.showAlert('Mengunggah bukti... Mohon tunggu.', 'info', { title: 'Upload' });
-        });
+        }
     });
+});
 </script>
-
 @endsection

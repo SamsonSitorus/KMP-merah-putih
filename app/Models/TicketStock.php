@@ -12,14 +12,14 @@ class TicketStock extends Model
         'ticket_type_id',
         'departure_date',
         'departure_time',
-<<<<<<< HEAD
+// <<<<<<< HEAD
         'total_stock',
-        'remaining_stock'
-=======
+        'remaining_stock',
+// =======
         'stock_roda_4',
         'stock_roda_2',
         'stock_passenger'
->>>>>>> 84a8b6a677b93c24d6e3772cab3801e4de0bb2b9
+// >>>>>>> 84a8b6a677b93c24d6e3772cab3801e4de0bb2b9
     ];
 
     public function originPort()

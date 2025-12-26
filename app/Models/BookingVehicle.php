@@ -14,9 +14,7 @@ class BookingVehicle extends Model
     protected $fillable = [
         'booking_id',
         'vehicle_type',
-        'count',
-        'unit_price',
-        'total_price'
+        'no_plat',
     ];
 
     public function booking()
