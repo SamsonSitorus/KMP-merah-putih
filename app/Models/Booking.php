@@ -16,11 +16,11 @@ class Booking extends Model
         'ticket_stock_id',
         'departure_date',
         'departure_time',
+        'dewasa_count',
+        'anak_count',
         'total_price',
         'payment_proof_path',
         'status',
-        'booksource',
-        'booker_name'    
     ];
 
     public function user()
@@ -38,8 +38,8 @@ class Booking extends Model
         return $this->belongsTo(TicketStock::class, 'ticket_stock_id');
     }
 
-    public function passenger()
+    public function Pessanger()
     {
-        return $this->hasMany(BookingPassengers::class);
+        return $this->hasMany(BookingPessanger::class);
     }
 }

@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('booking_id')->constrained()->onDelete('cascade');
             $table->string('name');
             $table->string('category');
+            // $table->string('category');
             $table->timestamps();
         });
     }
@@ -25,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('booking_passengers');
+        Schema::dropIfExists('booking_passenger');
     }
 };

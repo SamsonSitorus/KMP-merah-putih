@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class BookingPassengers extends Model
+class BookingPessanger extends Model
 {
     protected $fillable = [
         'booking_id', 'name','category'
@@ -14,4 +14,4 @@ class BookingPassengers extends Model
     {
         return $this->belongsTo(Booking::class);
     }
-}   
+}

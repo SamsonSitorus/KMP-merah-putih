@@ -12,7 +12,10 @@ return new class extends Migration
             $table->id();
             $table->foreignId('booking_id')->constrained('bookings')->onDelete('cascade');
             $table->string('vehicle_type');
+            $table->integer('count')->default(0);
             $table->string('no_plat');
+            // $table->decimal('unit_price', 12, 2)->default(0);
+            // $table->decimal('total_price', 12, 2)->default(0);
             $table->timestamps();
         });
     }
