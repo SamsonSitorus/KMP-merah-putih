@@ -1,167 +1,198 @@
 @extends('layouts.app')
 
 @section('content')
-@php
-use App\Models\Port;
-use App\Models\TicketStock;
-use App\Models\TicketPrice;
-
-    $originId = request()->query('origin_port_id');
-    $destinationId = request()->query('destination_port_id');
-    $departureDate = request()->query('departure_date');
-    $departureTime = request()->query('departure_time'); // dapat dari request juga
-    $dewasaCount = (int) request()->query('dewasa_count', 0);
-    $bayiCount = (int) request()->query('bayi_count', 0);
-
-    $vehicleTypes = (array) request()->query('vehicle_types', []);
-    $vehicleCounts = (array) request()->query('vehicle_counts', []);
-    $vehicleCounts = array_map(fn($v) => (int) $v, $vehicleCounts);
-
-    $origin = $originId ? Port::find($originId) : null;
-    $destination = $destinationId ? Port::find($destinationId) : null;
-
-    // Ambil semua harga tiket, keyBy 'name' untuk akses gampang
-    $prices = TicketPrice::all()->keyBy('name');
-    $dewasaPrice = $prices['Dewasa']->price ?? 0;
-    $bayiPrice = $prices['Bayi']->price ?? 0;
-
-    $vehiclePrices = [];
-    foreach ($vehicleTypes as $type) {
-        $vehiclePrices[$type] = $prices[$type]->price ?? 0;
+<style>
+    :root {
+        --primary-blue: #03254c;
+        --accent-orange: #ff5e1f;
+        --soft-gray: #f8f9fa;
+        --border-color: #e9ecef;
     }
 
-    $results = TicketStock::searchByRoute($originId, $destinationId, $departureDate, $departureTime);
+    body { background-color: #f4f7fa; }
 
-@endphp
+    /* Header Pencarian yang lebih Clean */
+    .search-summary-card {
+        background: var(--primary-blue);
+        color: white;
+        border: none;
+        border-radius: 16px;
+        box-shadow: 0 4px 12px rgba(3, 37, 76, 0.15);
+    }
 
-<div class="container py-4">
-    <!-- Search Summary -->
-    <div class="bg-white shadow-sm p-4 rounded mb-4 d-flex justify-content-between align-items-center">
+    /* Card Hasil Pencarian */
+    .result-card {
+        border: 1px solid var(--border-color);
+        border-radius: 20px;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        background: #fff;
+        overflow: hidden;
+    }
+    .result-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 25px rgba(0,0,0,0.08);
+        border-color: #d1d9e6;
+    }
+
+    /* Styling Waktu Keberangkatan */
+    .time-display {
+        background-color: var(--soft-gray);
+        border-radius: 12px;
+        padding: 15px;
+        text-align: center;
+        min-width: 120px;
+    }
+    .time-text {
+        font-size: 1.6rem;
+        font-weight: 800;
+        color: var(--primary-blue);
+        line-height: 1;
+    }
+
+    /* Status Stok */
+    .badge-stock {
+        background-color: #fff;
+        border: 1px solid var(--border-color);
+        color: #6c757d;
+        font-size: 0.75rem;
+        font-weight: 600;
+        padding: 5px 10px;
+        border-radius: 20px;
+    }
+
+    /* Harga */
+    .price-label { font-size: 0.8rem; color: #6c757d; font-weight: 500; }
+    .price-amount {
+        font-size: 1.4rem;
+        font-weight: 800;
+        color: var(--accent-orange);
+    }
+
+    /* Tombol */
+    .btn-book {
+        background: var(--accent-orange);
+        color: white;
+        border: none;
+        padding: 12px;
+        border-radius: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        transition: 0.3s;
+    }
+    .btn-book:hover {
+        background: #e64a19;
+        color: white;
+        box-shadow: 0 4px 15px rgba(255, 94, 31, 0.3);
+    }
+
+    /* Garis Pemisah Vertikal */
+    .v-divider {
+        width: 1px;
+        background-color: var(--border-color);
+        align-self: stretch;
+    }
+</style>
+
+<div class="container py-5">
+    <div class="search-summary-card p-4 mb-4 d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
         <div>
-            <h4 class="mb-1">{{ $origin->name ?? '-' }} → {{ $destination->name ?? '-' }}</h4>
-            <p class="text-muted mb-0">{{ $departureDate ?? '-' }} | {{ $dewasaCount }} Dewasa • {{ $bayiCount }} Bayi</p>
+            <div class="d-flex align-items-center gap-3 mb-2">
+                <span class="fs-4 fw-bold">{{ $origin->name ?? 'Asal' }}</span>
+                <i class="bi bi-arrow-right-circle-fill fs-5 opacity-75"></i>
+                <span class="fs-4 fw-bold">{{ $destination->name ?? 'Tujuan' }}</span>
+            </div>
+            <div class="d-flex flex-wrap gap-3 opacity-75 small">
+                <span><i class="bi bi-calendar3 me-1"></i> {{ $departureDate ?? '-' }}</span>
+                <span><i class="bi bi-people-fill me-1"></i> {{ $totalPassengers }} Orang</span>
+                <span><i class="bi bi-truck-flatbed me-1"></i> {{ $totalVehicles }} Kendaraan</span>
+            </div>
         </div>
-        <a href="{{ route('home') }}" class="btn btn-outline-secondary">Ubah Pencarian</a>
+        <div>
+            <a href="{{ route('home') }}" class="btn btn-light btn-sm rounded-pill px-4 fw-bold shadow-sm">
+                <i class="bi bi-pencil-square me-1"></i> Ubah Pencarian
+            </a>
+        </div>
     </div>
 
+    <h5 class="mb-4 fw-bold text-dark"><i class="bi bi- ship me-2 text-primary"></i>Jadwal Keberangkatan Tersedia</h5>
+
     @if($results->isEmpty())
-        <div class="alert alert-warning">
-            Tidak ditemukan jadwal untuk rute dan tanggal yang dipilih.
+        <div class="text-center py-5 bg-white rounded-4 shadow-sm">
+            <img src="https://illustrations.popsy.co/gray/falling.svg" alt="empty" style="width: 180px" class="mb-3 opacity-50">
+            <h5 class="text-muted">Waduh, jadwal tidak ditemukan!</h5>
+            <p class="text-muted small">Coba pilih tanggal atau rute lainnya.</p>
         </div>
     @else
         <div class="row gy-3">
             @foreach($results as $stock)
-                @php
-                    // Stok penumpang dan kendaraan berdasarkan kolom di table ticket_stocks
-                    $passengerStock = $stock->stock_passenger ?? 0;
-                    $vehicleStockMap = [
-                        'Mobil' => $stock->stock_roda_4 ?? 0,
-                        'Motor' => $stock->stock_roda_2 ?? 0,
-                    ];
-
-                    // Batasi jumlah penumpang yang bisa dipesan sesuai stok
-                    $totalPassengersRequested = $dewasaCount + $bayiCount;
-                    if ($totalPassengersRequested > $passengerStock) {
-                        $totalPassengersRequested = $passengerStock;
-                        // Opsional: kamu bisa juga batasi dewasa & bayi secara proporsional jika ingin lebih akurat
-                    }
-
-                    // Hitung harga total penumpang dengan stok terbatas
-                    $total = 0;
-                    if ($totalPassengersRequested > 0) {
-                        // Asumsi stok penumpang dibagi proporsional
-                        $dewasaEffective = min($dewasaCount, $totalPassengersRequested);
-                        $bayiEffective = min($bayiCount, $totalPassengersRequested - $dewasaEffective);
-                        $total += ($dewasaEffective * $dewasaPrice) + ($bayiEffective * $bayiPrice);
-                    }
-
-                    // Hitung harga kendaraan dan batasi stok kendaraan
-                    $vehicleTotal = 0;
-                    foreach ($vehicleTypes as $i => $vt) {
-                        $countRequested = $vehicleCounts[$i] ?? 0;
-                        $stockAvailable = $vehicleStockMap[$vt] ?? 0;
-                        $countUsed = min($countRequested, $stockAvailable);
-                        $unitPrice = $vehiclePrices[$vt] ?? 0;
-                        $vehicleTotal += $countUsed * $unitPrice;
-                    }
-                    $total += $vehicleTotal;
-
-                @endphp
-
-                <div class="col-12">
-                    <div class="offer-card result-card">
-                        <!-- Top Information -->
-                        <div class="result-top d-flex justify-content-between align-items-start">
-                            <div>
-                                <h5 class="mb-1">
-                                    Berangkat {{ \Carbon\Carbon::parse($stock->departure_time)->format('H:i') }}
-                                </h5>
-                                <div class="result-meta">Stok penumpang tersisa: {{ $passengerStock }}</div>
-                                <div class="result-meta">
-                                    Stok kendaraan:
-                                    @foreach($vehicleStockMap as $type => $stok)
-                                        <div>{{ $type }}: {{ $stok }}</div>
-                                    @endforeach
-                                </div>
-                            </div>
-                            <div class="text-end">
-                                <div class="result-price">
-                                    {{ $total > 0 ? 'Rp ' . number_format($total, 0, ',', '.') : 'Rp 0' }}
-                                </div>
-                                <div class="result-actions mt-2 d-flex justify-content-end">
-                                    <form action="{{ route('book_ticket') }}" method="GET" class="d-flex gap-2 align-items-center">
-                                        <input type="hidden" name="ticket_stock_id" value="{{ $stock->id }}">
-                                        <input type="hidden" name="departure_date" value="{{ $departureDate }}">
-                                        <input type="hidden" name="departure_time" value="{{ $stock->departure_time }}">
-                                        <input type="hidden" name="dewasa_count" value="{{ $dewasaCount }}">
-                                        <input type="hidden" name="bayi_count" value="{{ $bayiCount }}">
-                                        @foreach($vehicleTypes as $i => $vt)
-                                            <input type="hidden" name="vehicle_types[]" value="{{ $vt }}">
-                                            <input type="hidden" name="vehicle_counts[]" value="{{ $vehicleCounts[$i] ?? 0 }}">
-                                        @endforeach
-                                        <!-- Legacy -->
-                                        <input type="hidden" name="vehicle_type" value="{{ $vehicleTypes[0] ?? '' }}">
-                                        <input type="hidden" name="vehicle_count" value="{{ $vehicleCounts[0] ?? 0 }}">
-                                        <input type="hidden" name="total_price" value="{{ $total }}">
-                                        <button class="btn-cta" type="submit">Lihat Detail</button>
-                                    </form>
+            <div class="col-12">
+                <div class="result-card p-3 p-md-4 shadow-sm">
+                    <div class="row align-items-center g-3">
+                        
+                        <div class="col-md-3">
+                            <div class="time-display shadow-sm">
+                                <small class="text-muted text-uppercase fw-bold d-block mb-1" style="font-size: 0.65rem;">Berangkat</small>
+                                <div class="time-text">{{ \Carbon\Carbon::parse($stock->departure_time)->format('H:i') }}</div>
+                                <div class="mt-2 d-flex justify-content-center gap-1">
+                                    <span class="badge-stock"><i class="bi bi-bicycle me-1"></i>{{ $stock->stock_roda_2 ?? 0 }}</span>
+                                    <span class="badge-stock"><i class="bi bi-car-front me-1"></i>{{ $stock->stock_roda_4 ?? 0 }}</span>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Bottom Detail -->
-                        <div class="pt-3 mt-2" style="border-top:1px solid rgba(3,37,76,0.04);">
-                            <div class="d-flex gap-4 flex-wrap">
-                                <div>
-                                    Dewasa:
-                                    {{ $dewasaPrice ? 'Rp ' . number_format($dewasaPrice, 0, ',', '.') : '-' }}
-                                </div>
-                                <div>
-                                    Bayi:
-                                    {{ $bayiPrice ? 'Rp ' . number_format($bayiPrice, 0, ',', '.') : '-' }}
-                                </div>
-                                <div style="min-width: 180px;">
-                                    Kendaraan:
-                                    @if(count($vehicleTypes))
-                                        @foreach($vehicleTypes as $i => $vt)
-                                            <div style="white-space:nowrap;">
-                                                {{ $vt }} x {{ $vehicleCounts[$i] ?? 0 }} :
-                                                {{ isset($vehiclePrices[$vt])
-                                                    ? 'Rp ' . number_format($vehiclePrices[$vt], 0, ',', '.')
-                                                    : '-' }}
-                                            </div>
+                        <div class="col-md-6 px-md-4">
+                            <div class="row border-start-md ps-md-3">
+                                <div class="col-6">
+                                    <label class="d-block fw-bold text-primary small mb-2"><i class="bi bi-people me-1"></i> Penumpang</label>
+                                   <ul class="list-unstyled mb-0 small text-muted">
+                                        @foreach($passengers as $p)
+                                            <li>
+                                                {{ $p['name'] ?? '-' }} x {{ $p['count'] ?? 0 }}
+                                            </li>
                                         @endforeach
-                                    @else
-                                        -
-                                    @endif
+                                    </ul>
+                                </div>
+                                <div class="col-6">
+                                    <label class="d-block fw-bold text-primary small mb-2"><i class="bi bi-car-front me-1"></i> Kendaraan</label>
+                                    <ul class="list-unstyled mb-0 small text-muted">
+                                        @forelse($vehicles as $v)
+                                        <li>{{ $v['name'] ?? '-' }} x {{ $v['count'] ?? 0 }}</li>
+                                    @empty
+                                        <li class="fst-italic">Tanpa Kendaraan</li>
+                                    @endforelse
+                                    </ul>
                                 </div>
                             </div>
                         </div>
+
+                        <div class="col-md-3 text-md-end text-center mt-3 mt-md-0 border-start-md">
+                            <div class="mb-3">
+                                <span class="price-label d-block">Harga Total</span>
+                                <span class="price-amount">Rp {{ number_format($totalPrice, 0, ',', '.') }}</span>
+                            </div>
+                            
+                            
+                            <form action="{{ route('book_ticket') }}" method="GET">
+                                <input type="hidden" name="ticket_stock_id" value="{{ $stock->id }}">
+                                <input type="hidden" name="departure_date" value="{{ $departureDate }}">
+                                <input type="hidden" name="departure_time" value="{{ $stock->departure_time }}">
+                                <input type="hidden" name="booking_items" value='@json(["passengers"=>$passengers,"vehicles"=>$vehicles])'>
+                                <input type="hidden" name="total_price" value="{{ $totalPrice }}">
+                                @foreach($ticketTypeIds as $id)
+                                <input type="hidden" name="ticket_type_ids[]" value="{{ $id }}">
+                                @endforeach
+                                <button class="btn btn-book w-100 shadow-sm" type="submit">
+                                    Pilih Jadwal <i class="bi bi-chevron-right ms-1"></i>
+                                </button>
+                            </form>
+                        </div>
+
                     </div>
                 </div>
+            </div>
             @endforeach
         </div>
     @endif
 </div>
 @endsection
-    

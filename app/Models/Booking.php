@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\BookingVehicle;
+use App\Models\BookingPessanger;
 use App\Models\User;
 
 class Booking extends Model
@@ -16,11 +17,11 @@ class Booking extends Model
         'ticket_stock_id',
         'departure_date',
         'departure_time',
-        'dewasa_count',
-        'anak_count',
         'total_price',
         'payment_proof_path',
         'status',
+        'booksource',
+        'booker_name',
     ];
 
     public function user()
@@ -40,6 +41,6 @@ class Booking extends Model
 
     public function Pessanger()
     {
-        return $this->hasMany(BookingPessanger::class);
+        return $this->hasMany(BookingPassenger::class);
     }
 }

@@ -6,52 +6,104 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Booking;
+use App\Models\BookingPassenger;
+use App\Models\BookingPessanger;
 use App\Models\BookingVehicle;
 
 class BookingController extends Controller
 {
-    public function detail(Request $request)
-    {
-        $data = $request->validate([
-            'ticket_stock_id' => 'required|integer',
-            'departure_date' => 'nullable|date',
-            'departure_time' => 'nullable|string',
-            'dewasa_count' => 'nullable|integer|min:0',
-            'anak_count' => 'nullable|integer|min:0',
-            'total_price' => 'nullable|numeric|min:0',
-            'vehicle_types' => 'nullable|array',
-            'vehicle_counts' => 'nullable|array',
-        ]);
-        $user = Auth::user();
-        if (session()->has('booking_id')) {
-            $existing = Booking::find(session('booking_id'));
-            if ($existing && $existing->status === 'menunggu_pembayaran') {
-                return redirect()->route('book_ticket.confirm', ['id' => $existing->id]);
-            } 
-            session()->forget('booking_id');
+public function detail(Request $request)
+{
+    //  VALIDASI (sesuai struktur request)
+    $data = $request->validate([
+        'ticket_stock_id' => 'required|exists:ticket_stocks,id',
+        'departure_date'  => 'nullable|date',
+        'departure_time'  => 'nullable|string',
+        'total_price'     => 'required|numeric|min:0',
+
+        'passengers'              => 'required|array',
+        'passengers.*.names'      => 'required|array',
+        'passengers.*.names.*'    => 'required|string|max:255',
+
+        'vehicle_types'           => 'nullable|array',
+        'vehicle_types.*'         => 'string|max:255',
+
+        'vehicles'                => 'nullable|array',
+        'vehicles.*.plates'       => 'nullable|array',
+        'vehicles.*.plates.*'     => 'string|max:50',
+
+        'vehicle_categories'      => 'nullable|array',
+        'vehicle_categories.*'    => 'string|max:50',
+    ]);
+
+    //  CEK LOGIN
+    $user = Auth::user();
+    if (!$user) {
+        abort(403, 'User belum login');
+    }
+
+    //  CEK SESSION BOOKING
+    if (session()->has('booking_id')) {
+        $existing = Booking::find(session('booking_id'));
+        if ($existing && $existing->status === 'pending') {
+            return redirect()->route('book_ticket.confirm', $existing->id);
         }
-        $booking = Booking::create([
-            'user_id' => $user ? $user->id : null,
-            'ticket_stock_id' => $data['ticket_stock_id'],
-            'departure_date'  => $data['departure_date'],
-            'departure_time'  => $data['departure_time'],
-            'dewasa_count'    => $data['dewasa_count'],
-            'anak_count'      => $data['anak_count'],
-            'total_price'     => $data['total_price'],
-            'status'          => 'menunggu_pembayaran',
-        ]);
-        if (!empty($request->vehicle_types)) {
-            foreach ($request->vehicle_types as $index => $type) {
+        session()->forget('booking_id');
+    }
+
+    //  SIMPAN BOOKING
+    $booking = Booking::create([
+        'user_id'         => $user->id,
+        'ticket_stock_id' => $data['ticket_stock_id'],
+        'departure_date'  => $data['departure_date'],
+        'departure_time'  => $data['departure_time'],
+        'total_price'     => $data['total_price'],
+        'status'          => 'pending',
+        'booksource'      => 'web',
+        'booker_name'     => $user->name,
+    ]);
+
+    //  SIMPAN PENUMPANG
+    foreach ($data['passengers'] as $passengerGroup) {
+        foreach ($passengerGroup['names'] as $name) {
+            BookingPassenger::create([
+                'booking_id' => $booking->id,
+                'name'       => $name,
+            ]);
+        }
+    }
+    
+
+    //  SIMPAN KENDARAAN (JIKA ADA)
+    if (!empty($data['vehicle_types']) && !empty($data['vehicles'])) {
+
+        foreach ($data['vehicle_types'] as $i => $type) {
+
+            $plates = $data['vehicles'][$i]['plates'] ?? [];
+
+            if (empty($plates)) {
+                continue;
+            }
+
+            foreach ($plates as $plate) {
                 BookingVehicle::create([
-                    'booking_id' => $booking->id,
+                    'booking_id'   => $booking->id,
                     'vehicle_type' => $type,
-                    'vehicle_count' => $request->vehicle_counts[$index] ?? 0,
+                    'count'        => 1,
+                    'no_plat'      => $plate,
+                    'category'     => $data['vehicle_categories'][$i] ?? '-',
                 ]);
             }
         }
-        session(['booking_id' => $booking->id]);
-        return redirect()->route('book_ticket.confirm', ['id' => $booking->id]);
     }
+
+    //  SIMPAN SESSION
+    session(['booking_id' => $booking->id]);
+
+    //  REDIRECT
+    return redirect()->route('book_ticket.confirm', $booking->id);
+}
+
 
     public function showPayment()
     {
@@ -95,15 +147,22 @@ class BookingController extends Controller
             ->with('message', 'Pesanan berhasil dibatalkan.');
     }
 
-    public function downloadTicket($id)
-    {
-        $user = Auth::user();
+   public function downloadTicket($id)
+{
+    $user = Auth::user();
 
-        $booking = Booking::with(['user', 'vehicles'])
-            ->where('id', $id)
-            ->where('user_id', $user->id)
-            ->firstOrFail();
+    $booking = Booking::with([
+        'user',
+        'vehicles',
+        'Pessanger',
+        'ticketStock.originPort',
+        'ticketStock.destinationPort'
+    ])
+    ->where('id', $id)
+    ->where('user_id', $user->id)
+    ->firstOrFail();
 
-        return view('user.e_ticket', compact('booking'));
-    }
+    return view('user.e_ticket', compact('booking'));
+}
+
 }

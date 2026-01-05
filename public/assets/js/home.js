@@ -125,18 +125,30 @@ document.addEventListener('DOMContentLoaded', function() {
 const passengerCounts = {};
 const passengerPrices = {};
 const passengerNames = []; // slug urutan
+const passengerOriginalNames = {}; // slug => nama asli
+
+
+const bookingData = {
+    passengers: [],
+    vehicles: []
+};
 
 // Kendaraan
 const vehicleCounts = {};
 const vehiclePrices = {};
+const vehicleTicketTypeIds = {};
 
 // Ambil semua penumpang yang ada (dari modal)
 document.querySelectorAll('.passenger-row').forEach(row => {
     const nameEl = row.querySelector('h6');
     if (!nameEl) return;
 
+    
     const name = nameEl.textContent.trim();
     const slug = slugify(name);
+
+    passengerOriginalNames[slug] = name; // 👈 SIMPAN NAMA ASLI
+
 
     // Ambil harga dari elemen price-display di row ini
     const priceText = row.querySelector('.price-display')?.textContent || '';
@@ -173,7 +185,8 @@ document.querySelectorAll('.passenger-row').forEach(row => {
 document.querySelectorAll('.vehicle-checkbox').forEach(checkbox => {
     const type = checkbox.dataset.type;
     const slug = slugify(type);
-
+    const ticketTypeId = checkbox.getAttribute('data-ticket-type-id');
+    vehicleTicketTypeIds[type] = ticketTypeId;
     vehicleCounts[type] = 0;
 
     // Ambil harga dari elemen harga kendaraan
@@ -226,6 +239,9 @@ document.getElementById('donePassenger').addEventListener('click', () => {
     const passengerTypeInput = document.getElementById('passengerTypeInput');
     const passengerCountInput = document.getElementById('passengerCountInput');
     const passengerPriceInput = document.getElementById('passengerPriceInput');
+    bookingData.passengers = [];
+    bookingData.vehicles = [];
+
 
     // Filter penumpang yang jumlahnya > 0
     const selectedPassengerTypes = passengerNames.filter(slug => passengerCounts[slug] > 0);
@@ -258,9 +274,42 @@ document.getElementById('donePassenger').addEventListener('click', () => {
         ticketPriceInput.value = `Rp ${totalPrice.toLocaleString('id-ID')}`;
     }
 
-    // Update teks tombol
     updatePassengerButtonText();
+    // PENUMPANG → booking_items
 
+    passengerNames.forEach(slug => {
+        const count = passengerCounts[slug];
+        if (count > 0) {
+            bookingData.passengers.push({
+            name: passengerOriginalNames[slug], // 👈 NAMA ASLI
+            count: count,
+            price: passengerPrices[slug]
+        });
+        }
+    });
+
+
+    // KENDARAAN → booking_items
+
+    Object.entries(vehicleCounts).forEach(([type, count]) => {
+        if (count > 0) {
+            bookingData.vehicles.push({
+            name: type, // konsisten pakai "name"
+            count: count,
+            price: vehiclePrices[type],
+            ticket_type_id: vehicleTicketTypeIds[type] || null
+        });
+        }
+    });
+
+
+    // SIMPAN KE HIDDEN INPUT
+ 
+    document.getElementById('bookingItems').value =
+        JSON.stringify(bookingData);
+
+
+    
     // Tutup modal
     const passengerModal = document.getElementById('passengerModal');
     passengerModal.classList.remove('active');

@@ -2,260 +2,229 @@
 
 @section('content')
 <style>
-    .bk-card-header {
-        background: linear-gradient(90deg,#0077d6 0%,#00a3ff 100%);
-        color: #fff;
-        font-weight: 800;
-        letter-spacing: .2px;
+    :root {
+        --primary-blue: #03254c;
+        --accent-orange: #ff5e1f;
+        --bg-light: #f4f7fa;
     }
-    .bk-field-label { font-weight:700; color:#0f1724; }
-    .bk-small { font-size:0.85rem; color:#6b7280; }
-    .bk-price { font-weight:900; color:#d43f3a; font-size:1.05rem; }
-    .bk-detail-row { display:flex; justify-content:space-between; align-items:center; padding:0.6rem 0; border-bottom:1px dashed rgba(15,23,36,0.04); }
-    .bk-file-preview { border:1px dashed rgba(3,37,76,0.08); padding:0.8rem; border-radius:8px; display:flex; gap:0.8rem; align-items:center; }
-    .bk-file-thumb { width:72px; height:72px; object-fit:cover; border-radius:6px; background:#f3f4f6; display:block; }
-    .bk-file-meta { flex:1; }
-    .bk-btn-primary { background: linear-gradient(90deg,#0077d6 0%, #ff8c42 100%); border:none; color:white; font-weight:800; }
-    .bk-note { font-size:0.82rem; color:#525252; }
-    .text-muted-2 { color:#7b8794; }
+
+    body { background-color: var(--bg-light); }
+
+    .step-header {
+        background: white;
+        border-radius: 12px;
+        border-left: 5px solid var(--accent-orange);
+    }
+
+    .form-section-card {
+        background: white;
+        border-radius: 16px;
+        border: 1px solid #e9ecef;
+    }
+
+    .input-group-text {
+        background-color: #f8f9fa;
+        border-right: none;
+        color: #6c757d;
+    }
+
+    .form-control {
+        border-left: none;
+        padding-top: 12px;
+        padding-bottom: 12px;
+    }
+
+    .form-control:focus {
+        border-color: #dee2e6;
+        box-shadow: none;
+        background-color: #fff;
+    }
+
+    .summary-sidebar {
+        position: sticky;
+        top: 20px;
+    }
+
+    .summary-card {
+        border-radius: 16px;
+        border: none;
+        background: var(--primary-blue);
+        color: white;
+    }
+
+    .price-badge {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
+        padding: 15px;
+    }
+
+    .btn-confirm {
+        background: var(--accent-orange);
+        color: white;
+        border: none;
+        padding: 15px;
+        border-radius: 12px;
+        font-weight: 700;
+        font-size: 1.1rem;
+        transition: 0.3s;
+    }
+
+    .btn-confirm:hover {
+        background: #e64a19;
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(255, 94, 31, 0.3);
+    }
+
+    .passenger-number {
+        width: 30px;
+        height: 30px;
+        background: var(--primary-blue);
+        color: white;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        font-size: 0.8rem;
+        margin-right: 10px;
+    }
 </style>
 
+@php
+    $ticketStockId = request('ticket_stock_id');
+    $departureDate = request('departure_date');
+    $departureTime = request('departure_time');
+    $totalPrice = request('total_price');
+    $bookingItems = json_decode(request('booking_items'), true) ?? [];
+    $passengers = $bookingItems['passengers'] ?? [];
+    $vehicles   = $bookingItems['vehicles'] ?? [];
+@endphp
+
 <div class="container py-5">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
+    <form id="bookingForm" action="{{ route('book_ticket.detail') }}" method="POST">
+        @csrf
+        
+        <input type="hidden" name="ticket_stock_id" value="{{ $ticketStockId }}">
+        <input type="hidden" name="departure_date" value="{{ $departureDate }}">
+        <input type="hidden" name="departure_time" value="{{ $departureTime }}">
+        <input type="hidden" name="total_price" value="{{ $totalPrice }}">
+        <input type="hidden" name="booking_items" value='@json($bookingItems)'>
+       @foreach(request('ticket_type_ids', []) as $id)
+            <input type="hidden" name="vehicle_categories[]" value="{{ $id }}">
+        @endforeach
 
-            @if(session('success'))
-                <div class="alert alert-success">{{ session('success') }}</div>
-                @if(session('payment_path'))
-                    <div class="mb-3">File tersimpan: <a target="_blank" href="{{ asset('storage/' . session('payment_path')) }}">Lihat bukti</a></div>
+
+        <div class="row g-4">
+            <div class="col-lg-8">
+                <div class="step-header p-3 mb-4 shadow-sm">
+                    <h4 class="mb-0 fw-bold text-dark">Lengkapi Data Pemesanan</h4>
+                    <p class="text-muted small mb-0">Pastikan semua data sesuai dengan kartu identitas (KTP/Paspor/SIM).</p>
+                </div>
+
+                <div class="form-section-card p-4 shadow-sm mb-4">
+                    <div class="d-flex align-items-center mb-4">
+                        <i class="bi bi-people-fill fs-4 text-primary me-2"></i>
+                        <h5 class="mb-0 fw-bold">Data Penumpang</h5>
+                    </div>
+
+                    @foreach($passengers as $pIndex => $p)
+                        @for($i = 1; $i <= $p['count']; $i++)
+                            <div class="mb-4">
+                                <label class="form-label fw-bold small text-uppercase text-muted">
+                                    <span class="passenger-number">{{ $i }}</span> {{ $p['name'] }}
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-person"></i></span>
+                                    <input type="text" 
+                                           name="passengers[{{ $pIndex }}][names][]" 
+                                           class="form-control" 
+                                           placeholder="Nama Lengkap Sesuai Identitas" 
+                                           required>
+                                    <input type="hidden" name="passenger_types[]" value="{{ $p['name'] }}">
+                                </div>
+                            </div>
+                        @endfor
+                    @endforeach
+                </div>
+
+                @if(count($vehicles))
+                    <div class="form-section-card p-4 shadow-sm mb-4">
+                        <div class="d-flex align-items-center mb-4">
+                            <i class="bi bi-truck-flatbed fs-4 text-primary me-2"></i>
+                            <h5 class="mb-0 fw-bold">Data Kendaraan</h5>
+                        </div>
+
+                        @foreach($vehicles as $vIndex => $v)
+                            @for($i = 1; $i <= $v['count']; $i++)
+                                <div class="mb-4">
+                                    <label class="form-label fw-bold small text-uppercase text-muted">
+                                        No. Polisi {{ $v['name'] }} {{ $i }}
+                                    </label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-card-heading"></i></span>
+                                        <input type="text" 
+                                               name="vehicles[{{ $vIndex }}][plates][]" 
+                                               class="form-control" 
+                                               placeholder="Contoh: BK 1234 ABC" 
+                                               style="text-transform: uppercase"
+                                               required>
+                                        <input type="hidden" name="vehicle_types[]" value="{{ $v['name'] }}">
+                                    </div>
+                                    <div class="form-text mt-1 small">Masukkan plat nomor tanpa spasi jika perlu.</div>
+                                </div>
+                            @endfor
+                        @endforeach
+                    </div>
                 @endif
-            @endif
+            </div>
 
-            @php
-                $ticketStockId = request()->query('ticket_stock_id');
-                $departureDate = request()->query('departure_date');
-                $departureTime = request()->query('departure_time');
-                $dewasaCount = (int) request()->query('dewasa_count', 0);
-                $anakCount = (int) request()->query('anak_count', 0);
-                // Support multiple vehicle types passed from the search step
-                $vehicleTypes = (array) request()->query('vehicle_types', []);
-                $vehicleCounts = (array) request()->query('vehicle_counts', []);
-                $vehicleCounts = array_map(fn($v) => (int) $v, $vehicleCounts);
-                // legacy single values (for backward compatibility)
-                $vehicleType = $vehicleTypes[0] ?? null;
-                $vehicleCount = (int) ($vehicleCounts[0] ?? 0);
-                $totalPrice = request()->query('total_price');
-            @endphp
+            <div class="col-lg-4">
+                <div class="summary-sidebar">
+                    <div class="card summary-card shadow-lg">
+                        <div class="card-body p-4">
+                            <h5 class="fw-bold mb-4">Ringkasan Pesanan</h5>
+                            
+                            <div class="mb-4">
+                                <small class="opacity-75 d-block mb-1">Jadwal Keberangkatan</small>
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-calendar-check me-2 fs-5"></i>
+                                    <span class="fw-bold">{{ $departureDate }}</span>
+                                </div>
+                                <div class="d-flex align-items-center mt-1">
+                                    <i class="bi bi-clock me-2 fs-5"></i>
+                                    <span class="fw-bold">{{ $departureTime }} WIB</span>
+                                </div>
+                            </div>
 
-            <!-- Detail Pemesanan -->
-            <div class="booking-detail-card mb-4">
-                <div class="bk-card-header">Detail Pemesanan</div>
-                <div class="card-body">
-                    <!-- @if(session('booking_id'))
-                        <div class="mb-3 text-center">
-                            <a href="{{ route('book_ticket.download', session('booking_id')) }}" target="_blank" class="btn bk-btn-primary w-50 rounded-pill">
-                                Download E-Ticket
+                            <hr class="border-light opacity-25">
+
+                            <div class="price-badge mb-4">
+                                <small class="opacity-75 d-block mb-1">Total Pembayaran</small>
+                                <h3 class="mb-0 fw-bold text-warning">Rp {{ number_format($totalPrice, 0, ',', '.') }}</h3>
+                            </div>
+
+                            <button type="submit" class="btn btn-confirm w-100 mb-3">
+                                Konfirmasi Booking <i class="bi bi-arrow-right-short ms-2"></i>
+                            </button>
+                            
+                            <a href="{{ url()->previous() }}" class="btn btn-link text-white text-decoration-none w-100 text-center small opacity-75">
+                                <i class="bi bi-chevron-left me-1"></i> Kembali ke Pemilihan
                             </a>
                         </div>
-                    @endif -->
-                    <!-- <form id="paymentForm" action="{{ route('book_ticket.detail') }}" method="POST" enctype="multipart/form-data">
-                        <div class="mb-2">
-                            <div class="bk-detail-row">
-                                <div><span class="fw-semibold">Ticket Stock ID</span><div class="bk-small text-muted-2">ID untuk referensi pembayaran</div></div>
-                                <div class="text-end">{{ $ticketStockId ?? '-' }}</div>
-                            </div>
+                    </div>
 
-                            <div class="bk-detail-row">
-                                <div><span class="fw-semibold">Keberangkatan</span><div class="bk-small text-muted-2">Tanggal & waktu</div></div>
-                                <div class="text-end">{{ $departureDate ?? '-' }} <br><small class="bk-small">{{ $departureTime ?? '-' }}</small></div>
-                            </div>
-
-                            <div class="bk-detail-row">
-                                <div><span class="fw-semibold">Penumpang</span><div class="bk-small text-muted-2">Jumlah dan kategori</div></div>
-                                <div class="text-end">{{ $dewasaCount }} Dewasa<br><small class="bk-small">{{ $anakCount }} Anak-anak</small></div>
-                            </div>
-
-                            <div class="bk-detail-row">
-                                <div><span class="fw-semibold">Kendaraan</span><div class="bk-small text-muted-2">Tipe & jumlah kendaraan</div></div>
-                                <div class="text-end">
-                                    @if(count($vehicleTypes))
-                                        @foreach($vehicleTypes as $i => $vt)
-                                            <div>{{ $vt }} × {{ $vehicleCounts[$i] ?? 0 }}</div>
-                                        @endforeach
-                                    @else
-                                        Tidak membawa kendaraan
-                                    @endif
-                                </div>
-                            </div>
-
-                            <div class="bk-detail-row" style="border-bottom:none; padding-top:0.8rem;">
-                                <div><span class="fw-semibold">Total Harga</span><div class="bk-small text-muted-2">Sudah termasuk biaya administrasi</div></div>
-                                <div class="text-end bk-price">{{ $totalPrice ? 'Rp ' . number_format($totalPrice,0,',','.') : 'Rp 0' }}</div>
-                            </div>
-                            <div class="d-flex gap-2">
-                                <a href="{{ route('home') }}" class="btn btn-outline-secondary w-100 rounded-pill">
-                                    Kembali
-                                </a>
-                                <button type="submit" class="btn bk-btn-primary w-100 rounded-pill" id="btnLanjut">
-                                    Lanjut Pembayaran
-                                </button>
+                    <div class="mt-4 p-3 border rounded-4 bg-white shadow-sm small">
+                        <div class="d-flex">
+                            <i class="bi bi-shield-check text-success fs-4 me-3"></i>
+                            <div>
+                                <h6 class="mb-1 fw-bold">Pembayaran Aman</h6>
+                                <p class="text-muted mb-0">Data Anda dilindungi dengan enkripsi SSL standar internasional.</p>
                             </div>
                         </div>
-                    </form> -->
-                    <form id="paymentForm" action="{{ route('book_ticket.detail') }}" method="POST">
-                        @csrf
-                        <input type="hidden" name="ticket_stock_id" value="{{ $ticketStockId }}">
-                        <input type="hidden" name="departure_date" value="{{ $departureDate }}">
-                        <input type="hidden" name="departure_time" value="{{ $departureTime }}">
-                        <input type="hidden" name="dewasa_count" value="{{ $dewasaCount }}">
-                        <input type="hidden" name="anak_count" value="{{ $anakCount }}">
-                        <input type="hidden" name="total_price" value="{{ $totalPrice }}">
-
-                        @foreach($vehicleTypes as $i => $vt)
-                            <input type="hidden" name="vehicle_types[]" value="{{ $vt }}">
-                            <input type="hidden" name="vehicle_counts[]" value="{{ $vehicleCounts[$i] }}">
-                        @endforeach
-                        <div class="mb-2">
-
-                            <!-- <div class="bk-detail-row">
-                                <div>
-                                    <span class="fw-semibold">Ticket Stock ID</span>
-                                    <div class="bk-small text-muted-2">ID untuk referensi pembayaran</div>
-                                </div>
-                                <div class="text-end">{{ $ticketStockId }}</div>
-                            </div> -->
-
-                            <div class="bk-detail-row">
-                                <div>
-                                    <span class="fw-semibold">Keberangkatan</span>
-                                    <div class="bk-small text-muted-2">Tanggal & waktu</div>
-                                </div>
-                                <div class="text-end">
-                                    {{ $departureDate }}<br>
-                                    <small class="bk-small">{{ $departureTime }}</small>
-                                </div>
-                            </div>
-
-                            <div class="bk-detail-row">
-                                <div>
-                                    <span class="fw-semibold">Penumpang</span>
-                                    <div class="bk-small text-muted-2">Jumlah dan kategori</div>
-                                </div>
-                                <div class="text-end">
-                                    {{ $dewasaCount }} Dewasa<br>
-                                    <small class="bk-small">{{ $anakCount }} Anak-anak</small>
-                                </div>
-                            </div>
-
-                            <div class="bk-detail-row">
-                                <div>
-                                    <span class="fw-semibold">Kendaraan</span>
-                                    <div class="bk-small text-muted-2">Tipe & jumlah kendaraan</div>
-                                </div>
-
-                                <div class="text-end">
-                                    @if(count($vehicleTypes))
-                                        @foreach($vehicleTypes as $i => $vt)
-                                            <div>{{ $vt }} × {{ $vehicleCounts[$i] }}</div>
-                                        @endforeach
-                                    @else
-                                        Tidak membawa kendaraan
-                                    @endif
-                                </div>
-                            </div>
-
-                            <div class="bk-detail-row" style="border-bottom:none;">
-                                <div>
-                                    <span class="fw-semibold">Total Harga</span>
-                                    <div class="bk-small text-muted-2">Sudah termasuk biaya administrasi</div>
-                                </div>
-                                <div class="text-end bk-price">
-                                    Rp {{ number_format($totalPrice,0,',','.') }}
-                                </div>
-                            </div>
-
-                            <div class="d-flex gap-2">
-                                <a href="{{ route('home') }}" class="btn btn-outline-secondary w-100 rounded-pill">
-                                    Kembali
-                                </a>
-                                <button type="submit" class="btn bk-btn-primary w-100 rounded-pill" id="btnLanjut">
-                                    Lanjut Pembayaran
-                                </button>
-                            </div>
-                        </div>
-                    </form>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+    </form>
 </div>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function(){
-        const realInput = document.getElementById('payment_proof');
-        const fileThumb = document.getElementById('fileThumb');
-        const fileName = document.getElementById('fileName');
-        const fileHelp = document.getElementById('fileHelp');
-        const filePreview = document.getElementById('filePreview');
-        const allowedTypes = ['image/jpeg','image/png','application/pdf'];
-        const maxSize = 2 * 1024 * 1024; // 2MB
-
-        // When user clicks the custom label, it triggers the hidden input via for attribute
-        realInput.addEventListener('change', function(e){
-            const f = this.files[0];
-            if (!f) return;
-
-            // Validate type
-            if (!allowedTypes.includes(f.type)) {
-                if (window.showAlert) window.showAlert('Tipe file tidak didukung. Gunakan JPG, PNG, atau PDF.', 'warning', { title: 'Tipe File' });
-                this.value = '';
-                return;
-            }
-
-            // Validate size
-            if (f.size > maxSize) {
-                if (window.showAlert) window.showAlert('Ukuran file melebihi 2MB. Kompres atau pilih file yang lebih kecil.', 'warning', { title: 'Ukuran File' });
-                this.value = '';
-                return;
-            }
-
-            // Update UI
-            fileName.textContent = f.name;
-            fileHelp.textContent = (f.type === 'application/pdf') ? 'PDF terpilih — pratinjau tidak tersedia.' : 'Pratinjau gambar di samping.';
-
-            if (f.type.startsWith('image/')) {
-                const reader = new FileReader();
-                reader.onload = function(ev){
-                    fileThumb.src = ev.target.result;
-                    fileThumb.style.display = 'block';
-                };
-                reader.readAsDataURL(f);
-            } else {
-                fileThumb.style.display = 'none';
-                fileThumb.src = '';
-            }
-        });
-
-        // Form submit: small client-side guard
-        const form = document.getElementById('paymentForm');
-        form.addEventListener('submit', function(e){
-            const f = realInput.files[0];
-            if (!f) {
-                if (window.showAlert) window.showAlert('Silakan unggah bukti pembayaran sebelum melanjutkan.', 'warning', { title: 'Bukti Pembayaran' });
-                e.preventDefault();
-                return;
-            }
-            // Already validated on change, but re-check
-            if (!allowedTypes.includes(f.type) || f.size > maxSize) {
-                if (window.showAlert) window.showAlert('File tidak valid. Periksa tipe atau ukuran file.', 'error', { title: 'File Invalid' });
-                e.preventDefault();
-                return;
-            }
-
-            // Show small feedback toast
-            if (window.showAlert) window.showAlert('Mengunggah bukti... Mohon tunggu.', 'info', { title: 'Upload' });
-        });
-    });
-</script>
-
 @endsection

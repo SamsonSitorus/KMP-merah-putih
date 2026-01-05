@@ -14,8 +14,6 @@ return new class extends Migration
             $table->foreignId('ticket_stock_id')->constrained()->onDelete('cascade');
             $table->date('departure_date')->nullable();
             $table->string('departure_time')->nullable();
-            // $table->integer('dewasa_count')->default(0);
-            // $table->integer('anak_count')->default(0);
             $table->decimal('total_price', 12, 2)->default(0);
             $table->string('payment_proof_path')->nullable();
             $table->string('status')->default('pending');

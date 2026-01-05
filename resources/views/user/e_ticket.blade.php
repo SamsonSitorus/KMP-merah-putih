@@ -1,134 +1,270 @@
 @extends('layouts.app')
+
 @section('content')
 <style>
-    @media print {
-        .no-print {
-            display: none;
-        }
+    /* Menggunakan variabel warna standar Sneat */
+    :root {
+        --sn-primary: #696cff;
+        --sn-secondary: #8592a3;
+        --sn-success: #71dd37;
+        --sn-card-bg: #ffffff;
+        --sn-body-bg: #f5f5f9;
     }
-    .eticket-container {
-        max-width: 600px;
-        margin: 2rem auto;
-        padding: 1rem 2rem;
-        border: 2px dashed #0077d6;
-        border-radius: 12px;    
-        font-family: Arial, sans-serif;
-        color: #0f1724;
+
+    .ticket-wrapper {
+        background-color: var(--sn-body-bg);
+        padding: 3rem 1rem;
+        min-height: 100vh;
     }
-    .eticket-header {
-        text-align: center;
-        margin-bottom: 1.5rem;
-    }
-    .eticket-title {
-        font-weight: 700;
-        font-size: 1.4rem;
-        color: #0077d6;
-        margin-bottom: 0.2rem;
-    }
-    .eticket-subtitle {
-        font-size: 0.9rem;
-        color: #525252;
-    }
-    .eticket-section {
-        margin-bottom: 1rem;
-    }
-    .eticket-section h3 {
-        font-size: 1.1rem;
-        font-weight: 700;
-        border-bottom: 1px solid #e2e8f0;
-        padding-bottom: 0.3rem;
-        margin-bottom: 0.5rem;
-    }
-    .eticket-detail-row {
-        display: flex;
-        justify-content: space-between;
-        padding: 0.25rem 0;
-        border-bottom: 1px dashed #cbd5e1;
-    }
-    .eticket-footer {
-        text-align: center;
-        margin-top: 2rem;
-    }
-    .btn-print {
-        background-color: #0077d6;
+
+    .eticket-card {
+        max-width: 750px;
+        margin: 0 auto;
+        background: var(--sn-card-bg);
+        border-radius: 0.5rem; /* Standar Sneat card */
+        box-shadow: 0 2px 6px 0 rgba(67, 89, 113, 0.12);
+        position: relative;
         border: none;
-        color: white;
-        padding: 0.6rem 1.2rem;
+    }
+
+    /* Notch Tiket */
+    .eticket-card::before, .eticket-card::after {
+        content: "";
+        position: absolute;
+        width: 30px;
+        height: 30px;
+        background-color: var(--sn-body-bg);
+        border-radius: 50%;
+        top: 45%;
+        z-index: 2;
+    }
+    .eticket-card::before { left: -15px; }
+    .eticket-card::after { right: -15px; }
+
+    .ticket-header {
+        background: linear-gradient(72.47deg, #696cff 22.16%, rgba(105, 108, 255, 0.7) 76.47%);
+        color: #fff;
+        padding: 2rem;
+        border-radius: 0.5rem 0.5rem 0 0;
+        text-align: center;
+    }
+
+    .ticket-body {
+        padding: 2.5rem;
+    }
+
+    .divider-dashed {
+        border-top: 2px dashed #d9dee3;
+        margin: 2rem 0;
+        position: relative;
+    }
+
+    /* Route Display Sneat Style */
+    .route-section {
+        background: #fcfcfd;
+        border: 1px solid #d9dee3;
+        border-radius: 0.5rem;
+        padding: 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 2rem;
+    }
+
+    .port-info h3 {
+        color: var(--sn-primary);
+        font-weight: 700;
+        margin-bottom: 0;
+        font-size: 1.5rem;
+    }
+
+    .port-info span {
+        color: var(--sn-secondary);
+        font-size: 0.75rem;
+        text-transform: uppercase;
         font-weight: 600;
+    }
+
+    /* Info Grid */
+    .info-label {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        color: var(--sn-secondary);
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+        display: block;
+    }
+
+    .info-value {
         font-size: 1rem;
+        font-weight: 600;
+        color: #566a7f;
+        display: flex;
+        align-items: center;
+    }
+
+    .bx-icon-bg {
+        width: 32px;
+        height: 32px;
+        background: rgba(105, 108, 255, 0.1);
+        color: var(--sn-primary);
         border-radius: 6px;
-        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 10px;
+    }
+
+    /* Passenger Table */
+    .table-custom {
+        width: 100%;
+        border-spacing: 0 8px;
+        border-collapse: separate;
+    }
+    .table-custom td {
+        background: #f8f9fa;
+        padding: 0.8rem 1rem;
+        color: #566a7f;
+    }
+    .table-custom tr td:first-child { border-radius: 8px 0 0 8px; font-weight: 600; }
+    .table-custom tr td:last-child { border-radius: 0 8px 8px 0; }
+
+    @media print {
+        .no-print { display: none !important; }
+        .ticket-wrapper { background: white; padding: 0; }
+        .eticket-card { box-shadow: none; border: 1px solid #d9dee3; }
+        .ticket-header { background: #696cff !important; -webkit-print-color-adjust: exact; }
     }
 </style>
 
-<div class="eticket-container">
-    <div class="eticket-header">
-        <div class="eticket-title">Konfirmasi E-Tiket Pemesanan</div>
-        <div class="eticket-subtitle">ID Pemesanan: {{ $booking->id }}</div>
-        <div class="eticket-subtitle">Tanggal Penerbitan: {{ now()->format('d-m-Y') }}</div>
-    </div>
+<div class="ticket-wrapper">
+    <div class="eticket-card">
+        {{-- HEADER --}}
+        <div class="ticket-header">
+            <h4 class="text-white fw-bold mb-1">E-TICKET PENYEBERANGAN</h4>
+            <p class="mb-0 opacity-75">Booking ID: <span class="fw-bold">#{{ $booking->id }}</span></p>
+        </div>
 
-    <div class="eticket-section">
-        <h3>Informasi Penumpang</h3>
-        <div class="eticket-detail-row">
-            <div>Nama</div>
-            <div>{{ $booking->user->name ?? 'N/A' }}</div>
-        </div>
-        <div class="eticket-detail-row">
-            <div>Email</div>
-            <div>{{ $booking->user->email ?? 'N/A' }}</div>
-        </div>
-    </div>
-
-    <div class="eticket-section">
-        <h3>Detail Pemesanan</h3>
-        <div class="eticket-detail-row">
-            <div>ID Tiket Stock</div>
-            <div>{{ $booking->ticket_stock_id }}</div>
-        </div>
-        <div class="eticket-detail-row">
-            <div>Tanggal Keberangkatan</div>
-            <div>{{ $booking->departure_date }}</div>
-        </div>
-        <div class="eticket-detail-row">
-            <div>Waktu Keberangkatan</div>
-            <div>{{ $booking->departure_time }}</div>
-        </div>
-        <div class="eticket-detail-row">
-            <div>Penumpang Dewasa</div>
-            <div>{{ $booking->dewasa_count }}</div>
-        </div>
-        <div class="eticket-detail-row">
-            <div>Penumpang Anak-anak</div>
-            <div>{{ $booking->anak_count }}</div>
-        </div>
-    </div>
-
-    <div class="eticket-section">
-        <h3>Detail Kendaraan</h3>
-        @if($booking->vehicles->count())
-            @foreach($booking->vehicles as $vehicle)
-                <div class="eticket-detail-row">
-                    <div>{{ $vehicle->vehicle_type }}</div>
-                    <div>{{ $vehicle->count }} × Rp {{ number_format($vehicle->unit_price, 0, ',', '.') }}</div>
+        <div class="ticket-body">
+            {{-- RUTE PERJALANAN --}}
+            <div class="route-section shadow-sm">
+                <div class="port-info">
+                    <span>Asal</span>
+                    <h3>{{ $booking->ticketStock->originPort->name ?? 'N/A' }}</h3>
                 </div>
-            @endforeach
-        @else
-            <div>Tidak ada kendaraan yang dipesan</div>
-        @endif
-    </div>
+                <div class="text-center px-3">
+                    <i class="bx bx-ship text-primary fs-2"></i>
+                    <div class="d-flex align-items-center mt-1">
+                        <div style="height: 2px; width: 30px; background: #d9dee3;"></div>
+                        <i class="bx bx-chevron-right text-secondary"></i>
+                        <div style="height: 2px; width: 30px; background: #d9dee3;"></div>
+                    </div>
+                </div>
+                <div class="port-info text-end">
+                    <span>Tujuan</span>
+                    <h3>{{ $booking->ticketStock->destinationPort->name ?? 'N/A' }}</h3>
+                </div>
+            </div>
 
-    <div class="eticket-section">
-        <h3>Total Harga</h3>
-        <div class="eticket-detail-row">
-            <div></div>
-            <div><strong>Rp {{ number_format($booking->total_price, 0, ',', '.') }}</strong></div>
+            {{-- INFORMASI UTAMA --}}
+            <div class="row g-4">
+                <div class="col-sm-6">
+                    <label class="info-label">Jadwal Keberangkatan</label>
+                    <div class="info-value">
+                        <div class="bx-icon-bg"><i class="bx bx-calendar"></i></div>
+                        {{ $booking->departure_date }}
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <label class="info-label">Jam Keberangkatan</label>
+                    <div class="info-value">
+                        <div class="bx-icon-bg"><i class="bx bx-time-five"></i></div>
+                        {{ $booking->departure_time }} WIB
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <label class="info-label">Pemesan</label>
+                    <div class="info-value">
+                        <div class="bx-icon-bg"><i class="bx bx-user"></i></div>
+                        {{ $booking->booker_name }}
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <label class="info-label">Status</label>
+                    <div class="mt-1">
+                        <span class="badge bg-label-success fs-tiny text-uppercase fw-bold">
+                            {{ $booking->status }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="divider-dashed"></div>
+
+            {{-- DAFTAR PENUMPANG --}}
+            <div class="mb-4">
+                <h6 class="fw-bold mb-3 d-flex align-items-center">
+                    <i class="bx bx-group me-2 text-primary"></i> Daftar Penumpang
+                </h6>
+                <table class="table-custom">
+                    <tbody>
+                        @forelse($booking->Pessanger as $p)
+                        <tr>
+                            <td>{{ $p->name }}</td>
+                            <td class="text-end text-muted">Penumpang Dewasa</td>
+                        </tr>
+                        @empty
+                        <tr><td colspan="2" class="text-center">Data tidak ditemukan</td></tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+
+            {{-- KENDARAAN --}}
+            @if($booking->vehicles->count() > 0)
+            <div class="mb-2">
+                <h6 class="fw-bold mb-3 d-flex align-items-center">
+                    <i class="bx bx-car me-2 text-primary"></i> Detail Kendaraan
+                </h6>
+                @foreach($booking->vehicles as $v)
+                <div class="d-flex align-items-center p-3 mb-2 border rounded-3 bg-light">
+                    <div class="avatar flex-shrink-0 me-3">
+                        <span class="avatar-initial rounded bg-label-primary">
+                            <i class="bx bx-taxi"></i>
+                        </span>
+                    </div>
+                    <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
+                        <div class="me-2">
+                            <h6 class="mb-0 fw-bold">{{ $v->no_plat }}</h6>
+                            <small class="text-muted">{{ $v->vehicle_type }}</small>
+                        </div>
+                    </div>
+                </div>
+                @endforeach
+            </div>
+            @endif
+
+            <div class="divider-dashed"></div>
+
+            {{-- FOOTER TIKET --}}
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <label class="info-label mb-0">Total Pembayaran</label>
+                    <h3 class="text-primary fw-bolder mb-0">Rp {{ number_format($booking->total_price,0,',','.') }}</h3>
+                </div>
+                <div class="no-print">
+                    <button class="btn btn-primary d-flex align-items-center" onclick="window.print()">
+                        <i class="bx bx-printer me-2"></i> Cetak Tiket
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 
-    <div class="eticket-footer no-print">
-        <button class="btn-print" onclick="window.print()">Cetak / Simpan PDF</button>
+    <div class="text-center mt-4 no-print">
+        <a href="{{ route('history.status', 'berhasil') }}" class="btn btn-link text-muted">
+            <i class="bx bx-left-arrow-alt me-1"></i> Kembali ke Riwayat
+        </a>
     </div>
 </div>
-
 @endsection

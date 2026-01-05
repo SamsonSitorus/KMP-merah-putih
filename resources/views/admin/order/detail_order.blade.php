@@ -72,7 +72,7 @@
                                     </div>
                                 </td>
                                 <td class="dt-type-numeric" >
-                                    <span>{{$order->dewasa_count}}</span>
+                                   {{-- <span>{{$order->dewasa_count}}</span> --}}
                                 </td>
                             </tr>
                             <tr class="">
@@ -84,7 +84,7 @@
                                     </div>
                                 </td>
                                 <td class="dt-type-numeric" >
-                                    <span>{{$order->anak_count}}</span>
+                                    {{-- <span>{{$order->anak_count}}</span> --}}
                                 </td>
                             </tr>
                             

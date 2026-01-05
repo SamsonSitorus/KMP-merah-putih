@@ -10,6 +10,7 @@ use App\Http\Controllers\HistoryController;
 use App\Http\Controllers\AdminController\TiketPriceController;
 use App\Http\Controllers\AdminController\BookingAdminController;
 use App\Http\Controllers\AdminController\PortAdminController;
+use App\Http\Controllers\Findticketcontroller;
 
 Route::get('/login', [Authcontroller::class,'showLoginForm'])->name('login');
 Route::get('/register', [Authcontroller::class,'showRegisterForm'])->name('register');
@@ -56,7 +57,7 @@ Route::middleware(['auth', 'customer'])->group(function () {
     Route::get('/user_detail', fn() => view('user.user_detail'))
         ->name('user_detail');
 
-    Route::get('/find_ticket', fn() => view('user.find_ticket'))->name('find_ticket');
+    Route::get('/find_ticket', [Findticketcontroller::class,'findTickets'])->name('find_ticket');
 });
 
 Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {

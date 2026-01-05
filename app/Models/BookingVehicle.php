@@ -15,8 +15,8 @@ class BookingVehicle extends Model
         'booking_id',
         'vehicle_type',
         'count',
-        'unit_price',
-        'total_price'
+        'no_plat',
+        'category'
     ];
 
     public function booking()

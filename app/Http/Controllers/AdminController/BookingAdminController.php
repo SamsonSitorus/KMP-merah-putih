@@ -21,8 +21,8 @@ class BookingAdminController extends Controller
             'bookings.ticket_stock_id',
             'bookings.departure_date',
             'bookings.departure_time',
-            'bookings.dewasa_count',
-            'bookings.anak_count',
+            // 'bookings.dewasa_count',
+            // 'bookings.anak_count',
             'bookings.total_price',
             'bookings.payment_proof_path',
             'bookings.status',
@@ -46,8 +46,8 @@ class BookingAdminController extends Controller
             'bookings.ticket_stock_id',
             'bookings.departure_date',
             'bookings.departure_time',
-            'bookings.dewasa_count',
-            'bookings.anak_count',
+            // 'bookings.dewasa_count',
+            // 'bookings.anak_count',
             'bookings.total_price',
             'bookings.payment_proof_path',
             'bookings.status',
@@ -61,8 +61,9 @@ class BookingAdminController extends Controller
             'id',
             'vehicle_type',
             'count',
-            'unit_price',
-            'total_price'
+            'no_plat'
+            // 'unit_price',
+            // 'total_price'
         )
         ->where('booking_id', $id)
         ->get();
@@ -85,5 +86,9 @@ class BookingAdminController extends Controller
         ]);
 
         return redirect()->back()->with('success', 'Status booking berhasil diperbarui');
+    }
+
+    public function openForm(){
+        return view('admin.order.add_order');
     }
 }

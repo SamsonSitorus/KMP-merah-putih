@@ -5,46 +5,37 @@ namespace App\Http\Controllers\AdminController;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\TicketPrice;
+use App\Models\Tickettype;
 
 class TiketPriceController extends Controller
 {
     public function index()
     {
-        $passengerPrices = TicketPrice::whereNotNull('passenger_type')
-            ->whereNull('vehicle_type')
-            ->select('id', 'passenger_type', 'price')
-            ->orderBy('id')
-            ->get();
+        $ticketPrices = TicketPrice::with('ticketType')
+        ->orderBy('id')
+        ->get();
 
-        // Data Vehicle
-        $vehiclePrices = TicketPrice::whereNotNull('vehicle_type')
-            ->whereNull('passenger_type')
-            ->select('id', 'vehicle_type', 'price')
-            ->orderBy('id')
-            ->get();
+        // 🔹 Ambil SEMUA ticket type
+        $ticketTypes = TicketType::orderBy('id')->get();
 
         return view('admin.tiket.index', compact(
-            'passengerPrices',
-            'vehiclePrices'
+            'ticketPrices',
+            'ticketTypes'
         ));
     }
 
     public function store(Request $request)
     {
         $request->validate([
-            'type'            => 'required|in:passenger,vehicle',
-            'price'           => 'required|numeric|min:0'
+            'ticket_type_id' => 'required|exists:ticket_types,id',
+            'price' => 'required|integer|min:0',
+            'passenger_type' => 'nullable|string',
         ]);
 
         TicketPrice::create([
-            'ticket_stock_id' => 1,
-            'passenger_type'  => $request->type === 'passenger'
-                                    ? $request->passenger_type
-                                    : null,
-            'vehicle_type'    => $request->type === 'vehicle'
-                                    ? $request->vehicle_type
-                                    : null,
-            'price'           => $request->price
+            'ticket_type_id' => $request->ticket_type_id,
+            'name' => $request->passenger_type,
+            'price'          => $request->price,
         ]);
 
         return redirect()->back()->with('success', 'Tiket berhasil dibuat');

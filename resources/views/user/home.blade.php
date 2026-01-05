@@ -152,7 +152,7 @@
                             @endphp
                             <label style="display:flex; align-items:center; gap:.5rem; justify-content:space-between;">
                                 <div style="display:flex; align-items:center; gap:.5rem;">
-                                    <input type="checkbox" class="vehicle-checkbox" data-type="{{ $vtype->name }}"
+                                    <input type="checkbox" class="vehicle-checkbox" data-type="{{ $vtype->name }}"data-ticket-type-id="{{ $vtype->ticket_type_id }}"
                                         id="vehicle_chk_{{ $slug }}">
                                     <span>{{ $vtype->name }}</span>
                                 </div>
