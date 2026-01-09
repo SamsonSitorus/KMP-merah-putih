@@ -178,118 +178,149 @@
 </div>
 
 
-    <!-- Latest Offers Section -->
-    <section id="offers" class="offers-section reveal">
-        <div style="max-width: 1100px; margin: 0 auto; padding: 0 1rem;">
-            <div class="offers-header">
-                <h2>🏷️ Penawaran Terbaru</h2>
+   <section id="offers" class="offers-section reveal py-5 bg-white">
+    <div class="container">
+        <div class="offers-header text-center mb-5">
+            <h2 class="fw-bold text-dark">Daftar Tarif Penyeberangan</h2>
+            <p class="text-muted">Informasi harga tiket berdasarkan kategori penumpang dan kendaraan</p>
+        </div>
+
+        <div class="row g-4 justify-content-center">
+
+            <div class="col-lg-4 col-md-6 d-flex">
+                <div class="offer-card border rounded-3 shadow-none w-100 h-100 d-flex flex-column bg-white">
+                    <div class="p-3 border-bottom bg-white d-flex align-items-center justify-content-between">
+                        <h6 class="mb-0 fw-bold text-dark">
+                            <i class="bx bx-group me-1"></i> Penumpang
+                        </h6>
+                        <small class="text-muted fw-semibold">ID #01</small>
+                    </div>
+
+                    <div class="card-body p-0 flex-grow-1">
+                        <ul class="list-group list-group-flush">
+                            @foreach($ticketprices as $price)
+                                @if($price->ticket_type_id == 1)
+                                    <li class="list-group-item d-flex justify-content-between align-items-center py-3 border-bottom-light">
+                                        <div class="d-flex align-items-center">
+                                            <div class="icon-box me-3">
+                                                <i class="bx bx-user text-secondary"></i>
+                                            </div>
+                                            <div>
+                                                <span class="d-block fw-semibold text-dark">{{ $price->name }}</span>
+                                                <small class="text-muted" style="font-size: 0.7rem;">Tiket Penumpang</small>
+                                            </div>
+                                        </div>
+                                        <div class="text-end">
+                                            <span class="d-block fw-bold text-dark">
+                                                Rp {{ number_format($price->price, 0, ',', '.') }}
+                                            </span>
+                                        </div>
+                                    </li>
+                                @endif
+                            @endforeach
+                        </ul>
+                    </div>
+                    
+                    <div class="p-3 border-top mt-auto">
+                        <div class="d-flex align-items-center text-muted">
+                            <i class="bx bx-shield-quarter me-1"></i>
+                            <span style="font-size: 0.75rem;">Termasuk asuransi perjalanan</span>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem;">
+            <div class="col-lg-4 col-md-6 d-flex">
+                <div class="offer-card border rounded-3 shadow-none w-100 h-100 d-flex flex-column bg-white">
+                    <div class="p-3 border-bottom bg-white d-flex align-items-center justify-content-between">
+                        <h6 class="mb-0 fw-bold text-dark">
+                            <i class="bx bx-cycling me-1"></i> Kendaraan Roda 2
+                        </h6>
+                        <small class="text-muted fw-semibold">ID #02</small>
+                    </div>
 
-                <!-- PENUMPANG -->
-                <div class="offer-card stagger-item tilt">
-                    <div class="card-inner">
-                        <div class="offer-badge">👥 Penumpang</div>
-                        <h5>Daftar Harga Penumpang</h5>
-
-                        <div class="price-item">
-                            <span>🧑 Dewasa</span>
-                            <span>
-                                {{ isset($passengerPrices['Dewasa']) ? 'Rp ' . number_format($passengerPrices['Dewasa'], 0, ',', '.') : 'Rp 0' }}
-                            </span>
-                        </div>
-
-                        <div class="price-item">
-                            <span>👶 Bayi</span>
-                            <span>
-                                {{ isset($passengerPrices['Bayi']) ? 'Rp ' . number_format($passengerPrices['Bayi'], 0, ',', '.') : 'Rp 0' }}
-                            </span>
+                    <div class="card-body p-0 flex-grow-1">
+                        <ul class="list-group list-group-flush">
+                            @foreach($ticketprices as $price)
+                                @if($price->ticket_type_id == 2)
+                                    <li class="list-group-item d-flex justify-content-between align-items-center py-3 border-bottom-light">
+                                        <div class="d-flex align-items-center">
+                                            <div class="icon-box me-3">
+                                                <i class="bx bx-package text-secondary"></i>
+                                            </div>
+                                            <div>
+                                                <span class="d-block fw-semibold text-dark">{{ $price->name }}</span>
+                                                <small class="text-muted" style="font-size: 0.7rem;">Tiket Kendaraan</small>
+                                            </div>
+                                        </div>
+                                        <div class="text-end">
+                                            <span class="d-block fw-bold text-dark">
+                                                Rp {{ number_format($price->price, 0, ',', '.') }}
+                                            </span>
+                                        </div>
+                                    </li>
+                                @endif
+                            @endforeach
+                        </ul>
+                    </div>
+                    
+                    <div class="p-3 border-top mt-auto">
+                        <div class="d-flex align-items-center text-muted">
+                            <i class="bx bx-shield-quarter me-1"></i>
+                            <span style="font-size: 0.75rem;">Termasuk asuransi perjalanan</span>
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <!-- RODA 2 -->
-                <div class="offer-card stagger-item tilt">
-                    <div class="card-inner">
-                        <div class="offer-badge">🏍️ Roda 2</div>
-                        <h5>Daftar Harga Roda 2</h5>
+            <div class="col-lg-4 col-md-6 d-flex">
+                <div class="offer-card border rounded-3 shadow-none w-100 h-100 d-flex flex-column bg-white">
+                    <div class="p-3 border-bottom bg-white d-flex align-items-center justify-content-between">
+                        <h6 class="mb-0 fw-bold text-dark">
+                            <i class="bx bx-car me-1"></i> Kendaraan Roda 4
+                        </h6>
+                        <small class="text-muted fw-semibold">ID #03</small>
+                    </div>
 
-                        <div class="price-item">
-                            <span>🚲 Sepeda Dayung</span>
-                            <span>
-                                {{ isset($vehiclePrices['Sepeda Dayung'])
-                                    ? 'Rp ' . number_format($vehiclePrices['Sepeda Dayung'], 0, ',', '.')
-                                    : 'Rp 0' }}
-                            </span>
-                        </div>
-
-                        <div class="price-item">
-                            <span>🏍️ Sepeda Motor</span>
-                            <span>
-                                {{ isset($vehiclePrices['Sepeda Motor'])
-                                    ? 'Rp ' . number_format($vehiclePrices['Sepeda Motor'], 0, ',', '.')
-                                    : 'Rp 0' }}
-                            </span>
-                        </div>
-
-                        <div class="price-item">
-                            <span>🛺 Becak / Motor &gt; 500 cc</span>
-                            <span>
-                                {{ isset($vehiclePrices['Becak / Sepeda Motor > 500 cc'])
-                                    ? 'Rp ' . number_format($vehiclePrices['Becak / Sepeda Motor > 500 cc'], 0, ',', '.')
-                                    : 'Rp 0' }}
-                            </span>
+                    <div class="card-body p-0 flex-grow-1">
+                        <ul class="list-group list-group-flush">
+                            @foreach($ticketprices as $price)
+                                @if($price->ticket_type_id == 3)
+                                    <li class="list-group-item d-flex justify-content-between align-items-center py-3 border-bottom-light">
+                                        <div class="d-flex align-items-center">
+                                            <div class="icon-box me-3">
+                                                <i class="bx bx-bus text-secondary"></i>
+                                            </div>
+                                            <div>
+                                                <span class="d-block fw-semibold text-dark">{{ $price->name }}</span>
+                                                <small class="text-muted" style="font-size: 0.7rem;">Tiket Kendaraan</small>
+                                            </div>
+                                        </div>
+                                        <div class="text-end">
+                                            <span class="d-block fw-bold text-dark">
+                                                Rp {{ number_format($price->price, 0, ',', '.') }}
+                                            </span>
+                                        </div>
+                                    </li>
+                                @endif
+                            @endforeach
+                        </ul>
+                    </div>
+                    
+                    <div class="p-3 border-top mt-auto">
+                        <div class="d-flex align-items-center text-muted">
+                            <i class="bx bx-shield-quarter me-1"></i>
+                            <span style="font-size: 0.75rem;">Termasuk asuransi perjalanan</span>
                         </div>
                     </div>
                 </div>
-
-                <!-- RODA 4 -->
-                <div class="offer-card stagger-item tilt">
-                    <div class="card-inner">
-                        <div class="offer-badge">🚗 Roda 4</div>
-                        <h5>Daftar Harga Roda 4</h5>
-
-                        <div class="price-item">
-                            <span>🚐 Mini Bus Roda 4</span>
-                            <span>
-                                {{ isset($vehiclePrices['Mini Bus Roda 4'])
-                                    ? 'Rp ' . number_format($vehiclePrices['Mini Bus Roda 4'], 0, ',', '.')
-                                    : 'Rp 0' }}
-                            </span>
-                        </div>
-
-                        <div class="price-item">
-                            <span>🚚 Pick Up</span>
-                            <span>
-                                {{ isset($vehiclePrices['Pick Up']) ? 'Rp ' . number_format($vehiclePrices['Pick Up'], 0, ',', '.') : 'Rp 0' }}
-                            </span>
-                        </div>
-
-                        <div class="price-item">
-                            <span>🚌 Bus Sedang Roda 4</span>
-                            <span>
-                                {{ isset($vehiclePrices['Bus Sedang Roda 4'])
-                                    ? 'Rp ' . number_format($vehiclePrices['Bus Sedang Roda 4'], 0, ',', '.')
-                                    : 'Rp 0' }}
-                            </span>
-                        </div>
-
-                        <div class="price-item">
-                            <span>🚛 Kendaraan Barang Roda 4</span>
-                            <span>
-                                {{ isset($vehiclePrices['Kendaraan Barang Roda 4'])
-                                    ? 'Rp ' . number_format($vehiclePrices['Kendaraan Barang Roda 4'], 0, ',', '.')
-                                    : 'Rp 0' }}
-                            </span>
-                        </div>
-                    </div>
-                </div>
-
             </div>
 
         </div>
-    </section>
+    </div>
+</section>
+
+
 
     <!-- Why Choose Us Section -->
     <section id="why-us" class="why-section reveal">
@@ -353,44 +384,6 @@
             </div>
         </div>
     </section>
-
-
-    <!-- Contact Section -->
-    {{-- <section id="contact" class="py-5 bg-[#f8fafc] reveal">
-        <div style="max-width:1100px; margin:0 auto; padding:0 1rem;">
-            <h4 style="font-weight:700; margin-bottom:0.5rem;">Contact Us</h4>
-            <p style="color:#555; margin-bottom:1rem;">Butuh bantuan? Hubungi kami di
-                <strong>support@muaraputih.co.id</strong> atau telepon <strong>021-555-0123</strong>.</p>
-            <div style="display:flex; gap:1rem; flex-wrap:wrap;">
-                <a href="mailto:support@muaraputih.co.id" class="btn-search"
-                    style="width:auto; padding:0.6rem 1rem;">Email Us</a>
-                <a href="tel:+62215550123" class="btn-done" style="width:auto; padding:0.6rem 1rem;">Call Us</a>
-            </div>
-        </div>
-    </section> --}}
-
-    <!-- Scripts -->
-
-    <style>
-        .about-card {
-            max-width: 1200px;
-            padding: 30px;
-            margin: 40px auto;
-        }
-
-        .about-card-content {
-            display: flex;
-            align-items: center;
-            gap: 40px;
-        }
-
-        .about-card-content img {
-            width: 520px;
-            height: 380px;
-            object-fit: cover;
-            border-radius: 12px;
-        }
-    </style>
 
     <script>
     window.HomePageData = {

@@ -12,36 +12,40 @@ class EnsureProfileComplete
      * Handle an incoming request.
      * If user is not authenticated redirect to login; if profile incomplete, redirect to profile page.
      */
-    public function handle(Request $request, Closure $next)
-    {
-        $user = Auth::user();
+   public function handle(Request $request, Closure $next)
+{
+    $user = Auth::user();
 
-        if (! $user) {
-            return redirect()->route('login');
-        }
+    if (! $user) {
+        return redirect()->route('login');
+    }
 
-        // Determine completeness: check if user has a detail record and required fields filled
-        $detail = $user->detail;
+    $detail = $user->detail;
 
-        $required = ['tanggal_lahir', 'nomor_identitas', 'kota_asal'];
+    $required = ['tanggal_lahir', 'nomor_identitas', 'kota_asal'];
 
-        $complete = true;
-        if (! $detail) {
-            $complete = false;
-        } else {
-            foreach ($required as $f) {
-                if (empty($detail->{$f})) {
-                    $complete = false;
-                    break;
-                }
+    $complete = true;
+
+    if (! $detail) {
+        $complete = false;
+    } else {
+        foreach ($required as $f) {
+            if (empty($detail->{$f})) {
+                $complete = false;
+                break;
             }
         }
-
-        if (! $complete) {
-            // flash a message and redirect to profile edit page
-            return redirect()->route('profile')->with('warning', 'Lengkapi data profil Anda sebelum melakukan pemesanan tiket.');
-        }
-
-        return $next($request);
     }
+
+    if (! $complete) {
+        // ⬅️ SIMPAN HALAMAN ASAL (findticket)
+        session(['redirect_after_profile' => $request->fullUrl()]);
+
+        return redirect()->route('profile')
+            ->with('warning', 'Lengkapi data profil Anda sebelum melakukan pemesanan tiket.');
+            
+    }
+
+    return $next($request);
+}
 }

@@ -12,6 +12,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('booking_id')->constrained('bookings')->onDelete('cascade');
             $table->string('vehicle_type');
+            $table->string('vehicle_name'); 
+            $table->year('vehicle_year');
             $table->integer('count')->default(0);
             $table->string('no_plat');
             $table->string('category');

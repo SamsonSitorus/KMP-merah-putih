@@ -15,6 +15,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('booking_id')->constrained()->onDelete('cascade');
             $table->string('name');
+            $table->unsignedTinyInteger('age'); 
+            $table->string('gender', 10);
             $table->timestamps();
         });
     }

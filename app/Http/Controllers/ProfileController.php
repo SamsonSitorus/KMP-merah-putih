@@ -56,7 +56,14 @@ class ProfileController extends Controller
             ]
         );
 
-        return redirect()->route('profile')->with('success', 'Profil berhasil diperbarui.');
+        $redirectUrl = session('redirect_after_profile');
+
+        // hapus session supaya tidak nyangkut
+        session()->forget('redirect_after_profile');
+
+        return redirect($redirectUrl ?? route('profile'))
+            ->with('success', 'Profil berhasil diperbarui.');
+
     }
 
 }

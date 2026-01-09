@@ -26,12 +26,15 @@ class HomeController extends Controller
     
         // Contoh query ambil kendaraan (ticket_type_id 2 dan 3)
         $vehicleTypes = TicketPrice::whereIn('ticket_type_id', [2, 3])->get(['name', 'price', 'ticket_type_id']);
+
+        $ticketprices = TicketPrice::all();
         // Kirim ke view user.home
         return view('user.home', compact(
             'ports',
             'ticketStocks',
             'passengerTypes',
-            'vehicleTypes'
+            'vehicleTypes',
+            'ticketprices'
         ));
     }
     

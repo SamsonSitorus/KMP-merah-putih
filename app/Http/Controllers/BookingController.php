@@ -13,28 +13,35 @@ use App\Models\BookingVehicle;
 class BookingController extends Controller
 {
 public function detail(Request $request)
-{
-    //  VALIDASI (sesuai struktur request)
-    $data = $request->validate([
-        'ticket_stock_id' => 'required|exists:ticket_stocks,id',
-        'departure_date'  => 'nullable|date',
-        'departure_time'  => 'nullable|string',
-        'total_price'     => 'required|numeric|min:0',
+{$data = $request->validate([
+    'ticket_stock_id' => 'required|exists:ticket_stocks,id',
+    'departure_date'  => 'nullable|date',
+    'departure_time'  => 'nullable|string',
+    'total_price'     => 'required|numeric|min:0',
 
-        'passengers'              => 'required|array',
-        'passengers.*.names'      => 'required|array',
-        'passengers.*.names.*'    => 'required|string|max:255',
+    'passengers' => 'required|array',
 
-        'vehicle_types'           => 'nullable|array',
-        'vehicle_types.*'         => 'string|max:255',
+    'passengers.*.names' => 'required|array',
+    'passengers.*.names.*' => 'required|string|max:255',
 
-        'vehicles'                => 'nullable|array',
-        'vehicles.*.plates'       => 'nullable|array',
-        'vehicles.*.plates.*'     => 'string|max:50',
+    'passengers.*.genders' => 'required|array',
+    'passengers.*.genders.*' => 'required|in:Laki-laki,Perempuan',
 
-        'vehicle_categories'      => 'nullable|array',
-        'vehicle_categories.*'    => 'string|max:50',
-    ]);
+    'passengers.*.ages' => 'required|array',
+    'passengers.*.ages.*' => 'required|integer|min:0|max:120',
+
+    'vehicles' => 'nullable|array',
+    'vehicles.*.vehicle_type' => 'required|string',
+
+    'vehicles.*.vehicle_names' => 'required|array',
+    'vehicles.*.vehicle_names.*' => 'required|string',
+
+    'vehicles.*.vehicle_years' => 'required|array',
+    'vehicles.*.vehicle_years.*' => 'required|integer|min:1900|max:' . date('Y'),
+
+    'vehicles.*.plates' => 'required|array',
+    'vehicles.*.plates.*' => 'required|string|max:20',
+]);
 
     //  CEK LOGIN
     $user = Auth::user();
@@ -65,37 +72,34 @@ public function detail(Request $request)
 
     //  SIMPAN PENUMPANG
     foreach ($data['passengers'] as $passengerGroup) {
-        foreach ($passengerGroup['names'] as $name) {
+        foreach ($passengerGroup['names'] as $i => $name) {
             BookingPassenger::create([
                 'booking_id' => $booking->id,
                 'name'       => $name,
+                'age'        => $passengerGroup['ages'][$i],
+                'gender'     => $passengerGroup['genders'][$i],
             ]);
         }
     }
     
 
     //  SIMPAN KENDARAAN (JIKA ADA)
-    if (!empty($data['vehicle_types']) && !empty($data['vehicles'])) {
-
-        foreach ($data['vehicle_types'] as $i => $type) {
-
-            $plates = $data['vehicles'][$i]['plates'] ?? [];
-
-            if (empty($plates)) {
-                continue;
-            }
-
-            foreach ($plates as $plate) {
-                BookingVehicle::create([
-                    'booking_id'   => $booking->id,
-                    'vehicle_type' => $type,
-                    'count'        => 1,
-                    'no_plat'      => $plate,
-                    'category'     => $data['vehicle_categories'][$i] ?? '-',
-                ]);
-            }
+    if (!empty($data['vehicles'])) {
+    foreach ($data['vehicles'] as $vehicle) {
+        foreach ($vehicle['plates'] as $i => $plate) {
+            BookingVehicle::create([
+                'booking_id'   => $booking->id,
+                'vehicle_type' => $vehicle['vehicle_type'],
+                'vehicle_name' => $vehicle['vehicle_names'][$i],
+                'vehicle_year' => $vehicle['vehicle_years'][$i],
+                'no_plat'      => strtoupper($plate),
+                'count'        => 1,
+                'category'     => $vehicle['vehicle_type'],
+            ]);
         }
     }
+}
+
 
     //  SIMPAN SESSION
     session(['booking_id' => $booking->id]);

@@ -1,0 +1,131 @@
+
+    :root {
+        --primary-blue: #03254c;
+        --accent-orange: #ff5e1f;
+        --bg-light: #f8fafc;
+        --border-color: #e2e8f0;
+    }
+
+    body { 
+        background-color: var(--bg-light); 
+        font-family: 'Inter', -apple-system, sans-serif;
+    }
+
+    /* Header Styling */
+    .step-header {
+        background: white;
+        border-radius: 16px;
+        border-left: 6px solid var(--accent-orange);
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    }
+
+    /* Card Styling */
+    .form-section-card {
+        background: white;
+        border-radius: 20px;
+        border: 1px solid var(--border-color);
+        overflow: hidden;
+    }
+
+    .sub-card-item {
+        background: #ffffff;
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 15px;
+        transition: all 0.3s ease;
+    }
+
+    .sub-card-item:hover {
+        border-color: #cbd5e1;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+    }
+
+    .item-label {
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: var(--primary-blue);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        display: flex;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+
+    /* Input Styling */
+    .input-group-text {
+        background-color: #f8fafc;
+        border: 1px solid var(--border-color);
+        border-right: none;
+        color: #64748b;
+        border-radius: 10px 0 0 10px;
+    }
+
+    .form-control, .form-select {
+        border: 1px solid var(--border-color);
+        padding: 12px 15px;
+        border-radius: 10px;
+        font-size: 0.95rem;
+    }
+
+    .input-group .form-control {
+        border-left: none;
+        border-radius: 0 10px 10px 0;
+    }
+
+    .form-control:focus, .form-select:focus {
+        border-color: var(--accent-orange);
+        box-shadow: 0 0 0 3px rgba(255, 94, 31, 0.1);
+    }
+
+    /* Sidebar Styling */
+    .summary-sidebar {
+        position: sticky;
+        top: 2rem;
+    }
+
+    .summary-card {
+        border-radius: 24px;
+        border: none;
+        background: linear-gradient(145deg, #03254c, #053a75);
+        color: white;
+        box-shadow: 0 20px 25px -5px rgba(3, 37, 76, 0.2);
+    }
+
+    .price-badge {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(5px);
+        border-radius: 15px;
+        padding: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .btn-confirm {
+        background: var(--accent-orange);
+        color: white;
+        border: none;
+        padding: 16px;
+        border-radius: 14px;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        transition: 0.3s all;
+    }
+
+    .btn-confirm:hover {
+        background: #ff7a47;
+        transform: translateY(-3px);
+        box-shadow: 0 10px 20px rgba(255, 94, 31, 0.4);
+        color: white;
+    }
+
+    .icon-circle {
+        width: 32px;
+        height: 32px;
+        background: rgba(255, 94, 31, 0.1);
+        color: var(--accent-orange);
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 10px;
+    }

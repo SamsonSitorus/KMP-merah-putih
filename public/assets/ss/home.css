@@ -245,3 +245,62 @@ body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
   align-self: flex-end;
   margin-top: 1rem;
 }
+ /*baru*/
+
+        .about-card {
+            max-width: 1200px;
+            padding: 30px;
+            margin: 40px auto;
+        }
+
+        .about-card-content {
+            display: flex;
+            align-items: center;
+            gap: 40px;
+        }
+
+        .about-card-content img {
+            width: 520px;
+            height: 380px;
+            object-fit: cover;
+            border-radius: 12px;
+        }
+  
+    /* Minimalist Style */
+    .offer-card {
+        transition: all 0.2s ease-in-out;
+        border: 1px solid #e0e0e0 !important;
+    }
+    
+    .offer-card:hover {
+        border-color: #696cff !important; /* Aksen warna minimalis saat hover */
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05) !important;
+    }
+
+    .icon-box {
+        width: 32px;
+        height: 32px;
+        background: #f8f9fa;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 6px;
+    }
+
+    .border-bottom-light {
+        border-bottom: 1px solid #f1f1f1 !important;
+    }
+
+    .list-group-item:last-child {
+        border-bottom: none !important;
+    }
+
+    /* Neutral Badge */
+    .bg-label-secondary {
+        background: #f1f1f1;
+        color: #6c757d;
+    }
+
+    /* Typo */
+    .fw-bold { font-weight: 700 !important; }
+    .fw-semibold { font-weight: 600 !important; }
